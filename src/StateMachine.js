@@ -58,10 +58,10 @@ export default function StateMachine() {
             // Define the states and their transitions
             statemachine.states = {
                 "start": {
-                    "message": "Welcome to the Stir Food Chatbot! is it your first time here?",
+                    "message": "Welcome to the Stir Food Chatbot! Is it your first time here?",
                     "options": [
                         {
-                            "title": "Yes it is my first time",
+                            "title": "Yes, it is my first time",
                             "next": "services"
                         },
                         {
@@ -175,7 +175,7 @@ export default function StateMachine() {
                 },
 
                 "First Step": {
-                    "message": "The first step to this process is signing up as a The Food Corridor",
+                    "message": "The first step to this process is signing up for The Food Corridor",
                     "options": [
                         {
                             "title": "Next Step",
@@ -194,7 +194,7 @@ export default function StateMachine() {
 
 
                 "Event Venue": {
-                    "message": "Event Venues are available in the following types. Please select the type of venue you are looking for.",
+                    "message": "Event Venues are available in the following types. Please select the type of venue you are looking for",
                     "options": [
                         {
                             "type": "combined-form",
@@ -229,7 +229,7 @@ export default function StateMachine() {
 
 
                 "Check Signed Up": {
-                    "message": "Are you already signed up as a The Food Corridor?",
+                    "message": "Are you already signed up for The Food Corridor?",
                     "options": [
                         {
                             /*Database update here with callback function similar way like above where the form is*/
@@ -244,7 +244,7 @@ export default function StateMachine() {
                 },
 
                 "Not Signed up": {
-                    "message": "You need to sign up as a The Food Corridor to proceed",
+                    "message": "You need to sign up for The Food Corridor to proceed",
                     "options": [
                         {
                             "title": "Press Here to Sign Up",
@@ -259,7 +259,7 @@ export default function StateMachine() {
 
 
                 "Contact Form": {
-                    "message": "Before moving onto the second phase, Please fill out the form below so we can keep track of this conversation.",
+                    "message": "Before moving onto the second phase, please fill out the form below so we can keep track of this conversation",
                     "options": [
                         {
                             "type": "form",
@@ -291,7 +291,7 @@ export default function StateMachine() {
                 },
 
                 "BusinessStage": {
-                    "message": "What stage is your business in?",
+                    "message": "What stage is your business are you in?",
                     "options": [
                         {
                             "type": "radio",
@@ -323,7 +323,7 @@ export default function StateMachine() {
 
 
                 "Second Phase": {
-                    "message": "Great! Let's Check the pre-rental checklist of what you have.",
+                    "message": "Great! Let's check the pre-rental checklist of what you have",
                     "options": [
                         {
                             "type": "checkbox",
@@ -335,7 +335,7 @@ export default function StateMachine() {
                 },
 
                 "information": {
-                    "message": "Please contact our support team directly for further assistance.",
+                    "message": "Please contact our support team directly for further assistance",
                     "options": [
                         {
                             "title": "Back",
@@ -344,7 +344,7 @@ export default function StateMachine() {
                 },
 
                 "defaultState": {
-                    "message": "All requirements are met. You can proceed to the next step.",
+                    "message": "All requirements are met. You can proceed to the next step",
                     "options": [
                         {
                             "title": "Food Processing",
@@ -360,7 +360,7 @@ export default function StateMachine() {
                 },
 
                 "Food Service": {
-                    "message": "Please contact our support team directly for further assistance.",
+                    "message": "Please contact our support team directly for further assistance",
                     "options": [
                         {
                             "title": "Next Step",
@@ -369,7 +369,7 @@ export default function StateMachine() {
                 },
 
                 "Food Processing": {
-                    "message": "Please contact our support team directly for further assistance.",
+                    "message": "Please contact our support team directly for further assistance",
                     "options": [
                         {
                             "title": "Next Step",
@@ -379,7 +379,7 @@ export default function StateMachine() {
 
 
                 "Food Form": {
-                    "message": "Please fill out the form below so we can keep track of this conversation.",
+                    "message": "Please fill out the form below so we can keep track of this conversation",
                     "options": [
                         /*{
                             "type": "checkbox",
