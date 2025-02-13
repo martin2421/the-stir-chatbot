@@ -85,11 +85,13 @@ export default function StateMachine() {
                                 let result = await searchData({ email });
 
                                 if (result) {
-                                    statemachine.currentState = "Unregistered"; // ex. state - Replace with different state after data base check
+                                    console.log("Registered");
+                                    statemachine.currentState = "Registered"; // ex. state - Replace with different state after data base check
                                     statemachine.render(); // Render the new state
                                 }
                                 else {
-                                    statemachine.currentState = "Registered"; // ex. state - Replace with different state after data base check
+                                    console.log("Unregistered");
+                                    statemachine.currentState = "Unregistered"; // ex. state - Replace with different state after data base check
                                     statemachine.render(); // Render the new state
 
                                 }
@@ -104,36 +106,36 @@ export default function StateMachine() {
                 },
 
 
-                "Registered": {
-                    /*Callback function to get the conversation back to where it was*/
-                    "message": "We have a few questions to establish your business state",
-                    "options": [
-                        {
-                            "title": "Established",
-                            "next": "established"
-                        },
-                        {
-                            "title": "Scaling up",
-                            "next": "Scaling up"
-                        },
-                        {
-                            "title": "Idea Phase",
-                            "next": "Idea Phase"
-                        }
-                    ],
-                },
+                // "Registered": {
+                //     /*Callback function to get the conversation back to where it was*/
+                //     "message": "We have a few questions to establish your business state",
+                //     "options": [
+                //         {
+                //             "title": "Established",
+                //             "next": "established"
+                //         },
+                //         {
+                //             "title": "Scaling up",
+                //             "next": "Scaling up"
+                //         },
+                //         {
+                //             "title": "Idea Phase",
+                //             "next": "Idea Phase"
+                //         }
+                //     ],
+                // },
 
                 "Unregistered": {
                     "message": "The email or phone number you provided is not in our system. Please try again or start a new conversation",
                     "options": [
-                    {
-                    "title": "Try Again",
-                    "next": "Previous Conversation"
-                    },
-                    {
-                    "title": "Start New Conversation",
-                    "next": "services"
-                    }
+                        {
+                            "title": "Try Again",
+                            "next": "Previous Conversation"
+                        },
+                        {
+                            "title": "Start New Conversation",
+                            "next": "services"
+                        }
                     ],
                 },
 
@@ -180,8 +182,8 @@ export default function StateMachine() {
                             "next": "Check Signed Up"
                         },
                         {
-                            "title":"Sign up for the Food Corridor here",
-                            "href":"https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
+                            "title": "Sign up for the Food Corridor here",
+                            "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
                         },
                         {
                             "title": "Back",
@@ -190,49 +192,41 @@ export default function StateMachine() {
                     ]
                 },
 
-                "kitchenRental": {
-                    "message": "The first step to this process is signing up as a The Food Corridor",
+
+                "Event Venue": {
+                    "message": "Event Venues are available in the following types. Please select the type of venue you are looking for.",
                     "options": [
                         {
-                            "title": "Next Step",
-                            "next": "Contact Form"
+                            "type": "combined-form",
+                            "elements": [
+                                {
+                                    "type": "radio",
+                                    "name": "venue_location",  // First radio button group for location
+                                    "boxes": [
+                                        { name: "venue_location", value: "Indoor", id: "Indoor", label: "Indoor Venue" },
+                                        { name: "venue_location", value: "Outdoor", id: "Outdoor", label: "Outdoor Venue" }
+                                    ]
+                                },
+                                {
+                                    "type": "radio",
+                                    "name": "venue_capacity",  // Second radio button group for capacity
+                                    "boxes": [
+                                        { name: "venue_capacity", value: "0-50", id: "small", label: "0-50 People" },
+                                        { name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People" },
+                                        { name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People" }
+                                    ]
+                                }
+                            ],
+                            "callback": function (data) {
+                                if (data.selectedLocation && data.selectedCapacity) {
+                                    statemachine.currentState = "Contact Form";
+                                    statemachine.render();
+                                }
+                            }
                         }
                     ]
                 },
 
-                "Event Venue": {
-                "message": "Event Venues are available in the following types. Please select the type of venue you are looking for.",
-                "options": [
-                    {
-                        "type": "combined-form",
-                        "elements": [
-                            {
-                                "type": "radio",
-                                "name": "venue_location",  // First radio button group for location
-                                "boxes": [
-                                    {name: "venue_location", value: "Indoor", id: "Indoor", label: "Indoor Venue"},
-                                    {name: "venue_location", value: "Outdoor", id: "Outdoor", label: "Outdoor Venue"}
-                                ]
-                            },
-                            {
-                                "type": "radio",
-                                "name": "venue_capacity",  // Second radio button group for capacity
-                                "boxes": [
-                                    {name: "venue_capacity", value: "0-50", id: "small", label: "0-50 People"},
-                                    {name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People"},
-                                    {name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People"}
-                                ]
-                            }
-                        ],
-                        "callback": function(data) {
-                            if (data.selectedLocation && data.selectedCapacity) {
-                                statemachine.currentState = "Contact Form";
-                                statemachine.render();
-                            }
-                        }
-                    }
-                ]
-            },
 
                 "Check Signed Up": {
                     "message": "Are you already signed up as a The Food Corridor?",
@@ -263,6 +257,7 @@ export default function StateMachine() {
                     ]
                 },
 
+
                 "Contact Form": {
                     "message": "Before moving onto the second phase, Please fill out the form below so we can keep track of this conversation.",
                     "options": [
@@ -284,7 +279,7 @@ export default function StateMachine() {
                                 let message = data.message;
                                 let response = await insertData({ f_name, l_name, email, phone, message });
                                 console.log(response);
-                                statemachine.currentState = "Second Phase"; // ex. state - Replace with different state after data base check
+                                statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
                                 statemachine.render(); // Render the new state
                             }
                         },
@@ -302,22 +297,22 @@ export default function StateMachine() {
                             "type": "radio",
                             "label": "Business Stage:",
                             "boxes": [
-                                {name: "business_stage", value: "Brand New", id: "brand_new", label: "Brand New (concept phase, no sales)"},
-                                {name: "business_stage", value: "Getting Started", id: "getting_started", label: "Getting Started (some sales, have most legal docs)"},
-                                {name: "business_stage", value: "Up N Running", id: "up_n_running", label: "Up N Running (selling, have legal docs)"},
-                                {name: "business_stage", value: "Established", id: "established", label: "Established (selling, have legal docs)"},
-                                {name: "business_stage", value: "Other", id: "other", label: "Other (not a food business)"}
+                                { name: "business_stage", value: "Brand New", id: "brand_new", label: "Brand New (concept phase, no sales)" },
+                                { name: "business_stage", value: "Getting Started", id: "getting_started", label: "Getting Started (some sales, have most legal docs)" },
+                                { name: "business_stage", value: "Up N Running", id: "up_n_running", label: "Up N Running (selling, have legal docs)" },
+                                { name: "business_stage", value: "Established", id: "established", label: "Established (selling, have legal docs)" },
+                                { name: "business_stage", value: "Other", id: "other", label: "Other (not a food business)" }
                             ],
-                            "callback": function(data) {
+                            "callback": function (data) {
                                 if (data.selectedValue === "Brand New") {
                                     statemachine.currentState = "information";
                                 } else if (data.selectedValue === "Getting Started") {
                                     statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Up N Running") {
                                     statemachine.currentState = "Second Phase";
-                                } else if(data.selectedValue === "Established") {
+                                } else if (data.selectedValue === "Established") {
                                     statemachine.currentState = "Second Phase";
-                                } else if(data.selectedValue === "Other") {
+                                } else if (data.selectedValue === "Other") {
                                     statemachine.currentState = "information";
                                 }
                                 statemachine.render();
@@ -326,12 +321,13 @@ export default function StateMachine() {
                     ]
                 },
 
+
                 "Second Phase": {
                     "message": "Great! Let's Check the pre-rental checklist of what you have.",
                     "options": [
                         {
                             "type": "checkbox",
-                            "boxes": function() {
+                            "boxes": function () {
                                 return getCheckboxesForService(statemachine.selectedService);
                             }
                         }
@@ -341,10 +337,10 @@ export default function StateMachine() {
                 "information": {
                     "message": "Please contact our support team directly for further assistance.",
                     "options": [
-                    {
-                        "title":"Back",
-                        "back":"start"
-                    }]
+                        {
+                            "title": "Back",
+                            "back": "start"
+                        }]
                 },
 
                 "defaultState": {
@@ -381,22 +377,43 @@ export default function StateMachine() {
                         }]
                 },
 
+
                 "Food Form": {
                     "message": "Please fill out the form below so we can keep track of this conversation.",
                     "options": [
-                        {
+                        /*{
                             "type": "checkbox",
                             "boxes": function() {
                                     return getCheckboxesForService(statemachine.selectedService);
+                            }
+                        },*/
+                        {
+                            "type": "dropdown",
+                            "name": "stage",
+                            "choices": [
+                                { value: "Idea Phase", label: "Idea Phase" },
+                                { value: "Established", label: "Established" },
+                                { value: "Scaling up", label: "Scaling up" }
+                            ],
+                            "callback": function (selectedValue) {
+                                if (selectedValue === "Idea Phase") {
+                                    statemachine.currentState = "Idea Phase";
+                                } else if (selectedValue === "Established") {
+                                    statemachine.currentState = "established";
+                                } else if (selectedValue === "Scaling up") {
+                                    statemachine.currentState = "Scaling up";
+                                }
+                                statemachine.render();
                             }
                         },
                     ]
                 },
 
+
                 // Then update the handleUnchecked state to use this function:
                 "handleUnchecked": {
                     "message": "Please read the following requirement",  // Remove message from here
-                    "render": function(uncheckedItems) {
+                    "render": function (uncheckedItems) {
                         return handleUncheckedItems(uncheckedItems);
                     },
                     "options": []
@@ -477,7 +494,7 @@ export default function StateMachine() {
                         var form = createForm(option, i); // Create a form if the option type is "form"
                         buttoncontainer.appendChild(form); // Append the form to the buttons container
                     }
-                    
+
                     else if (option.type === "checkbox") {
                         var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
                         buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
@@ -497,7 +514,7 @@ export default function StateMachine() {
                         var radioGroup = createRadioGroup(option);
                         buttoncontainer.appendChild(radioGroup);
                     }
-                    
+
                     else {
                         var button = document.createElement("button"); // Create a new button element
                         button.className = "titles"; // Set the class name for the button
@@ -512,12 +529,12 @@ export default function StateMachine() {
                 // Update the render function's handleUnchecked section
                 if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
                     const additionalOptions = currentState.render(this.uncheckedStates);
-                    
+
                     additionalOptions.forEach((option) => {
                         var button = document.createElement("button");
                         button.className = "titles";
                         button.innerText = option.title;
-                        
+
                         if (option.title === "Next Requirement") {
                             button.onclick = () => {
                                 statemachine.currentUncheckedIndex++;
@@ -531,7 +548,7 @@ export default function StateMachine() {
                                 statemachine.render();
                             };
                         }
-                        
+
                         buttoncontainer.appendChild(button);
                     });
                 }
@@ -649,7 +666,7 @@ export default function StateMachine() {
 
                 var submitButton = document.createElement("button"); // Create a new button element
                 submitButton.type = "submit"; // Set the button type to submit
-                submitButton.innerText = "Submit"; // Set the button text
+                submitButton.innerText = "Let's Get Cooking!"; // Set the button text
                 form.appendChild(submitButton); // Append the button to the form
 
                 return form;
@@ -660,50 +677,50 @@ export default function StateMachine() {
             function getCheckboxesForService(service) {
                 if (service === "workstationSpace") {
                     return [
-                        {name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License"},
-                        {name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance"},
-                        {name: "Makership Membership", value: "Makership Membership", id: "Makership Membership"},
-                        {name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee"}
+                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
+                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
+                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
                     ];
                 } else if (service === "kitchenRental") {
                     return [
-                        {name: "Interior Health", value: "Interior Health", id: "Interior Health"},
-                        {name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License"},
-                        {name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance"},
-                        {name: "Completed Business Plan", value: "Completed Business Plan"},
-                        {name:"FoodSafe Certificate", value: "FoodSafe Certificate", id: "FoodSafe Certificate"},
-                        {name: "Makership Membership", value: "Makership Membership", id: "Makership Membership"},
-                        {name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee"}
+                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
+                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
+                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Completed Business Plan", value: "Completed Business Plan" },
+                        { name: "FoodSafe Certificate", value: "FoodSafe Certificate", id: "FoodSafe Certificate" },
+                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
+                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
                     ];
                 } else if (service === "Event Venue") {
                     return [
-                        {name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License"},
-                        {name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance"},
-                        {name: "Makership Membership", value: "Makership Membership", id: "Makership Membership"},
-                        {name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee"}
+                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
+                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
+                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
                     ];
                 } else if (service === "Business Coach") {
                     return [
-                        {name: "Makership Conduct Agreement", value: "Makership Conduct Agreement", id: "Makership Conduct Agreement"},
-                        {name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee"}
+                        { name: "Makership Conduct Agreement", value: "Makership Conduct Agreement", id: "Makership Conduct Agreement" },
+                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
                     ];
                 }
-                else if (service === "Food Processing"){
+                else if (service === "Food Processing") {
                     return [
-                        {name: "Interior Health", value: "Interior Health", id: "Interior Health"},
-                        {name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License"},
-                        {name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance"},
-                        {name: "Completed Business Plan", value: "Completed Business Plan"}
+                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
+                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
+                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Completed Business Plan", value: "Completed Business Plan" }
                     ];
                 }
-                else if (service === "Food Service"){
+                else if (service === "Food Service") {
                     return [
-                        {name: "Interior Health", value: "Interior Health", id: "Interior Health"},
-                        {name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License"},
-                        {name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance"},
-                        {name: "Completed Business Plan", value: "Completed Business Plan"}
+                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
+                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
+                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Completed Business Plan", value: "Completed Business Plan" }
                     ];
-                }  
+                }
                 else {
                     return [];
                 }
@@ -714,13 +731,13 @@ export default function StateMachine() {
             statemachine.currentUncheckedIndex = 0;
 
             // Modify the handleUncheckedItems function
-            function handleUncheckedItems(uncheckedItems) {        
+            function handleUncheckedItems(uncheckedItems) {
                 const options = [];
 
                 if (statemachine.currentUncheckedIndex < uncheckedItems.length) {
                     const item = uncheckedItems[statemachine.currentUncheckedIndex];
-                    
-                    switch(item) {
+
+                    switch (item) {
                         case "Commercial Insurance":
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
                             options.push(
@@ -755,7 +772,7 @@ export default function StateMachine() {
                     // Update the Next Requirement button
                     options.push({
                         "title": "Next Requirement",
-                        "callback": function() {
+                        "callback": function () {
                             statemachine.currentUncheckedIndex++;
                             statemachine.currentState = "handleUnchecked";
                             statemachine.render();
@@ -772,14 +789,68 @@ export default function StateMachine() {
                 return options;
             }
 
+            //--
+            function createCombinedForm(option) {
+                var form = document.createElement("form");
+                form.className = "combined-form";
+
+                option.elements.forEach(element => {
+                    if (element.type === "radio") {
+                        const radioDiv = document.createElement("div");
+                        radioDiv.className = "radio-group";
+
+                        const groupLabel = document.createElement("div");
+                        groupLabel.className = "group-label";
+                        groupLabel.innerText = element.name === "venue_location" ? "Venue Type:" : "Capacity:";
+                        radioDiv.appendChild(groupLabel);
+
+                        element.boxes.forEach(box => {
+                            var label = document.createElement("label");
+                            var input = document.createElement("input");
+                            input.type = "radio";
+                            input.name = box.name;
+                            input.value = box.value;
+                            input.id = box.id;
+                            label.appendChild(input);
+                            label.appendChild(document.createTextNode(box.label || box.value));
+                            radioDiv.appendChild(label);
+                            radioDiv.appendChild(document.createElement("br"));
+                        });
+                        form.appendChild(radioDiv);
+                    }
+                });
+
+
+                // Add submit button
+                var submitButton = document.createElement("button");
+                submitButton.type = "submit";
+                submitButton.innerText = "Submit";
+                form.appendChild(submitButton);
+
+                // Handle form submission
+                form.onsubmit = function (event) {
+                    event.preventDefault();
+                    var selectedLocation = form.querySelector('input[name="venue_location"]:checked');
+                    var selectedCapacity = form.querySelector('input[name="venue_capacity"]:checked');
+
+                    option.callback({
+                        selectedLocation: selectedLocation ? selectedLocation.value : null,
+                        selectedCapacity: selectedCapacity ? selectedCapacity.value : null
+                    });
+                };
+
+                return form;
+            }
+
+
             // Function to create radio buttons
             function createRadioGroup(option) {
-                var form = document.createElement("form");
+                var form = document.createElement("form"); createRadioGroup
                 form.className = "radio-form";
 
                 const radioDiv = document.createElement("div");
                 radioDiv.className = "radio-group";
-                
+
                 // Add group label if provided
                 if (option.label) {
                     const groupLabel = document.createElement("div");
@@ -787,7 +858,7 @@ export default function StateMachine() {
                     groupLabel.innerText = option.label;
                     radioDiv.appendChild(groupLabel);
                 }
-                
+
                 option.boxes.forEach(box => {
                     var label = document.createElement("label");
                     var input = document.createElement("input");
@@ -800,7 +871,7 @@ export default function StateMachine() {
                     radioDiv.appendChild(label);
                     radioDiv.appendChild(document.createElement("br"));
                 });
-                
+
                 form.appendChild(radioDiv);
 
                 // Add submit button
@@ -810,7 +881,7 @@ export default function StateMachine() {
                 form.appendChild(submitButton);
 
                 // Handle form submission
-                form.onsubmit = function(event) {
+                form.onsubmit = function (event) {
                     event.preventDefault();
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
                     option.callback({
@@ -820,7 +891,6 @@ export default function StateMachine() {
 
                 return form;
             }
-
 
             // Load chat history from localStorage
             function loadChatHistory() {
@@ -870,11 +940,11 @@ export default function StateMachine() {
                 localStorage.setItem("chatHistory", JSON.stringify(history));
             }
 
+
             // Save the current state to localStorage
             function saveCurrentState(state) {
                 localStorage.setItem("currentState", statemachine.currentState);
             }
-
 
 
 
