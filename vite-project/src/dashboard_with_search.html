@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Data Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .expand-btn {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #searchInput {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Client Data Table</h2>
+    <input type="text" id="searchInput" onkeyup="searchTable()"
+        placeholder="Search for names, services, or requirements...">
+    <table id="clientTable">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Business Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Service Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td>Doe Catering</td>
+                <td>john@example.com</td>
+                <td>123-456-7890</td>
+                <td>Kitchen Rental</td>
+                <td><button class="expand-btn" onclick="toggleDetails('details1')">View Details</button></td>
+            </tr>
+            <tr id="details1" class="hidden details-row">
+                <td colspan="6">
+                    <strong>Requirements:</strong>
+                    <ul>
+                        <li>Health Certificate: ✅</li>
+                        <li>Insurance: ❌</li>
+                        <li>Business License: ✅</li>
+                    </ul>
+                    <strong>Products:</strong>
+                    <ul>
+                        <li>Oven</li>
+                        <li>Refrigerator</li>
+                        <li>Dishwasher</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Jane Smith</td>
+                <td>Smith Logistics</td>
+                <td>jane@example.com</td>
+                <td>987-654-3210</td>
+                <td>Warehouse Unit</td>
+                <td><button class="expand-btn" onclick="toggleDetails('details2')">View Details</button></td>
+            </tr>
+            <tr id="details2" class="hidden details-row">
+                <td colspan="6">
+                    <strong>Requirements:</strong>
+                    <ul>
+                        <li>Warehouse Permit: ✅</li>
+                        <li>Business License: ✅</li>
+                    </ul>
+                    <strong>Products:</strong>
+                    <ul>
+                        <li>Forklift</li>
+                        <li>Storage Shelves</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Michael Johnson</td>
+                <td>Johnson Bakery</td>
+                <td>michael@example.com</td>
+                <td>555-123-4567</td>
+                <td>Kitchen Rental</td>
+                <td><button class="expand-btn" onclick="toggleDetails('details3')">View Details</button></td>
+            </tr>
+            <tr id="details3" class="hidden details-row">
+                <td colspan="6">
+                    <strong>Requirements:</strong>
+                    <ul>
+                        <li>Health Certificate: ✅</li>
+                        <li>Insurance: ✅</li>
+                    </ul>
+                    <strong>Products:</strong>
+                    <ul>
+                        <li>Mixing Machine</li>
+                        <li>Cooling Rack</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function toggleDetails(id) {
+            let detailsRow = document.getElementById(id);
+            detailsRow.classList.toggle('hidden');
+        }
+
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("clientTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].textContent.toLowerCase();
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                    if (rows[i].classList.contains("details-row")) {
+                        rows[i - 1].style.display = ""; // Show parent row when a detail matches
+                    }
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,372 @@
+html,
+body {
+    background: #efefef;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+#clearHistoryButton {
+    margin-right: 10px;
+}
+
+#chat-circle {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chef {
+    font-size: 70px;  /* Reduced size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: rgb(136, 38, 27); /* Bubble color */
+    border-radius: 50%;
+    padding: 20px; /* Space inside the bubble */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Shadow for a floating effect */
+}
+
+.pan {
+    width: 60px;  /* Reduced pan size */
+    height: 12px;
+    background-color: #333;
+    position: absolute;
+    border-radius: 5px;
+    bottom: 0;
+    transform-origin: 50% 50%;
+    animation: flipPan 1s infinite;
+}
+
+@keyframes flipPan {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chef-icon {
+    font-size: 70px;  /* Reduced chef emoji size */
+    color: white;
+    font-weight: bold;
+}
+
+.help-text {
+    position: absolute;
+    top: -30px; /* Adjusted position to come out from the center of the chef's head */
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff5733; /* Bright color */
+    animation: moveTextUp 3s linear infinite;
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+@keyframes moveTextUp {
+    0% {
+        transform: translateY(0); /* Start from the chef's head */
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-200px); /* Move upwards */
+        opacity: 0; /* Fade away */
+    }
+}
+
+
+#chat-circle:hover {
+    animation: none;
+}
+
+#chat-circle.hidden {
+    display: none;
+}
+
+.chat-box {
+    display: none;
+    background: #efefef;
+    position: fixed;
+    right: 30px;
+    bottom: 50px;
+    width: 350px;
+    max-width: 85vw;
+    border-radius: 5px;
+    box-shadow: 0px 5px 35px 9px #ccc;
+    z-index: 1000;
+}
+
+.chat-box.show {
+    display: block;
+}
+
+.chat-box-header {
+    background: rgb(139,35,27);
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-box-body {
+    height: 370px;
+    padding: 15px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+}
+
+.chat-box-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    font-size: 30px;
+    font-weight: bolder;
+
+}
+
+.chat-box-header button:hover {
+    color: #ddd;
+}
+
+.chat-box-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chat-box-body::-webkit-scrollbar-thumb {
+    background: #5A5EB9;
+}
+
+
+
+
+.chat-input {
+    background: #f4f7f9;
+    height: 47px;
+    padding: 10px 10px;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+#chat-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+}
+
+.chat-submit {
+    background: transparent;
+    border: none;
+    color: #5A5EB9;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.buttons button, .buttons select, .buttons input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.buttons button {
+    background: rgb(139,35,27);
+    color: white;
+}
+.buttons button:hover {
+    background: rgb(139,35,27);
+}
+.buttons select {
+    background: white;
+    border: 1px solid #ccc;
+}
+
+
+
+.titles {
+    /* This is for the titles of the buttons */
+    display:grid;
+    font-display: flex;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+.form {
+display: flex;
+flex-direction: column;
+gap: 10px;
+max-width: 300px; 
+padding: 15px;
+background-color: #f9f9f9;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+margin-bottom: 10px;
+}
+
+
+.form input {
+width: 95%;
+padding: 8px;
+border: 1px solid #ccc;
+border-radius: 5px;
+font-size: 16px;
+transition: border-color 0.3s;
+}
+
+.form input:focus {
+border-color: rgb(136, 38, 27); 
+outline: none;
+border:2px solid rgb(136, 38, 27);
+}
+
+
+.form button {
+padding: 10px;
+background-color: rgb(136, 38, 27);
+color: white;
+font-size: 16px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+
+.form button:hover {
+background-color:rgb(216, 128, 122) ;
+}
+
+
+/* Container for each message, using flex layout */
+.chat-msg {
+display: flex;
+justify-content: space-between; /* Distribute space between left and right messages */
+align-items: flex-start; /* Align messages at the top */
+margin-bottom: 10px; /* Space between messages */
+}
+
+/* Left side message */
+.cm-msg-text {
+max-width: 70%; /* Limit the maximum width */
+padding: 8px;
+background-color: #ddd; /* Background color */
+border-radius: 10px; /* Rounded corners */
+margin-right: 10px; /* Space to the right of the left message */
+}
+
+/* Right side message, closely aligned to the right */
+.cm-msg-text-reply {
+max-width: 70%; /* Limit the maximum width */
+padding: 8px;
+background-color: rgb(139,35,27); /* Background color for the reply message */
+color: white; /* Text color */
+border-radius: 10px; /* Rounded corners */
+margin-left: auto; /* Push this message to the far right */
+}
+
+/* 复选框表单容器 */
+.checkbox {
+display: flex;
+flex-direction: column;
+gap: 10px; /* 选项之间的间距 */
+max-width: 300px;
+padding: 15px;
+background-color: #f9f9f9;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 复选框标签 */
+.checkbox label {
+display: flex;
+align-items: center;
+gap: 8px; /* 复选框与文本的间距 */
+font-size: 16px;
+cursor: pointer;
+}
+
+/* 复选框输入 */
+.checkbox input[type="checkbox"] {
+width: 18px;
+height: 20px;
+accent-color: rgb(136, 38, 27);
+cursor: pointer;
+}
+
+/* 提交按钮 */
+.checkbox button {
+padding: 10px;
+background-color: rgb(136, 38, 27);
+color: white;
+font-size: 16px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+
+.checkbox button:hover {
+background-color: rgb(216, 128, 122) ;
+}
+
+.combined-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: rgb(136, 38, 27);
+    cursor: pointer;
+}
+
+.group-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: rgb(136, 38, 27);
+}
+
+.radio-group {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+}
