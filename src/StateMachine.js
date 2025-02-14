@@ -84,14 +84,16 @@ export default function StateMachine() {
                                 let email = data.email
                                 let result = await searchData({ email });
 
-                                if (result) {
-                                    console.log("Registered");
-                                    statemachine.currentState = "Registered"; // ex. state - Replace with different state after data base check
+                                if (result.success) {
+                                    console.log(result.state);
+                                    console.log(result.chat);
+                                    statemachine.currentState = result.state; // ex. state - Replace with different state after data base check
                                     statemachine.render(); // Render the new state
                                 }
                                 else {
-                                    console.log("Unregistered");
-                                    statemachine.currentState = "Unregistered"; // ex. state - Replace with different state after data base check
+                                    console.log(result.state);
+                                    console.log(result.chat);
+                                    statemachine.currentState = result.state; // ex. state - Replace with different state after data base check
                                     statemachine.render(); // Render the new state
 
                                 }

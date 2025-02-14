@@ -54,24 +54,29 @@ export const insertData = async (data) => {
 
 export const searchData = async (data) => {
 
-  dynamodb
+  return dynamodb
     .scan({
       TableName: "Prospects",
       FilterExpression:
-        "attribute_not_exists(deletedAt) AND contains(email, :email)",
+        "attribute_not_exists(deletedAt) AND email = :email",
       ExpressionAttributeValues: {
         ":email": data.email,
       },
     })
     .promise()
-    .then(function () {
-      if (data != undefined) {
-        console.log(data.Items[0]);
-        return true;
+    .then(function (data) {
+      if (data.Items[0] != undefined) {
+        return { success: true, state: 'First Step', chat: data.Items[0] };
       } else {
-        return false;
+        return { success: false, state: 'Unregistered', chat: 'NOTHING' };
       }
     }
     )
     .catch(console.error)
+
+  // if(result == undefined){
+  //   return false;
+  // }else{
+  //   return true;
+  // }
 }
