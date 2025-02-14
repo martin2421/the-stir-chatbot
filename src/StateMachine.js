@@ -107,26 +107,6 @@ export default function StateMachine() {
                     ],
                 },
 
-
-                // "Registered": {
-                //     /*Callback function to get the conversation back to where it was*/
-                //     "message": "We have a few questions to establish your business state",
-                //     "options": [
-                //         {
-                //             "title": "Established",
-                //             "next": "established"
-                //         },
-                //         {
-                //             "title": "Scaling up",
-                //             "next": "Scaling up"
-                //         },
-                //         {
-                //             "title": "Idea Phase",
-                //             "next": "Idea Phase"
-                //         }
-                //     ],
-                // },
-
                 "Unregistered": {
                     "message": "The email or phone number you provided is not in our system. Please try again or start a new conversation",
                     "options": [
@@ -744,7 +724,7 @@ export default function StateMachine() {
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
                             options.push(
                                 {
-                                    "title": "Click here for interiorsavings insurance",
+                                    "title": "Click here for interior savings insurance",
                                     "href": "https://www.interiorsavings.com/business/insurance"
                                 },
                                 {
