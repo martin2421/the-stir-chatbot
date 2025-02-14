@@ -62,7 +62,7 @@ export default function StateMachine() {
                     "options": [
                         {
                             "title": "Yes, it is my first time",
-                            "next": "services"
+                            "next": "Food Form"
                         },
                         {
                             "title": "No, I've been here before",
@@ -106,26 +106,6 @@ export default function StateMachine() {
                         }
                     ],
                 },
-
-
-                // "Registered": {
-                //     /*Callback function to get the conversation back to where it was*/
-                //     "message": "We have a few questions to establish your business state",
-                //     "options": [
-                //         {
-                //             "title": "Established",
-                //             "next": "established"
-                //         },
-                //         {
-                //             "title": "Scaling up",
-                //             "next": "Scaling up"
-                //         },
-                //         {
-                //             "title": "Idea Phase",
-                //             "next": "Idea Phase"
-                //         }
-                //     ],
-                // },
 
                 "Unregistered": {
                     "message": "The email or phone number you provided is not in our system. Please try again or start a new conversation",
@@ -204,6 +184,7 @@ export default function StateMachine() {
                                 {
                                     "type": "radio",
                                     "name": "venue_location",  // First radio button group for location
+                                    "label": "Venue Location:",  // Label for the radio button group
                                     "boxes": [
                                         { name: "venue_location", value: "Indoor", id: "Indoor", label: "Indoor Venue" },
                                         { name: "venue_location", value: "Outdoor", id: "Outdoor", label: "Outdoor Venue" }
@@ -212,6 +193,7 @@ export default function StateMachine() {
                                 {
                                     "type": "radio",
                                     "name": "venue_capacity",  // Second radio button group for capacity
+                                    "label": "Venue Capacity:",  // Label for the radio button group
                                     "boxes": [
                                         { name: "venue_capacity", value: "0-50", id: "small", label: "0-50 People" },
                                         { name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People" },
@@ -381,34 +363,56 @@ export default function StateMachine() {
 
 
                 "Food Form": {
-                    "message": "Please fill out the form below so we can keep track of this conversation",
-                    "options": [
-                        /*{
-                            "type": "checkbox",
-                            "boxes": function() {
-                                    return getCheckboxesForService(statemachine.selectedService);
-                            }
-                        },*/
+                "message": "Please fill out the form below so we can keep track of this conversation",
+                "options": [
+                {
+                    "type": "combined-form",
+                    "elements": [
                         {
-                            "type": "dropdown",
-                            "name": "stage",
-                            "choices": [
-                                { value: "Idea Phase", label: "Idea Phase" },
-                                { value: "Established", label: "Established" },
-                                { value: "Scaling up", label: "Scaling up" }
-                            ],
-                            "callback": function (selectedValue) {
-                                if (selectedValue === "Idea Phase") {
-                                    statemachine.currentState = "Idea Phase";
-                                } else if (selectedValue === "Established") {
-                                    statemachine.currentState = "established";
-                                } else if (selectedValue === "Scaling up") {
-                                    statemachine.currentState = "Scaling up";
-                                }
-                                statemachine.render();
-                            }
+                            "type": "checkbox-group",
+                            "name": "Types of Products",
+                            "boxes": [
+                                { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed" },
+                                { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy" },
+                                { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients" },
+                                { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality" },
+                                { name: "food_docs", value: "Other Products 🏷️", id: "Other" }
+                            ]
                         },
-                    ]
+                        {
+                            "type": "radio",
+                            "name": "Space/Time Needed",
+                            "label": "Space/Time Needed:",  // Label for the radio button group
+                            "boxes": [
+                                { name: "business_type", value: "0-10", id: "0-10", label: "0-10 Hours" },
+                                { name: "business_type", value: "10-25", id: "10-25", label: "10-25 Hours" },
+                                { name: "business_type", value: "25-50", id: "25-50", label: "25-50 Hours" }
+                            ]
+                        },
+                        {
+                            "type": "textarea",
+                            "name": "notes",
+                            "label": "Additional Notes",
+                            "placeholder": "Please enter any additional notes or requirements..."
+                        }
+                    ],
+                    "callback": function(data) {
+                        console.log("Form data:", data);
+                        if (data.businessType === "Food Processing") {
+                            statemachine.currentState = "Food Processing";
+                        } else if (data.businessType === "Food Service") {
+                            statemachine.currentState = "Food Service";
+                        } else {
+                            statemachine.currentState = "information";
+                        }
+                        statemachine.render();
+                    }
+                },
+                {
+                    "title": "Back",
+                    "back": "start"
+                }
+                ]
                 },
 
 
@@ -744,7 +748,7 @@ export default function StateMachine() {
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
                             options.push(
                                 {
-                                    "title": "Click here for interiorsavings insurance",
+                                    "title": "Click here for interior savings insurance",
                                     "href": "https://www.interiorsavings.com/business/insurance"
                                 },
                                 {
@@ -791,56 +795,92 @@ export default function StateMachine() {
                 return options;
             }
 
-            //--
             function createCombinedForm(option) {
                 var form = document.createElement("form");
                 form.className = "combined-form";
-
+            
                 option.elements.forEach(element => {
-                    if (element.type === "radio") {
-                        const radioDiv = document.createElement("div");
-                        radioDiv.className = "radio-group";
-
+                    if (element.type === "checkbox-group") {
+                        const groupDiv = document.createElement("div");
+                        groupDiv.className = "checkbox-group";
+            
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
-                        groupLabel.innerText = element.name === "venue_location" ? "Venue Type:" : "Capacity:";
-                        radioDiv.appendChild(groupLabel);
-
+                        groupLabel.innerText = element.name;
+                        groupDiv.appendChild(groupLabel);
+            
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
-                            input.type = "radio";
+                            input.type = "checkbox";
                             input.name = box.name;
                             input.value = box.value;
                             input.id = box.id;
                             label.appendChild(input);
-                            label.appendChild(document.createTextNode(box.label || box.value));
+                            label.appendChild(document.createTextNode(box.value));
+                            groupDiv.appendChild(label);
+                            groupDiv.appendChild(document.createElement("br"));
+                        });
+                        form.appendChild(groupDiv);
+                    }
+                    else if (element.type === "radio") {
+                        const radioDiv = document.createElement("div");
+                        radioDiv.className = "radio-group";
+            
+                        const groupLabel = document.createElement("div");
+                        groupLabel.className = "group-label";
+                        groupLabel.innerText = element.label;
+                        radioDiv.appendChild(groupLabel);
+            
+                        element.boxes.forEach(box => {
+                            var label = document.createElement("label");
+                            var input = document.createElement("input");
+                            input.type = "radio";
+                            input.name = element.name;
+                            input.value = box.value;
+                            input.id = box.id;
+                            label.appendChild(input);
+                            label.appendChild(document.createTextNode(box.label));
                             radioDiv.appendChild(label);
                             radioDiv.appendChild(document.createElement("br"));
                         });
                         form.appendChild(radioDiv);
                     }
+                    else if (element.type === "textarea") {
+                        const textareaDiv = document.createElement("div");
+                        textareaDiv.className = "textarea-group";
+            
+                        const textareaLabel = document.createElement("div");
+                        textareaLabel.className = "group-label";
+                        textareaLabel.innerText = element.label;
+                        textareaDiv.appendChild(textareaLabel);
+            
+                        const textarea = document.createElement("textarea");
+                        textarea.name = element.name;
+                        textarea.placeholder = element.placeholder;
+                        textarea.rows = 4;
+                        textareaDiv.appendChild(textarea);
+            
+                        form.appendChild(textareaDiv);
+                    }
                 });
-
-
-                // Add submit button
+            
                 var submitButton = document.createElement("button");
                 submitButton.type = "submit";
                 submitButton.innerText = "Submit";
                 form.appendChild(submitButton);
-
-                // Handle form submission
-                form.onsubmit = function (event) {
+            
+                form.onsubmit = function(event) {
                     event.preventDefault();
-                    var selectedLocation = form.querySelector('input[name="venue_location"]:checked');
-                    var selectedCapacity = form.querySelector('input[name="venue_capacity"]:checked');
-
-                    option.callback({
-                        selectedLocation: selectedLocation ? selectedLocation.value : null,
-                        selectedCapacity: selectedCapacity ? selectedCapacity.value : null
-                    });
+                    const formData = {
+                        foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.value),
+                        equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
+                        businessType: form.querySelector('input[name="business_type"]:checked')?.value,
+                        notes: form.querySelector('textarea[name="notes"]').value
+                    };
+                    option.callback(formData);
                 };
-
+            
                 return form;
             }
 
