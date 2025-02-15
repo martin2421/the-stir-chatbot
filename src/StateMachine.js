@@ -736,15 +736,18 @@ export default function StateMachine() {
             // Add a property to track current unchecked item
             statemachine.currentUncheckedIndex = 0;
 
-            // Modify the handleUncheckedItems function
+            // Function to handle displaying and processing unchecked requirement items
             function handleUncheckedItems(uncheckedItems) {
                 const options = [];
 
+                // Check if there are more items to process
                 if (statemachine.currentUncheckedIndex < uncheckedItems.length) {
                     const item = uncheckedItems[statemachine.currentUncheckedIndex];
-
+                    
+                    // Handle different types of unchecked requirements
                     switch (item) {
                         case "Commercial Insurance":
+                            // Display insurance provider options
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
                             options.push(
                                 {
@@ -775,7 +778,7 @@ export default function StateMachine() {
                             addMessage(`You need to complete your ${item} before proceeding.`, "user");
                     }
 
-                    // Update the Next Requirement button
+                    // Add navigation button for next requirement
                     options.push({
                         "title": "Next Requirement",
                         "callback": function () {
@@ -795,20 +798,27 @@ export default function StateMachine() {
                 return options;
             }
 
+            // Function to create a combined form that includes multiple input types (checkboxes, radio buttons, and textarea)
             function createCombinedForm(option) {
+                // Create the main form container
                 var form = document.createElement("form");
                 form.className = "combined-form";
-            
+
+                // Iterate through each form element specified in the options
                 option.elements.forEach(element => {
+                    // Handle checkbox group creation
                     if (element.type === "checkbox-group") {
+                        // Create container for checkbox group
                         const groupDiv = document.createElement("div");
                         groupDiv.className = "checkbox-group";
-            
+
+                        // Create and style the group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.name;
                         groupDiv.appendChild(groupLabel);
-            
+
+                        // Create individual checkboxes
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -816,6 +826,7 @@ export default function StateMachine() {
                             input.name = box.name;
                             input.value = box.value;
                             input.id = box.id;
+                            // Append checkbox and its label text
                             label.appendChild(input);
                             label.appendChild(document.createTextNode(box.value));
                             groupDiv.appendChild(label);
@@ -823,15 +834,19 @@ export default function StateMachine() {
                         });
                         form.appendChild(groupDiv);
                     }
+                    // Handle radio button group creation
                     else if (element.type === "radio") {
+                        // Create container for radio group
                         const radioDiv = document.createElement("div");
                         radioDiv.className = "radio-group";
-            
+
+                        // Create and style the group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.label;
                         radioDiv.appendChild(groupLabel);
-            
+
+                        // Create individual radio buttons
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -839,6 +854,7 @@ export default function StateMachine() {
                             input.name = element.name;
                             input.value = box.value;
                             input.id = box.id;
+                            // Append radio button and its label text
                             label.appendChild(input);
                             label.appendChild(document.createTextNode(box.label));
                             radioDiv.appendChild(label);
@@ -846,41 +862,53 @@ export default function StateMachine() {
                         });
                         form.appendChild(radioDiv);
                     }
+                    // Handle textarea creation
                     else if (element.type === "textarea") {
+                        // Create container for textarea
                         const textareaDiv = document.createElement("div");
                         textareaDiv.className = "textarea-group";
-            
+
+                        // Create and style the textarea label
                         const textareaLabel = document.createElement("div");
                         textareaLabel.className = "group-label";
                         textareaLabel.innerText = element.label;
                         textareaDiv.appendChild(textareaLabel);
-            
+
+                        // Create and configure textarea element
                         const textarea = document.createElement("textarea");
                         textarea.name = element.name;
                         textarea.placeholder = element.placeholder;
                         textarea.rows = 4;
                         textareaDiv.appendChild(textarea);
-            
+
                         form.appendChild(textareaDiv);
                     }
                 });
-            
+
+                // Create and append submit button
                 var submitButton = document.createElement("button");
                 submitButton.type = "submit";
                 submitButton.innerText = "Submit";
                 form.appendChild(submitButton);
-            
+
+                // Handle form submission
                 form.onsubmit = function(event) {
-                    event.preventDefault();
+                    event.preventDefault(); // Prevent default form submission
+                    // Collect form data from all input types
                     const formData = {
+                        // Get all checked checkbox values
                         foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.value),
+                        // Get all checked equipment values
                         equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
+                        // Get selected radio button value
                         businessType: form.querySelector('input[name="business_type"]:checked')?.value,
+                        // Get textarea content
                         notes: form.querySelector('textarea[name="notes"]').value
                     };
+                    // Call the callback function with collected data
                     option.callback(formData);
                 };
-            
+
                 return form;
             }
 
