@@ -2,7 +2,6 @@ import { useState } from 'react'
 import './App.css'
 import StateMachine from './StateMachine'
 
-console.log(process.env)
 
 function App() {
 

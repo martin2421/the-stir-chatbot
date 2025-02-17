@@ -1,55 +1,4 @@
 import dynamodb from './aws-config';
-// import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ExecuteStatementCommand, DeleteCommand } from
-//     '@aws-sdk/lib-dynamodb';
-// import { v4 as uuidv4 } from 'uuid';
-
-export const insertData = async (data) => {
-
-  let params1 = {
-    TableName: "Prospects",
-    Key: {
-      id: -1,
-    },
-  }
-
-  let res = await dynamodb.scan(params1).promise();
-  let item = res.Items[0];
-
-  console.log(item);
-  const params = {
-    TableName: 'Prospects',
-    Item: {
-      id: item.nextId,
-      firstName: data.f_name,
-      lastName: data.l_name,
-      email: data.email,
-      phoneNumber: data.phone,
-    }
-  };
-  try {
-    await dynamodb.put(params).promise();
-
-    dynamodb
-      .update({
-        TableName: "Prospects",
-        Key: {
-          id: -1,
-        },
-        UpdateExpression: `set nextId = :next`,
-        ExpressionAttributeValues: {
-          ":next": item.nextId + 1,
-        },
-      })
-      .promise()
-
-
-    return { success: true, message: 'INSERTED' };
-
-  } catch (error) {
-    console.log("chale");
-    return { success: false, message: error.message };
-  }
-}
 
 
 export const searchData = async (data) => {
@@ -66,17 +15,218 @@ export const searchData = async (data) => {
     .promise()
     .then(function (data) {
       if (data.Items[0] != undefined) {
-        return { success: true, state: 'First Step', chat: data.Items[0] };
+        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].stateChat, chat: data.Items[0].chat };
       } else {
-        return { success: false, state: 'Unregistered', chat: 'NOTHING' };
+        return { success: false};
       }
     }
     )
     .catch(console.error)
-
-  // if(result == undefined){
-  //   return false;
-  // }else{
-  //   return true;
-  // }
 }
+
+
+
+export const insertData = async (data) => {
+
+  let params1 = {
+    TableName: "Prospects",
+    Key: {
+      id: -1,
+    },
+  }
+
+  let res = await dynamodb.scan(params1).promise();
+  let item = res.Items[0];
+
+  const params = {
+    TableName: 'Prospects',
+    Item: {
+      id: item.nextId,
+      firstName: data.f_name,
+      lastName: data.l_name,
+      email: data.email,
+      phoneNumber: data.phone,
+    }
+  }
+
+  try {
+    await dynamodb.put(params).promise();
+
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: -1,
+        },
+        UpdateExpression: `set nextId = :next`,
+        ExpressionAttributeValues: {
+          ":next": item.nextId + 1,
+        },
+      })
+      .promise()
+
+
+    return { success: true, message: 'INSERTED' };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+
+
+export const insertStateData = async (data) => {
+
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set stateChat = :state`,
+        ExpressionAttributeValues: {
+          ":state": data.stateChat,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'State was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+export const insertChatHistory = async (data) => {
+
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set chat = :chat`,
+        ExpressionAttributeValues: {
+          ":chat": data.chat,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Chat was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+export const insertBusinessStage = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set businessStage = :stage`,
+        ExpressionAttributeValues: {
+          ":stage": data.businessStage,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Business stage was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+export const insertStage = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set businessStage = :stage`,
+        ExpressionAttributeValues: {
+          ":stage": data.businessStage,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Business stage was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+export const insertLicences = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set businessStage = :stage`,
+        ExpressionAttributeValues: {
+          ":stage": data.businessStage,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Business stage was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+export const insertService = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set service = :serv`,
+        ExpressionAttributeValues: {
+          ":serv": data.service,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Service was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+

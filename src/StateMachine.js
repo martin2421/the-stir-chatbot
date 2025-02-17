@@ -1,10 +1,13 @@
-import { insertData, searchData } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService } from "./dynamoService";
+
 
 export default function StateMachine() {
-    console.log("loading");
+
     document.addEventListener("readystatechange", function (event) {
         if (document.readyState === 'complete') {
-            console.log("Loaded");
+
+            let user = localStorage.getItem("userEmail");
+            let serviceSelected;
 
             document.getElementById("chef").addEventListener("click", () => {
                 const helpText = document.querySelector(".help-text");
@@ -19,6 +22,8 @@ export default function StateMachine() {
             // Clear chat history
             const clearHistoryButton = document.getElementById("clearHistoryButton");
             clearHistoryButton.addEventListener("click", () => {
+                localStorage.removeItem("userEmail");
+                user = null;
                 localStorage.removeItem("chatHistory");
                 localStorage.removeItem("currentState");
                 messagesContainer.innerHTML = "";
@@ -47,6 +52,7 @@ export default function StateMachine() {
             const chatLogs = document.querySelector(".chat-logs");
             const messagesContainer = document.getElementById("messages");
 
+
             var statemachine = {
                 currentState: "", // Initialize the current state
                 selectedService: "", // Initialize the selected service
@@ -55,6 +61,7 @@ export default function StateMachine() {
                 render: function (isLoadingHistory = false) { } // Initialize the render function
             }
 
+
             // Define the states and their transitions
             statemachine.states = {
                 "start": {
@@ -62,7 +69,7 @@ export default function StateMachine() {
                     "options": [
                         {
                             "title": "Yes, it is my first time",
-                            "next": "Food Form"
+                            "next": "services"
                         },
                         {
                             "title": "No, I've been here before",
@@ -85,17 +92,25 @@ export default function StateMachine() {
                                 let result = await searchData({ email });
 
                                 if (result.success) {
-                                    console.log(result.state);
-                                    console.log(result.chat);
-                                    statemachine.currentState = result.state; // ex. state - Replace with different state after data base check
-                                    statemachine.render(); // Render the new state
+                                    localStorage.setItem("userEmail", email);
+                                    user = email;
+                                    if (result.stateChat == "" || result.stateChat == undefined) {
+                                        statemachine.currentState = "First Step";
+                                        localStorage.setItem("currentState", "First Step");
+                                        saveCurrentState();
+                                        statemachine.render(); // Render the new state
+                                    } else {
+                                        statemachine.currentState = result.stateChat; // ex. state - Replace with different state after data base check
+                                        localStorage.setItem("currentState", statemachine.currentState);
+                                        loadChatFromDB();
+                                        statemachine.render(true);
+                                    }
+
+
                                 }
                                 else {
-                                    console.log(result.state);
-                                    console.log(result.chat);
-                                    statemachine.currentState = result.state; // ex. state - Replace with different state after data base check
+                                    statemachine.currentState = 'Unregistered'; // ex. state - Replace with different state after data base check
                                     statemachine.render(); // Render the new state
-
                                 }
                             }
                         },
@@ -255,15 +270,20 @@ export default function StateMachine() {
                                 { name: "message", placeholder: "Message" }
                             ],
                             "callback": async function (data) {
-                                console.log("Form data 2:", data.f_name + data.email); // Log the form data to the console
                                 let f_name = data.f_name;
                                 let l_name = data.l_name;
                                 let email = data.email;
                                 let phone = data.phone;
                                 let message = data.message;
                                 let response = await insertData({ f_name, l_name, email, phone, message });
-                                console.log(response);
+                                if (response.success) console.log("Data inserted");
+                                localStorage.setItem("userEmail", email);
+                                user = email;
                                 statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
+                                saveCurrentState();
+                                let result = await insertService({ email: user, service: serviceSelected });
+                                console.log(result.message)
+
                                 statemachine.render(); // Render the new state
                             }
                         },
@@ -287,7 +307,7 @@ export default function StateMachine() {
                                 { name: "business_stage", value: "Established", id: "established", label: "Established (selling, have legal docs)" },
                                 { name: "business_stage", value: "Other", id: "other", label: "Other (not a food business)" }
                             ],
-                            "callback": function (data) {
+                            "callback": async function (data) {
                                 if (data.selectedValue === "Brand New") {
                                     statemachine.currentState = "information";
                                 } else if (data.selectedValue === "Getting Started") {
@@ -299,6 +319,14 @@ export default function StateMachine() {
                                 } else if (data.selectedValue === "Other") {
                                     statemachine.currentState = "information";
                                 }
+
+                                let result = await insertBusinessStage({ email: user, businessStage: data.selectedValue });
+                                if(data.selectedValue != "Brand New"){
+                                    saveCurrentState(statemachine.currentState);
+                                }
+                                if (result.success) console.log(result.message);
+
+
                                 statemachine.render();
                             }
                         }
@@ -319,11 +347,12 @@ export default function StateMachine() {
                 },
 
                 "information": {
-                    "message": "Please contact our support team directly for further assistance",
+                    
+                    "message": "Please contact our support team directly for further assistance (--FIX--)",
                     "options": [
                         {
                             "title": "Back",
-                            "back": "start"
+                            "back": "BusinessStage"
                         }]
                 },
 
@@ -363,56 +392,56 @@ export default function StateMachine() {
 
 
                 "Food Form": {
-                "message": "Please fill out the form below so we can keep track of this conversation",
-                "options": [
-                {
-                    "type": "combined-form",
-                    "elements": [
+                    "message": "Please fill out the form below so we can keep track of this conversation",
+                    "options": [
                         {
-                            "type": "checkbox-group",
-                            "name": "Types of Products",
-                            "boxes": [
-                                { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed" },
-                                { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy" },
-                                { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients" },
-                                { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality" },
-                                { name: "food_docs", value: "Other Products 🏷️", id: "Other" }
-                            ]
+                            "type": "combined-form",
+                            "elements": [
+                                {
+                                    "type": "checkbox-group",
+                                    "name": "Types of Products",
+                                    "boxes": [
+                                        { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed" },
+                                        { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy" },
+                                        { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients" },
+                                        { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality" },
+                                        { name: "food_docs", value: "Other Products 🏷️", id: "Other" }
+                                    ]
+                                },
+                                {
+                                    "type": "radio",
+                                    "name": "Space/Time Needed",
+                                    "label": "Space/Time Needed:",  // Label for the radio button group
+                                    "boxes": [
+                                        { name: "business_type", value: "0-10", id: "0-10", label: "0-10 Hours" },
+                                        { name: "business_type", value: "10-25", id: "10-25", label: "10-25 Hours" },
+                                        { name: "business_type", value: "25-50", id: "25-50", label: "25-50 Hours" }
+                                    ]
+                                },
+                                {
+                                    "type": "textarea",
+                                    "name": "notes",
+                                    "label": "Additional Notes",
+                                    "placeholder": "Please enter any additional notes or requirements..."
+                                }
+                            ],
+                            "callback": function (data) {
+                                console.log("Form data:", data);
+                                if (data.businessType === "Food Processing") {
+                                    statemachine.currentState = "Food Processing";
+                                } else if (data.businessType === "Food Service") {
+                                    statemachine.currentState = "Food Service";
+                                } else {
+                                    statemachine.currentState = "information";
+                                }
+                                statemachine.render();
+                            }
                         },
                         {
-                            "type": "radio",
-                            "name": "Space/Time Needed",
-                            "label": "Space/Time Needed:",  // Label for the radio button group
-                            "boxes": [
-                                { name: "business_type", value: "0-10", id: "0-10", label: "0-10 Hours" },
-                                { name: "business_type", value: "10-25", id: "10-25", label: "10-25 Hours" },
-                                { name: "business_type", value: "25-50", id: "25-50", label: "25-50 Hours" }
-                            ]
-                        },
-                        {
-                            "type": "textarea",
-                            "name": "notes",
-                            "label": "Additional Notes",
-                            "placeholder": "Please enter any additional notes or requirements..."
+                            "title": "Back",
+                            "back": "start"
                         }
-                    ],
-                    "callback": function(data) {
-                        console.log("Form data:", data);
-                        if (data.businessType === "Food Processing") {
-                            statemachine.currentState = "Food Processing";
-                        } else if (data.businessType === "Food Service") {
-                            statemachine.currentState = "Food Service";
-                        } else {
-                            statemachine.currentState = "information";
-                        }
-                        statemachine.render();
-                    }
-                },
-                {
-                    "title": "Back",
-                    "back": "start"
-                }
-                ]
+                    ]
                 },
 
 
@@ -422,13 +451,13 @@ export default function StateMachine() {
                     "render": function (uncheckedItems) {
                         return handleUncheckedItems(uncheckedItems);
                     },
-                    "options": []
+                    "options  ": []
                 },
             };
 
 
             // Function to handle user interaction
-            statemachine.interact = function (option) {
+            statemachine.interact = async function (option) {
                 var currentState = statemachine.states[statemachine.currentState]; // Get the current state
                 var selectedOption = currentState.options[option]; // Get the selected option
 
@@ -477,7 +506,7 @@ export default function StateMachine() {
 
 
             // Function to render the current state
-            statemachine.render = function (isLoadingHistory = false) {
+            statemachine.render = async function (isLoadingHistory = false) {
                 var buttoncontainer = document.getElementById("button"); // Get the buttons container
                 var currentState = statemachine.states[statemachine.currentState]; // Get the current state
 
@@ -525,7 +554,12 @@ export default function StateMachine() {
                         var button = document.createElement("button"); // Create a new button element
                         button.className = "titles"; // Set the class name for the button
                         button.innerText = option.title; // Set the button text to the option title
-                        button.onclick = () => this.interact(i); // Set the button's onclick handler to interact with the option
+                        button.onclick = async () => {
+                            if (localStorage.getItem("currentState") == "services" && i != 5) {
+                                serviceSelected = option.title;
+                            }
+                            this.interact(i);
+                        } // Set the button's onclick handler to interact with the option
                         buttoncontainer.appendChild(button); // Append the button to the buttons container
                     }
                 });
@@ -736,18 +770,15 @@ export default function StateMachine() {
             // Add a property to track current unchecked item
             statemachine.currentUncheckedIndex = 0;
 
-            // Function to handle displaying and processing unchecked requirement items
+            // Modify the handleUncheckedItems function
             function handleUncheckedItems(uncheckedItems) {
                 const options = [];
 
-                // Check if there are more items to process
                 if (statemachine.currentUncheckedIndex < uncheckedItems.length) {
                     const item = uncheckedItems[statemachine.currentUncheckedIndex];
-                    
-                    // Handle different types of unchecked requirements
+
                     switch (item) {
                         case "Commercial Insurance":
-                            // Display insurance provider options
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
                             options.push(
                                 {
@@ -778,7 +809,7 @@ export default function StateMachine() {
                             addMessage(`You need to complete your ${item} before proceeding.`, "user");
                     }
 
-                    // Add navigation button for next requirement
+                    // Update the Next Requirement button
                     options.push({
                         "title": "Next Requirement",
                         "callback": function () {
@@ -798,27 +829,20 @@ export default function StateMachine() {
                 return options;
             }
 
-            // Function to create a combined form that includes multiple input types (checkboxes, radio buttons, and textarea)
             function createCombinedForm(option) {
-                // Create the main form container
                 var form = document.createElement("form");
                 form.className = "combined-form";
 
-                // Iterate through each form element specified in the options
                 option.elements.forEach(element => {
-                    // Handle checkbox group creation
                     if (element.type === "checkbox-group") {
-                        // Create container for checkbox group
                         const groupDiv = document.createElement("div");
                         groupDiv.className = "checkbox-group";
 
-                        // Create and style the group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.name;
                         groupDiv.appendChild(groupLabel);
 
-                        // Create individual checkboxes
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -826,7 +850,6 @@ export default function StateMachine() {
                             input.name = box.name;
                             input.value = box.value;
                             input.id = box.id;
-                            // Append checkbox and its label text
                             label.appendChild(input);
                             label.appendChild(document.createTextNode(box.value));
                             groupDiv.appendChild(label);
@@ -834,19 +857,15 @@ export default function StateMachine() {
                         });
                         form.appendChild(groupDiv);
                     }
-                    // Handle radio button group creation
                     else if (element.type === "radio") {
-                        // Create container for radio group
                         const radioDiv = document.createElement("div");
                         radioDiv.className = "radio-group";
 
-                        // Create and style the group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.label;
                         radioDiv.appendChild(groupLabel);
 
-                        // Create individual radio buttons
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -854,7 +873,6 @@ export default function StateMachine() {
                             input.name = element.name;
                             input.value = box.value;
                             input.id = box.id;
-                            // Append radio button and its label text
                             label.appendChild(input);
                             label.appendChild(document.createTextNode(box.label));
                             radioDiv.appendChild(label);
@@ -862,19 +880,15 @@ export default function StateMachine() {
                         });
                         form.appendChild(radioDiv);
                     }
-                    // Handle textarea creation
                     else if (element.type === "textarea") {
-                        // Create container for textarea
                         const textareaDiv = document.createElement("div");
                         textareaDiv.className = "textarea-group";
 
-                        // Create and style the textarea label
                         const textareaLabel = document.createElement("div");
                         textareaLabel.className = "group-label";
                         textareaLabel.innerText = element.label;
                         textareaDiv.appendChild(textareaLabel);
 
-                        // Create and configure textarea element
                         const textarea = document.createElement("textarea");
                         textarea.name = element.name;
                         textarea.placeholder = element.placeholder;
@@ -885,27 +899,19 @@ export default function StateMachine() {
                     }
                 });
 
-                // Create and append submit button
                 var submitButton = document.createElement("button");
                 submitButton.type = "submit";
                 submitButton.innerText = "Submit";
                 form.appendChild(submitButton);
 
-                // Handle form submission
-                form.onsubmit = function(event) {
-                    event.preventDefault(); // Prevent default form submission
-                    // Collect form data from all input types
+                form.onsubmit = function (event) {
+                    event.preventDefault();
                     const formData = {
-                        // Get all checked checkbox values
                         foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.value),
-                        // Get all checked equipment values
                         equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
-                        // Get selected radio button value
                         businessType: form.querySelector('input[name="business_type"]:checked')?.value,
-                        // Get textarea content
                         notes: form.querySelector('textarea[name="notes"]').value
                     };
-                    // Call the callback function with collected data
                     option.callback(formData);
                 };
 
@@ -964,7 +970,9 @@ export default function StateMachine() {
 
             // Load chat history from localStorage
             function loadChatHistory() {
+
                 messagesContainer.innerHTML = ""; // Clear the chat logs
+
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
                 history.forEach(item => {
@@ -985,12 +993,53 @@ export default function StateMachine() {
                 if (savedState) {
                     statemachine.currentState = savedState;
                 }
+                console.log("Loading chat from localStorage");
+
                 return history.length > 0;
             }
 
 
-            // Function to save chat history to localStorage
-            function saveChatHistory(msg, type) {
+            // Load chat history from localStorage
+            async function loadChatFromDB() {
+
+                messagesContainer.innerHTML = ""; // Clear the chat logs
+
+                const result = await searchData({ email: user });
+                const history = JSON.parse(result.chat) || [];
+
+                history.forEach(item => {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = `chat-msg ${item.type}`;
+
+                    // Check if the message contains the reply class
+                    if (item.msg.includes("cm-msg-text-reply")) {
+                        msgDiv.innerHTML = item.msg;
+                    } else {
+                        msgDiv.innerHTML = `<div class="cm-msg-text">${item.msg}</div>`;
+                    }
+
+                    messagesContainer.appendChild(msgDiv);
+                });
+
+                const savedState = result.stateChat;
+                if (savedState) {
+                    statemachine.currentState = savedState;
+                }
+
+                localStorage.setItem("chatHistory", JSON.stringify(history))
+                console.log("Loading chat from DynamoDB");
+
+                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
+                    let result = await insertChatHistory({ email: user, chat: localStorage.getItem("chatHistory") });
+                    console.log(result.message);
+                }
+
+                return history.length > 0;
+            }
+
+
+            // Function to save chat history to localStorage and DynamoDB
+            async function saveChatHistory(msg, type) {
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
                 // If msg is an HTML element (replyMsgDiv)
@@ -1008,14 +1057,25 @@ export default function StateMachine() {
                 }
 
                 localStorage.setItem("chatHistory", JSON.stringify(history));
+
+                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
+                    let result = await insertChatHistory({ email: user, chat: localStorage.getItem("chatHistory") });
+                    console.log(result.message);
+                }
             }
 
 
             // Save the current state to localStorage
-            function saveCurrentState(state) {
+            async function saveCurrentState(state) {
                 localStorage.setItem("currentState", statemachine.currentState);
-            }
 
+                console.log(statemachine.currentState);
+
+                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
+                    let result = await insertStateData({ email: user, stateChat: statemachine.currentState })
+                    console.log(result.message);
+                }
+            }
 
 
             statemachine.currentState = "start"; // Set the initial state to start
