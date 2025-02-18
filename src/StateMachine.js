@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp } from "./dynamoService";
 
 
 export default function StateMachine() {
@@ -321,7 +321,7 @@ export default function StateMachine() {
                                 }
 
                                 let result = await insertBusinessStage({ email: user, businessStage: data.selectedValue });
-                                if(data.selectedValue != "Brand New"){
+                                if (data.selectedValue != "Brand New") {
                                     saveCurrentState(statemachine.currentState);
                                 }
                                 if (result.success) console.log(result.message);
@@ -347,7 +347,7 @@ export default function StateMachine() {
                 },
 
                 "information": {
-                    
+
                     "message": "Please contact our support team directly for further assistance (--FIX--)",
                     "options": [
                         {
@@ -557,6 +557,14 @@ export default function StateMachine() {
                         button.onclick = async () => {
                             if (localStorage.getItem("currentState") == "services" && i != 5) {
                                 serviceSelected = option.title;
+                            }
+                            if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
+                                let signed = false;
+                                if (i == 0) {
+                                    signed = true;
+                                }
+                                let result = await insertSignedUp({ email: user, signedUp: signed });
+                                console.log(result.message);
                             }
                             this.interact(i);
                         } // Set the button's onclick handler to interact with the option

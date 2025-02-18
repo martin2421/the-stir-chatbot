@@ -154,7 +154,7 @@ export const insertBusinessStage = async (data) => {
 
 
 
-export const insertStage = async (data) => {
+export const insertSignedUp = async (data) => {
   let result = await searchData({ email : data.email })
 
   try {
@@ -164,14 +164,14 @@ export const insertStage = async (data) => {
         Key: {
           id: Number(result.id),
         },
-        UpdateExpression: `set businessStage = :stage`,
+        UpdateExpression: `set signedUp = :signed`,
         ExpressionAttributeValues: {
-          ":stage": data.businessStage,
+          ":signed": data.signedUp,
         },
       })
       .promise()
 
-    return { success: true, message: 'Business stage was saved' };
+    return { success: true, message: 'Food Corridor Signed up updated!' };
 
   } catch (error) {
     return { success: false, message: error };
