@@ -166,10 +166,20 @@ export default function StateMachine() {
                         },
                         {
                             "title": "Explain Each Service",
-                            "next": "information"
+                            "next": "Explain"
                         }
                     ]
                 },
+
+                "Explain": {
+                    "message": "Here is a brief explanation of each service we offer <br> <br> Workstation Space: A space for you to work on your projects <br> Kitchen Rental: A kitchen space for you to rent <br> Event Venue: A venue for hosting events <br> Business Coach: A coach to help you with your business <br> Ecommerce: An online platform for selling products",
+                    "options": [
+                        {
+                            "title": "Back to Services",
+                            "back": "services"
+                        },
+                        ]
+                    },
 
                 "First Step": {
                     "message": "The first step to this process is signing up for The Food Corridor",
@@ -344,16 +354,6 @@ export default function StateMachine() {
                             }
                         }
                     ]
-                },
-
-                "information": {
-
-                    "message": "Please contact our support team directly for further assistance (--FIX--)",
-                    "options": [
-                        {
-                            "title": "Back",
-                            "back": "BusinessStage"
-                        }]
                 },
 
                 "defaultState": {
@@ -811,6 +811,41 @@ export default function StateMachine() {
                             options.push({
                                 "title": "Click Here for the Interior Health Requirements",
                                 "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                            });
+                            break;
+                        case "Completed Business Plan":
+                            addMessage("A business plan is essential for success. Here are some resources to help you get started:", "user");
+                            options.push({
+                                "title": "Click Here for the Business Plan Guide",
+                                "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/pages/business-plan-template.aspx"
+                            });
+                            break;
+                        case "FoodSafe Certificate":
+                            addMessage("Food safety is important! You'll need a FoodSafe certificate:", "user");
+                            options.push({
+                                "title": "Click Here for the FoodSafe Course",
+                                "href": "https://www.foodsafe.ca/"
+                            });
+                            break;
+                        case "Makership Membership":
+                            addMessage("You need to be a member of Makership to proceed. Sign up here:", "user");
+                            options.push({
+                                "title": "Click Here to Sign Up for Makership",
+                                "href": "https://www.makerspacekamloops.ca/membership"
+                            });
+                            break;
+                        case "Stir Maker Fee":
+                            addMessage("You need to pay the Stir Maker fee to proceed. Click below to pay:", "user");
+                            options.push({
+                                "title": "Click Here to Pay the Stir Maker Fee",
+                                "href": "https://www.stirmaker.ca/" // Update the link
+                            });
+                            break;
+                        case "Makership Conduct Agreement":
+                            addMessage("You need to agree to the Makership Conduct Agreement. Click below to review and sign:", "user");
+                            options.push({
+                                "title": "Click Here to Review and Sign the Conduct Agreement",
+                                "href": "https://www.makerspacekamloops.ca/membership"
                             });
                             break;
                         default:
