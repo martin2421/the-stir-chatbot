@@ -551,9 +551,7 @@ export default function StateMachine() {
 
                         buttoncontainer.appendChild(button);
                     });
-                }
-
-
+                }else{
                 // Create buttons for each option in the current state  
                 currentState.options.forEach((option, i) => {
                     if (option.type === "form") {
@@ -603,6 +601,10 @@ export default function StateMachine() {
                 });
 
                 chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
+                }
+
+
+
 
 
             };
