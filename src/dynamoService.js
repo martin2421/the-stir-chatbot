@@ -190,14 +190,14 @@ export const insertLicences = async (data) => {
         Key: {
           id: Number(result.id),
         },
-        UpdateExpression: `set businessStage = :stage`,
+        UpdateExpression: `set licenses = :license`,
         ExpressionAttributeValues: {
-          ":stage": data.businessStage,
+          ":license": data.licenses,
         },
       })
       .promise()
 
-    return { success: true, message: 'Business stage was saved' };
+    return { success: true, message: 'Licenses were saved' };
 
   } catch (error) {
     return { success: false, message: error };

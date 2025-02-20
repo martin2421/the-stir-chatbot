@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences } from "./dynamoService";
 
 
 export default function StateMachine() {
@@ -24,6 +24,7 @@ export default function StateMachine() {
             clearHistoryButton.addEventListener("click", () => {
                 localStorage.removeItem("userEmail");
                 user = null;
+                serviceSelected = null;
                 localStorage.removeItem("chatHistory");
                 localStorage.removeItem("currentState");
                 messagesContainer.innerHTML = "";
@@ -178,8 +179,8 @@ export default function StateMachine() {
                             "title": "Back to Services",
                             "back": "services"
                         },
-                        ]
-                    },
+                    ]
+                },
 
                 "First Step": {
                     "message": "The first step to this process is signing up for The Food Corridor",
@@ -350,7 +351,9 @@ export default function StateMachine() {
                         {
                             "type": "checkbox",
                             "boxes": function () {
-                                return getCheckboxesForService(statemachine.selectedService);
+                                let result = getCheckboxesForService(statemachine.selectedService);
+                                //console.log(result);
+                                return result;
                             }
                         }
                     ]
@@ -523,57 +526,6 @@ export default function StateMachine() {
                 // Then, clear the current buttons 
                 buttoncontainer.innerHTML = "";
 
-                // Create buttons for each option in the current state  
-                currentState.options.forEach((option, i) => {
-                    if (option.type === "form") {
-                        var form = createForm(option, i); // Create a form if the option type is "form"
-                        buttoncontainer.appendChild(form); // Append the form to the buttons container
-                    }
-
-                    else if (option.type === "checkbox") {
-                        var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
-                        buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
-                    }
-
-                    else if (option.type === "dropdown") {
-                        var dropdown = createDropdown(option); // Create a dropdown if the option type is "dropdown"
-                        buttoncontainer.appendChild(dropdown); // Append the dropdown to the buttons container
-                    }
-
-                    else if (option.type === "combined-form") {  // Add this case
-                        var combinedForm = createCombinedForm(option);
-                        buttoncontainer.appendChild(combinedForm);
-                    }
-                    // In the render function, add this case
-                    else if (option.type === "radio") {
-                        var radioGroup = createRadioGroup(option);
-                        buttoncontainer.appendChild(radioGroup);
-                    }
-
-                    else {
-                        var button = document.createElement("button"); // Create a new button element
-                        button.className = "titles"; // Set the class name for the button
-                        button.innerText = option.title; // Set the button text to the option title
-                        button.onclick = async () => {
-                            if (localStorage.getItem("currentState") == "services" && i != 5) {
-                                serviceSelected = option.title;
-                            }
-                            if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
-                                let signed = false;
-                                if (i == 0) {
-                                    signed = true;
-                                }
-                                let result = await insertSignedUp({ email: user, signedUp: signed });
-                                console.log(result.message);
-                            }
-                            this.interact(i);
-                        } // Set the button's onclick handler to interact with the option
-                        buttoncontainer.appendChild(button); // Append the button to the buttons container
-                    }
-                });
-
-                chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
-
                 // Update the render function's handleUnchecked section
                 if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
                     const additionalOptions = currentState.render(this.uncheckedStates);
@@ -600,6 +552,59 @@ export default function StateMachine() {
                         buttoncontainer.appendChild(button);
                     });
                 }
+
+
+                // Create buttons for each option in the current state  
+                currentState.options.forEach((option, i) => {
+                    if (option.type === "form") {
+                        var form = createForm(option, i); // Create a form if the option type is "form"
+                        buttoncontainer.appendChild(form); // Append the form to the buttons container
+                    }
+
+                    else if (option.type === "checkbox") {
+                        var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
+                        buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
+                    }
+
+                    else if (option.type === "dropdown") {
+                        var dropdown = createDropdown(option); // Create a dropdown if the option type is "dropdown"
+                        buttoncontainer.appendChild(dropdown); // Append the dropdown to the buttons container
+                    }
+
+                    else if (option.type === "combined-form") {  // Add this case
+                        var combinedForm = createCombinedForm(option);
+                        buttoncontainer.appendChild(combinedForm);
+                    }
+                    // In the render function, add this case
+                    else if (option.type === "radio") {
+                        var radioGroup = createRadioGroup(option);
+                        buttoncontainer.appendChild(radioGroup);
+                    }
+                    else {
+                        var button = document.createElement("button"); // Create a new button element
+                        button.className = "titles"; // Set the class name for the button
+                        button.innerText = option.title; // Set the button text to the option title
+                        button.onclick = async () => {
+                            if (localStorage.getItem("currentState") == "services" && i != 5) {
+                                serviceSelected = option.title;
+                            }
+                            if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
+                                let signed = false;
+                                if (i == 0) {
+                                    signed = true;
+                                }
+                                let result = await insertSignedUp({ email: user, signedUp: signed });
+                                console.log(result.message);
+                            }
+                            this.interact(i);
+                        } // Set the button's onclick handler to interact with the option
+                        buttoncontainer.appendChild(button); // Append the button to the buttons container
+                    }
+                });
+
+                chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
+
+
             };
 
 
@@ -647,26 +652,45 @@ export default function StateMachine() {
             // Function to create checkboxes for the option
             function createCheckbox(boxes) {
                 var form = document.createElement("form"); // Create a new form element
-                form.className = "checkbox"; // Set the class name for the form
-                form.onsubmit = function (event) {
+                form.className = "checkbox"; // Set the class name for the form 
+
+                let cityKamloops = true;
+                let commercialInsurance = true;
+                let makershipMembership = true;
+                let stirMakerFee = true;
+
+                form.onsubmit = async function (event) {
                     event.preventDefault();
                     var uncheckedValues = [];
                     boxes.forEach(box => {
                         var checkbox = document.getElementById(box.id);
+
                         if (!checkbox.checked) {
                             uncheckedValues.push(box.value);
+                            console.log("checkbox data: " + box.id);
+
+                            if (box.id == "City of Kamloops Business License") cityKamloops = false;
+                            if (box.id == "Commercial Insurance") commercialInsurance = false;
+                            if (box.id == "Makership Membership") makershipMembership = false;
+                            if (box.id == "Stir Maker Fee") stirMakerFee = false;
                         }
                     });
-                    // Handle the unchecked values as needed
+
+                    let result = await insertLicences({ email: user, licenses: JSON.stringify({"City of Kamloops Business License": cityKamloops,"Commercial Insurance":commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee":stirMakerFee}) });
+                    console.log(result.message);
+
+                    //Handle the unchecked values as needed
                     if (uncheckedValues.length > 0) {
                         statemachine.uncheckedStates = uncheckedValues; // Store unchecked values in the state machine
+
                         statemachine.currentState = "handleUnchecked";
                         statemachine.render();
-                    }
+                      }
                     else {
-                        // If all checkboxes are checked, transition to a default state
-                        statemachine.currentState = "defaultState";
-                        statemachine.render();
+
+                    //If all checkboxes are checked, transition to a default state
+                    statemachine.currentState = "defaultState";
+                    statemachine.render();
                     }
                 };
 
