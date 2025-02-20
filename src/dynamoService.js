@@ -255,3 +255,29 @@ export const insertProducts = async (data) => {
     return { success: false, message: error };
   }
 }
+
+
+
+export const insertNote = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set notes = :note`,
+        ExpressionAttributeValues: {
+          ":note": data.note,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Note was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}

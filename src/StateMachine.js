@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote } from "./dynamoService";
 
 
 export default function StateMachine() {
@@ -433,6 +433,9 @@ export default function StateMachine() {
                                 console.log( JSON.stringify(data.foodDocs));
 
                                 let result = await insertProducts({ email : user, products : JSON.stringify(data.foodDocs)});
+                                console.log(result.message);
+
+                                result = await insertNote({ email : user, note : JSON.stringify(data.notes)});
                                 console.log(result.message);
                                 
                                 if (data.businessType === "Food Processing") {
