@@ -230,3 +230,28 @@ export const insertService = async (data) => {
   }
 }
 
+
+
+export const insertProducts = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set products = :product`,
+        ExpressionAttributeValues: {
+          ":product": data.products,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Products were saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}

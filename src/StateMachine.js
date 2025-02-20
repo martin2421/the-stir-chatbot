@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts } from "./dynamoService";
 
 
 export default function StateMachine() {
@@ -287,7 +287,7 @@ export default function StateMachine() {
                                 let phone = data.phone;
                                 let message = data.message;
                                 let response = await insertData({ f_name, l_name, email, phone, message });
-                                if (response.success) console.log("Data inserted");
+                                if (response.success) console.log("User data was inserted");
                                 localStorage.setItem("userEmail", email);
                                 user = email;
                                 statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
@@ -404,10 +404,10 @@ export default function StateMachine() {
                                     "type": "checkbox-group",
                                     "name": "Types of Products",
                                     "boxes": [
-                                        { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed" },
-                                        { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy" },
-                                        { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients" },
-                                        { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality" },
+                                        { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed & Packaged Foods" },
+                                        { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy, Meat & Seafood" },
+                                        { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients & Seasonings" },
+                                        { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality & Agricultural Products" },
                                         { name: "food_docs", value: "Other Products 🏷️", id: "Other" }
                                     ]
                                 },
@@ -428,8 +428,13 @@ export default function StateMachine() {
                                     "placeholder": "Please enter any additional notes or requirements..."
                                 }
                             ],
-                            "callback": function (data) {
+                            "callback": async function (data) {
                                 console.log("Form data:", data);
+                                console.log( JSON.stringify(data.foodDocs));
+
+                                let result = await insertProducts({ email : user, products : JSON.stringify(data.foodDocs)});
+                                console.log(result.message);
+                                
                                 if (data.businessType === "Food Processing") {
                                     statemachine.currentState = "Food Processing";
                                 } else if (data.businessType === "Food Service") {
@@ -602,11 +607,6 @@ export default function StateMachine() {
 
                 chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
                 }
-
-
-
-
-
             };
 
 
@@ -669,7 +669,6 @@ export default function StateMachine() {
 
                         if (!checkbox.checked) {
                             uncheckedValues.push(box.value);
-                            console.log("checkbox data: " + box.id);
 
                             if (box.id == "City of Kamloops Business License") cityKamloops = false;
                             if (box.id == "Commercial Insurance") commercialInsurance = false;
@@ -976,7 +975,7 @@ export default function StateMachine() {
                 form.onsubmit = function (event) {
                     event.preventDefault();
                     const formData = {
-                        foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.value),
+                        foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
                         equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
                         businessType: form.querySelector('input[name="business_type"]:checked')?.value,
                         notes: form.querySelector('textarea[name="notes"]').value
@@ -1138,7 +1137,7 @@ export default function StateMachine() {
             async function saveCurrentState(state) {
                 localStorage.setItem("currentState", statemachine.currentState);
 
-                console.log(statemachine.currentState);
+                console.log("Current state: " + statemachine.currentState);
 
                 if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
                     let result = await insertStateData({ email: user, stateChat: statemachine.currentState })
