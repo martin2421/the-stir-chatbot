@@ -281,3 +281,29 @@ export const insertNote = async (data) => {
     return { success: false, message: error };
   }
 }
+
+
+
+export const insertEventVenue = async (data) => {
+  let result = await searchData({ email : data.email })
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "Prospects",
+        Key: {
+          id: Number(result.id),
+        },
+        UpdateExpression: `set eventVenue = :venue`,
+        ExpressionAttributeValues: {
+          ":venue": data.venue,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Event Venue was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}

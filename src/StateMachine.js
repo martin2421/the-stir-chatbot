@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue } from "./dynamoService";
 
 
 export default function StateMachine() {
@@ -8,11 +8,12 @@ export default function StateMachine() {
 
             let user = localStorage.getItem("userEmail");
             let serviceSelected;
+            let eventVenue;
 
             document.getElementById("chef").addEventListener("click", () => {
                 const helpText = document.querySelector(".help-text");
                 helpText.style.animation = "moveTextUp 3s linear infinite"; // Restart infinite animation if clicked
-            });
+            }); 
 
             const chatCircle = document.getElementById("chat-circle");
             const chatBox = document.querySelector(".chat-box");
@@ -25,6 +26,7 @@ export default function StateMachine() {
                 localStorage.removeItem("userEmail");
                 user = null;
                 serviceSelected = null;
+                eventVenue = null;
                 localStorage.removeItem("chatHistory");
                 localStorage.removeItem("currentState");
                 messagesContainer.innerHTML = "";
@@ -227,11 +229,16 @@ export default function StateMachine() {
                                     ]
                                 }
                             ],
-                            "callback": function (data) {
-                                if (data.selectedLocation && data.selectedCapacity) {
+                            "callback": async function (data) {
+                                
+                                console.log(data);
+                                if (data.venue_capacity != undefined && data.venue_location != undefined) {
                                     statemachine.currentState = "Contact Form";
-                                    statemachine.render();
+                                    eventVenue = JSON.stringify({venue_location : data.venue_location, venue_capacity: data.venue_capacity});
+                                }else {
+                                    statemachine.currentState = "Event Venue";
                                 }
+                                statemachine.render();
                             }
                         }
                     ]
@@ -286,14 +293,23 @@ export default function StateMachine() {
                                 let email = data.email;
                                 let phone = data.phone;
                                 let message = data.message;
+
+
                                 let response = await insertData({ f_name, l_name, email, phone, message });
                                 if (response.success) console.log("User data was inserted");
+
+
                                 localStorage.setItem("userEmail", email);
                                 user = email;
                                 statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
                                 saveCurrentState();
+
+
                                 let result = await insertService({ email: user, service: serviceSelected });
                                 console.log(result.message)
+
+                                result = await insertEventVenue({ email: user, venue: eventVenue })
+                                console.log(result.message);
 
                                 statemachine.render(); // Render the new state
                             }
@@ -430,14 +446,13 @@ export default function StateMachine() {
                             ],
                             "callback": async function (data) {
                                 console.log("Form data:", data);
-                                console.log( JSON.stringify(data.foodDocs));
 
-                                let result = await insertProducts({ email : user, products : JSON.stringify(data.foodDocs)});
+                                let result = await insertProducts({ email: user, products: JSON.stringify(data.foodDocs) });
                                 console.log(result.message);
 
-                                result = await insertNote({ email : user, note : JSON.stringify(data.notes)});
+                                result = await insertNote({ email: user, note: JSON.stringify(data.notes) });
                                 console.log(result.message);
-                                
+
                                 if (data.businessType === "Food Processing") {
                                     statemachine.currentState = "Food Processing";
                                 } else if (data.businessType === "Food Service") {
@@ -559,56 +574,56 @@ export default function StateMachine() {
 
                         buttoncontainer.appendChild(button);
                     });
-                }else{
-                // Create buttons for each option in the current state  
-                currentState.options.forEach((option, i) => {
-                    if (option.type === "form") {
-                        var form = createForm(option, i); // Create a form if the option type is "form"
-                        buttoncontainer.appendChild(form); // Append the form to the buttons container
-                    }
+                } else {
+                    // Create buttons for each option in the current state  
+                    currentState.options.forEach((option, i) => {
+                        if (option.type === "form") {
+                            var form = createForm(option, i); // Create a form if the option type is "form"
+                            buttoncontainer.appendChild(form); // Append the form to the buttons container
+                        }
 
-                    else if (option.type === "checkbox") {
-                        var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
-                        buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
-                    }
+                        else if (option.type === "checkbox") {
+                            var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
+                            buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
+                        }
 
-                    else if (option.type === "dropdown") {
-                        var dropdown = createDropdown(option); // Create a dropdown if the option type is "dropdown"
-                        buttoncontainer.appendChild(dropdown); // Append the dropdown to the buttons container
-                    }
+                        else if (option.type === "dropdown") {
+                            var dropdown = createDropdown(option); // Create a dropdown if the option type is "dropdown"
+                            buttoncontainer.appendChild(dropdown); // Append the dropdown to the buttons container
+                        }
 
-                    else if (option.type === "combined-form") {  // Add this case
-                        var combinedForm = createCombinedForm(option);
-                        buttoncontainer.appendChild(combinedForm);
-                    }
-                    // In the render function, add this case
-                    else if (option.type === "radio") {
-                        var radioGroup = createRadioGroup(option);
-                        buttoncontainer.appendChild(radioGroup);
-                    }
-                    else {
-                        var button = document.createElement("button"); // Create a new button element
-                        button.className = "titles"; // Set the class name for the button
-                        button.innerText = option.title; // Set the button text to the option title
-                        button.onclick = async () => {
-                            if (localStorage.getItem("currentState") == "services" && i != 5) {
-                                serviceSelected = option.title;
-                            }
-                            if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
-                                let signed = false;
-                                if (i == 0) {
-                                    signed = true;
+                        else if (option.type === "combined-form") {  // Add this case
+                            var combinedForm = createCombinedForm(option);
+                            buttoncontainer.appendChild(combinedForm);
+                        }
+                        // In the render function, add this case
+                        else if (option.type === "radio") {
+                            var radioGroup = createRadioGroup(option);
+                            buttoncontainer.appendChild(radioGroup);
+                        }
+                        else {
+                            var button = document.createElement("button"); // Create a new button element
+                            button.className = "titles"; // Set the class name for the button
+                            button.innerText = option.title; // Set the button text to the option title
+                            button.onclick = async () => {
+                                if (localStorage.getItem("currentState") == "services" && i != 5) {
+                                    serviceSelected = option.title;
                                 }
-                                let result = await insertSignedUp({ email: user, signedUp: signed });
-                                console.log(result.message);
-                            }
-                            this.interact(i);
-                        } // Set the button's onclick handler to interact with the option
-                        buttoncontainer.appendChild(button); // Append the button to the buttons container
-                    }
-                });
+                                if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
+                                    let signed = false;
+                                    if (i == 0) {
+                                        signed = true;
+                                    }
+                                    let result = await insertSignedUp({ email: user, signedUp: signed });
+                                    console.log(result.message);
+                                }
+                                this.interact(i);
+                            } // Set the button's onclick handler to interact with the option
+                            buttoncontainer.appendChild(button); // Append the button to the buttons container
+                        }
+                    });
 
-                chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
+                    chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
                 }
             };
 
@@ -680,7 +695,7 @@ export default function StateMachine() {
                         }
                     });
 
-                    let result = await insertLicences({ email: user, licenses: JSON.stringify({"City of Kamloops Business License": cityKamloops,"Commercial Insurance":commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee":stirMakerFee}) });
+                    let result = await insertLicences({ email: user, licenses: JSON.stringify({ "City of Kamloops Business License": cityKamloops, "Commercial Insurance": commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee": stirMakerFee }) });
                     console.log(result.message);
 
                     //Handle the unchecked values as needed
@@ -689,12 +704,12 @@ export default function StateMachine() {
 
                         statemachine.currentState = "handleUnchecked";
                         statemachine.render();
-                      }
+                    }
                     else {
 
-                    //If all checkboxes are checked, transition to a default state
-                    statemachine.currentState = "defaultState";
-                    statemachine.render();
+                        //If all checkboxes are checked, transition to a default state
+                        statemachine.currentState = "defaultState";
+                        statemachine.render();
                     }
                 };
 
@@ -717,7 +732,6 @@ export default function StateMachine() {
                 form.appendChild(submitButton); // Append the button to the form
                 return form;
             }
-
 
 
             // Function to create a dropdown for the option
@@ -977,13 +991,23 @@ export default function StateMachine() {
 
                 form.onsubmit = function (event) {
                     event.preventDefault();
-                    const formData = {
-                        foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
-                        equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
-                        businessType: form.querySelector('input[name="business_type"]:checked')?.value,
-                        notes: form.querySelector('textarea[name="notes"]').value
-                    };
-                    option.callback(formData);
+                    if (statemachine.currentState === "Event Venue") {
+                        const formData = {
+                            venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
+                            venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
+                        };
+                        option.callback(formData);
+                    } else {
+                        const formData = {
+                            foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
+                            equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
+                            businessType: form.querySelector('input[name="business_type"]:checked')?.value,
+                            notes: form.querySelector('textarea[name="notes"]').value,
+                        };
+                        option.callback(formData);
+
+                    }
+
                 };
 
                 return form;
