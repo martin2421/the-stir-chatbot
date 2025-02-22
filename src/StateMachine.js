@@ -714,7 +714,6 @@ export default function StateMachine() {
                 });
 
 
-
                 let cityKamloops = true;
                 let commercialInsurance = true;
                 let makershipMembership = true;
@@ -742,14 +741,13 @@ export default function StateMachine() {
                     //Handle the unchecked values as needed
                     if (uncheckedValues.length > 0) {
                         statemachine.uncheckedStates = uncheckedValues; // Store unchecked values in the state machine
-
                         statemachine.currentState = "handleUnchecked";
                         statemachine.render();
                     }
                     else {
-
                         //If all checkboxes are checked, transition to a default state
                         statemachine.currentState = "defaultState";
+                        saveCurrentState(statemachine.currentState);
                         statemachine.render();
                     }
                 };
