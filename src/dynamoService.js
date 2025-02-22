@@ -25,7 +25,6 @@ export const searchData = async (data) => {
 }
 
 
-
 export const insertData = async (data) => {
 
   let params1 = {
@@ -78,14 +77,12 @@ export const insertData = async (data) => {
 
 export const insertStateData = async (data) => {
 
-  let result = await searchData({ email: data.email })
-
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set stateChat = :state`,
         ExpressionAttributeValues: {
@@ -105,14 +102,12 @@ export const insertStateData = async (data) => {
 
 export const insertChatHistory = async (data) => {
 
-  let result = await searchData({ email: data.email })
-
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set chat = :chat`,
         ExpressionAttributeValues: {
@@ -131,14 +126,13 @@ export const insertChatHistory = async (data) => {
 
 
 export const insertBusinessStage = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set businessStage = :stage`,
         ExpressionAttributeValues: {
@@ -157,14 +151,13 @@ export const insertBusinessStage = async (data) => {
 
 
 export const insertSignedUp = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set signedUp = :signed`,
         ExpressionAttributeValues: {
@@ -183,14 +176,13 @@ export const insertSignedUp = async (data) => {
 
 
 export const insertLicences = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set licenses = :license`,
         ExpressionAttributeValues: {
@@ -209,14 +201,13 @@ export const insertLicences = async (data) => {
 
 
 export const insertService = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set service = :serv`,
         ExpressionAttributeValues: {
@@ -235,14 +226,13 @@ export const insertService = async (data) => {
 
 
 export const insertProducts = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set products = :product`,
         ExpressionAttributeValues: {
@@ -261,14 +251,13 @@ export const insertProducts = async (data) => {
 
 
 export const insertNote = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set notes = :note`,
         ExpressionAttributeValues: {
@@ -287,14 +276,13 @@ export const insertNote = async (data) => {
 
 
 export const insertEventVenue = async (data) => {
-  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
       .update({
         TableName: "Prospects",
         Key: {
-          id: Number(result.id),
+          id: data.userId,
         },
         UpdateExpression: `set eventVenue = :venue`,
         ExpressionAttributeValues: {

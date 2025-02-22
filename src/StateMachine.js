@@ -303,21 +303,22 @@ export default function StateMachine() {
                                 let message = data.message;
 
 
-                                let response = await insertData({ f_name, l_name, b_name, email, phone, message, today});
+                                let response = await insertData({ f_name, l_name, b_name, email, phone, message, today });
                                 if (response.success) console.log("User data was inserted");
 
 
-                                localStorage.setItem("userEmail", email);
-                                user = email;
+                                localStorage.setItem("userId", response.userId);
+                                console.log(response.userId);
+                                user = response.userId;
                                 statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
                                 saveCurrentState();
 
 
-                                let result = await insertService({ email: user, service: serviceSelected });
+                                let result = await insertService({ userId: user, service: serviceSelected });
                                 console.log(result.message)
 
-                                if(eventVenue != null){
-                                    result = await insertEventVenue({ email: user, venue: eventVenue })
+                                if (eventVenue != null) {
+                                    result = await insertEventVenue({ userId: user, venue: eventVenue })
                                     console.log(result.message);
                                 }
 
@@ -358,7 +359,7 @@ export default function StateMachine() {
                                     statemachine.currentState = "information";
                                 }
 
-                                let result = await insertBusinessStage({ email: user, businessStage: data.selectedValue });
+                                let result = await insertBusinessStage({ userId: user, businessStage: data.selectedValue });
                                 if (data.selectedValue != "Brand New") {
                                     saveCurrentState(statemachine.currentState);
                                 }
@@ -458,10 +459,10 @@ export default function StateMachine() {
                             "callback": async function (data) {
                                 console.log("Form data:", data);
 
-                                let result = await insertProducts({ email: user, products: JSON.stringify(data.foodDocs) });
+                                let result = await insertProducts({ userId: user, products: JSON.stringify(data.foodDocs) });
                                 console.log(result.message);
 
-                                result = await insertNote({ email: user, note: JSON.stringify(data.notes) });
+                                result = await insertNote({ userId: user, note: JSON.stringify(data.notes) });
                                 console.log(result.message);
 
                                 if (data.businessType === "Food Processing") {
@@ -626,7 +627,7 @@ export default function StateMachine() {
                                     if (i == 0) {
                                         signed = true;
                                     }
-                                    let result = await insertSignedUp({ email: user, signedUp: signed });
+                                    let result = await insertSignedUp({ userId: user, signedUp: signed });
                                     console.log(result.message);
                                 }
                                 this.interact(i);
@@ -707,7 +708,7 @@ export default function StateMachine() {
                         }
                     });
 
-                    let result = await insertLicences({ email: user, licenses: JSON.stringify({ "City of Kamloops Business License": cityKamloops, "Commercial Insurance": commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee": stirMakerFee }) });
+                    let result = await insertLicences({ userId: user, licenses: JSON.stringify({ "City of Kamloops Business License": cityKamloops, "Commercial Insurance": commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee": stirMakerFee }) });
                     console.log(result.message);
 
                     //Handle the unchecked values as needed
@@ -1137,7 +1138,7 @@ export default function StateMachine() {
                 console.log("Loading chat from DynamoDB");
 
                 if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({ email: user, chat: localStorage.getItem("chatHistory") });
+                    let result = await insertChatHistory({ userId: user, chat: localStorage.getItem("chatHistory") });
                     console.log(result.message);
                 }
 
@@ -1166,7 +1167,7 @@ export default function StateMachine() {
                 localStorage.setItem("chatHistory", JSON.stringify(history));
 
                 if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({ email: user, chat: localStorage.getItem("chatHistory") });
+                    let result = await insertChatHistory({ userId: user, chat: localStorage.getItem("chatHistory") });
                     console.log(result.message);
                 }
             }
@@ -1179,7 +1180,7 @@ export default function StateMachine() {
                 console.log("Current state: " + statemachine.currentState);
 
                 if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertStateData({ email: user, stateChat: statemachine.currentState })
+                    let result = await insertStateData({ userId: user, stateChat: statemachine.currentState })
                     console.log(result.message);
                 }
             }
