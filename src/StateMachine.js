@@ -32,12 +32,16 @@ export default function StateMachine() {
             // Clear chat history
             const clearHistoryButton = document.getElementById("clearHistoryButton");
             clearHistoryButton.addEventListener("click", () => {
-                localStorage.removeItem("userEmail");
+
+                localStorage.removeItem("userId");
+                localStorage.removeItem("chatHistory");
+                localStorage.removeItem("serviceSelected");
+                localStorage.removeItem("currentState");
+
                 user = null;
                 serviceSelected = null;
                 eventVenue = null;
-                localStorage.removeItem("chatHistory");
-                localStorage.removeItem("currentState");
+                
                 messagesContainer.innerHTML = "";
                 statemachine.currentState = "start";
                 statemachine.render();
