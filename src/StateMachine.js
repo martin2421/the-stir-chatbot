@@ -6,7 +6,7 @@ export default function StateMachine() {
     document.addEventListener("readystatechange", function (event) {
         if (document.readyState === 'complete') {
 
-            let user = localStorage.getItem("userEmail");
+            let user = Number(localStorage.getItem("userId"));
             let serviceSelected = localStorage.getItem("serviceSelected");
             let eventVenue;
 
@@ -41,7 +41,7 @@ export default function StateMachine() {
                 user = null;
                 serviceSelected = null;
                 eventVenue = null;
-                
+
                 messagesContainer.innerHTML = "";
                 statemachine.currentState = "start";
                 statemachine.render();
@@ -107,8 +107,8 @@ export default function StateMachine() {
                                 let result = await searchData({ email });
 
                                 if (result.success) {
-                                    localStorage.setItem("userEmail", email);
-                                    user = email;
+                                    localStorage.setItem("userId", result.id);
+                                    user = result.id;
                                     if (result.stateChat == "" || result.stateChat == undefined) {
                                         statemachine.currentState = "First Step";
                                         localStorage.setItem("currentState", "First Step");
@@ -363,6 +363,7 @@ export default function StateMachine() {
                                     statemachine.currentState = "information";
                                 }
 
+                                console.log(user);
                                 let result = await insertBusinessStage({ userId: user, businessStage: data.selectedValue });
                                 if (data.selectedValue != "Brand New") {
                                     saveCurrentState(statemachine.currentState);
@@ -383,6 +384,12 @@ export default function StateMachine() {
                         {
                             "type": "checkbox",
                             "boxes": function () {
+                                let sel = localStorage.getItem("serviceSelected");
+
+                                if(sel == "Workstation Space") statemachine.selectedService = "workstationSpace";
+                                else if(sel == "Kitchen Rental") statemachine.selectedService = "kitchenRental";
+                                else if(sel == "Event Venue") statemachine.selectedService = "Event Venue";
+                                else if(sel == "Business Coach") statemachine.selectedService = "Business Coach";
                                 let result = getCheckboxesForService(statemachine.selectedService);
                                 //console.log(result);
                                 return result;
@@ -691,6 +698,23 @@ export default function StateMachine() {
                 var form = document.createElement("form"); // Create a new form element
                 form.className = "checkbox"; // Set the class name for the form 
 
+
+
+                boxes.forEach(box => {
+                    var label = document.createElement("label");
+                    var input = document.createElement("input"); // Create a new input element
+                    input.type = "checkbox"; // Set the input type to checkbox
+                    input.name = box.name; // Set the input name
+                    input.value = box.value; // Set the input value
+                    input.id = box.id; // Set the input id
+                    label.appendChild(input); // Append the input to the label
+                    label.appendChild(document.createTextNode(box.value)); // Append the checkbox label
+                    form.appendChild(label); // Append the label to the form
+                    form.appendChild(document.createElement("br")); // Add a line break
+                });
+
+
+
                 let cityKamloops = true;
                 let commercialInsurance = true;
                 let makershipMembership = true;
@@ -729,19 +753,6 @@ export default function StateMachine() {
                         statemachine.render();
                     }
                 };
-
-                boxes.forEach(box => {
-                    var label = document.createElement("label");
-                    var input = document.createElement("input"); // Create a new input element
-                    input.type = "checkbox"; // Set the input type to checkbox
-                    input.name = box.name; // Set the input name
-                    input.value = box.value; // Set the input value
-                    input.id = box.id; // Set the input id
-                    label.appendChild(input); // Append the input to the label
-                    label.appendChild(document.createTextNode(box.value)); // Append the checkbox label
-                    form.appendChild(label); // Append the label to the form
-                    form.appendChild(document.createElement("br")); // Add a line break
-                });
 
                 var submitButton = document.createElement("button"); // Create a new button element
                 submitButton.type = "submit"; // Set the button type to submit
@@ -782,6 +793,7 @@ export default function StateMachine() {
 
             // Function to get the checkboxes based on the selected service
             function getCheckboxesForService(service) {
+
                 if (service === "workstationSpace") {
                     return [
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
