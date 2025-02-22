@@ -15,7 +15,7 @@ export const searchData = async (data) => {
     .promise()
     .then(function (data) {
       if (data.Items[0] != undefined) {
-        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].stateChat, chat: data.Items[0].chat };
+        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, businessName: data.Items[0].businessName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].stateChat, chat: data.Items[0].chat, businessStage: data.Items[0].businessStage, dateCreated: data.Items[0].createdAt, service: data.Items[0].service};
       } else {
         return { success: false };
       }
@@ -23,6 +23,7 @@ export const searchData = async (data) => {
     )
     .catch(console.error)
 }
+
 
 
 export const insertData = async (data) => {

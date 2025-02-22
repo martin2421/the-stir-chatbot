@@ -108,6 +108,7 @@ export default function StateMachine() {
 
                                 if (result.success) {
                                     localStorage.setItem("userId", result.id);
+                                    localStorage.setItem("serviceSelected", result.service)
                                     user = result.id;
                                     if (result.stateChat == "" || result.stateChat == undefined) {
                                         statemachine.currentState = "First Step";
@@ -117,7 +118,7 @@ export default function StateMachine() {
                                     } else {
                                         statemachine.currentState = result.stateChat; // ex. state - Replace with different state after data base check
                                         localStorage.setItem("currentState", statemachine.currentState);
-                                        loadChatFromDB();
+                                        loadChatFromDB(email);
                                         statemachine.render(true);
                                     }
 
@@ -1122,11 +1123,11 @@ export default function StateMachine() {
 
 
             // Load chat history from localStorage
-            async function loadChatFromDB() {
+            async function loadChatFromDB(emailIn) {
 
                 messagesContainer.innerHTML = ""; // Clear the chat logs
 
-                const result = await searchData({ email: user });
+                const result = await searchData({ email: emailIn });
                 const history = JSON.parse(result.chat) || [];
 
                 history.forEach(item => {
