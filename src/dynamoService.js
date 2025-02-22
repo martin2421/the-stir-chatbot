@@ -17,7 +17,7 @@ export const searchData = async (data) => {
       if (data.Items[0] != undefined) {
         return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].stateChat, chat: data.Items[0].chat };
       } else {
-        return { success: false};
+        return { success: false };
       }
     }
     )
@@ -68,7 +68,7 @@ export const insertData = async (data) => {
       .promise()
 
 
-    return { success: true, message: 'INSERTED' };
+    return { success: true, userId: item.nextId, message: 'INSERTED' };
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -78,7 +78,7 @@ export const insertData = async (data) => {
 
 export const insertStateData = async (data) => {
 
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -105,7 +105,7 @@ export const insertStateData = async (data) => {
 
 export const insertChatHistory = async (data) => {
 
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -131,7 +131,7 @@ export const insertChatHistory = async (data) => {
 
 
 export const insertBusinessStage = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -157,7 +157,7 @@ export const insertBusinessStage = async (data) => {
 
 
 export const insertSignedUp = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -183,7 +183,7 @@ export const insertSignedUp = async (data) => {
 
 
 export const insertLicences = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -209,7 +209,7 @@ export const insertLicences = async (data) => {
 
 
 export const insertService = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -235,7 +235,7 @@ export const insertService = async (data) => {
 
 
 export const insertProducts = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -261,7 +261,7 @@ export const insertProducts = async (data) => {
 
 
 export const insertNote = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb
@@ -287,7 +287,7 @@ export const insertNote = async (data) => {
 
 
 export const insertEventVenue = async (data) => {
-  let result = await searchData({ email : data.email })
+  let result = await searchData({ email: data.email })
 
   try {
     await dynamodb

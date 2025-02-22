@@ -7,7 +7,7 @@ export default function StateMachine() {
         if (document.readyState === 'complete') {
 
             let user = localStorage.getItem("userEmail");
-            let serviceSelected;
+            let serviceSelected = localStorage.getItem("serviceSelected");
             let eventVenue;
 
 
@@ -238,8 +238,6 @@ export default function StateMachine() {
                                 }
                             ],
                             "callback": async function (data) {
-
-                                console.log(data);
                                 if (data.venue_capacity != undefined && data.venue_location != undefined) {
                                     statemachine.currentState = "Contact Form";
                                     eventVenue = JSON.stringify({ venue_location: data.venue_location, venue_capacity: data.venue_capacity });
@@ -318,8 +316,11 @@ export default function StateMachine() {
                                 let result = await insertService({ email: user, service: serviceSelected });
                                 console.log(result.message)
 
-                                result = await insertEventVenue({ email: user, venue: eventVenue })
-                                console.log(result.message);
+                                if(eventVenue != null){
+                                    result = await insertEventVenue({ email: user, venue: eventVenue })
+                                    console.log(result.message);
+                                }
+
 
                                 statemachine.render(); // Render the new state
                             }
@@ -618,6 +619,7 @@ export default function StateMachine() {
                             button.onclick = async () => {
                                 if (localStorage.getItem("currentState") == "services" && i != 5) {
                                     serviceSelected = option.title;
+                                    localStorage.setItem("serviceSelected", serviceSelected);
                                 }
                                 if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
                                     let signed = false;
