@@ -44,8 +44,10 @@ export const insertData = async (data) => {
       id: item.nextId,
       firstName: data.f_name,
       lastName: data.l_name,
+      businessName: data.b_name,
       email: data.email,
       phoneNumber: data.phone,
+      createdAt: data.today
     }
   }
 

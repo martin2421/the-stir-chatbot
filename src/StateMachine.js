@@ -10,10 +10,19 @@ export default function StateMachine() {
             let serviceSelected;
             let eventVenue;
 
+
+            //data needed to create timestamp for when it was created
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+            today = dd + '/' + mm + '/' + yyyy;
+
+
             document.getElementById("chef").addEventListener("click", () => {
                 const helpText = document.querySelector(".help-text");
                 helpText.style.animation = "moveTextUp 3s linear infinite"; // Restart infinite animation if clicked
-            }); 
+            });
 
             const chatCircle = document.getElementById("chat-circle");
             const chatBox = document.querySelector(".chat-box");
@@ -37,7 +46,6 @@ export default function StateMachine() {
 
             // Show/Hide chat box
             chatCircle.addEventListener("click", () => {
-
                 chatCircle.classList.add("hidden");
                 chatBox.classList.add("show");
 
@@ -230,12 +238,12 @@ export default function StateMachine() {
                                 }
                             ],
                             "callback": async function (data) {
-                                
+
                                 console.log(data);
                                 if (data.venue_capacity != undefined && data.venue_location != undefined) {
                                     statemachine.currentState = "Contact Form";
-                                    eventVenue = JSON.stringify({venue_location : data.venue_location, venue_capacity: data.venue_capacity});
-                                }else {
+                                    eventVenue = JSON.stringify({ venue_location: data.venue_location, venue_capacity: data.venue_capacity });
+                                } else {
                                     statemachine.currentState = "Event Venue";
                                 }
                                 statemachine.render();
@@ -283,6 +291,7 @@ export default function StateMachine() {
                             "fields": [
                                 { name: "f_name", placeholder: "First Name" },
                                 { name: "l_name", placeholder: "Last Name" },
+                                { name: "b_name", placeholder: "Business Name" },
                                 { name: "email", placeholder: "Email" },
                                 { name: "phone", placeholder: "Phone" },
                                 { name: "message", placeholder: "Message" }
@@ -290,12 +299,13 @@ export default function StateMachine() {
                             "callback": async function (data) {
                                 let f_name = data.f_name;
                                 let l_name = data.l_name;
+                                let b_name = data.b_name;
                                 let email = data.email;
                                 let phone = data.phone;
                                 let message = data.message;
 
 
-                                let response = await insertData({ f_name, l_name, email, phone, message });
+                                let response = await insertData({ f_name, l_name, b_name, email, phone, message, today});
                                 if (response.success) console.log("User data was inserted");
 
 
