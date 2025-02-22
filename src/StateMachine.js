@@ -121,8 +121,6 @@ export default function StateMachine() {
                                         loadChatFromDB(email);
                                         statemachine.render(true);
                                     }
-
-
                                 }
                                 else {
                                     statemachine.currentState = 'Unregistered'; // ex. state - Replace with different state after data base check
