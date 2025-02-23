@@ -154,9 +154,9 @@ export default function StateMachine() {
                     "message": "What type of service are you looking for?",
                     "options": [
                         {
-                            "title": "Workstation Space",
+                            "title": "Warehouse Space",
                             "next": "Contact Form",
-                            "service": "workstationSpace"
+                            "service": "warehouseSpace"
                         },
                         {
                             "title": "Kitchen Rental",
@@ -186,7 +186,7 @@ export default function StateMachine() {
                 },
 
                 "Explain": {
-                    "message": "Here is a brief explanation of each service we offer <br> <br> Workstation Space: A space for you to work on your projects <br> Kitchen Rental: A kitchen space for you to rent <br> Event Venue: A venue for hosting events <br> Business Coach: A coach to help you with your business <br> Ecommerce: An online platform for selling products",
+                    "message": "Here is a brief explanation of each service we offer <br> <br> warehouse Space: A space for you to work on your projects <br> Kitchen Rental: A kitchen space for you to rent <br> Event Venue: A venue for hosting events <br> Business Coach: A coach to help you with your business <br> Ecommerce: An online platform for selling products",
                     "options": [
                         {
                             "title": "Back to Services",
@@ -385,7 +385,7 @@ export default function StateMachine() {
                             "boxes": function () {
                                 let sel = localStorage.getItem("serviceSelected");
 
-                                if(sel == "Workstation Space") statemachine.selectedService = "workstationSpace";
+                                if(sel == "Warehouse Space") statemachine.selectedService = "warehouseSpace";
                                 else if(sel == "Kitchen Rental") statemachine.selectedService = "kitchenRental";
                                 else if(sel == "Event Venue") statemachine.selectedService = "Event Venue";
                                 else if(sel == "Business Coach") statemachine.selectedService = "Business Coach";
@@ -791,7 +791,7 @@ export default function StateMachine() {
             // Function to get the checkboxes based on the selected service
             function getCheckboxesForService(service) {
 
-                if (service === "workstationSpace") {
+                if (service === "warehouseSpace") {
                     return [
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
