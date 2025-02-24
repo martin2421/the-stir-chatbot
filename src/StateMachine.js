@@ -431,7 +431,7 @@ export default function StateMachine() {
                                 },
                                 {
                                     "type": "radio",
-                                    "name": "Space/Time Needed",
+                                    "name": "business_type",
                                     "label": "Space/Time Needed:",  // Label for the radio button group
                                     "boxes": [
                                         { name: "business_type", value: "0-10", id: "0-10", label: "0-10 Hours" },
@@ -503,17 +503,14 @@ export default function StateMachine() {
                 if (lastMsgDiv && lastMsgDiv.classList.contains("chat-msg")) {
                     const msgTextDiv = lastMsgDiv.querySelector(".cm-msg-text");
                     if (msgTextDiv) {
-                        // Create a new message div for the reply
                         const replyMsgDiv = document.createElement("div");
-                        replyMsgDiv.className = "chat-msg self"; // You can adjust the class as per your design
+                        replyMsgDiv.className = "chat-msg user";
 
-                        // Set the content of the new message box
                         replyMsgDiv.innerHTML = `<div class="cm-msg-text-reply">${selectedOption.title}</div>`;
 
-                        // Append the new message box to the container
                         messagesContainer.appendChild(replyMsgDiv);
-                        chatLogs.scrollTop = chatLogs.scrollHeight; // Scroll to the bottom
-                        saveChatHistory(replyMsgDiv, "self"); // Save the message to chat history
+                        chatLogs.scrollTop = chatLogs.scrollHeight;
+                        saveChatHistory(replyMsgDiv, "self");
                     }
                 }
 
@@ -554,8 +551,8 @@ export default function StateMachine() {
                 }
 
                 if (!isLoadingHistory) {
-                    addMessage(currentState.message, "user"); // Add the current state's message to the chat logs
-                    saveChatHistory(currentState.message, "user"); // Save the message to chat history
+                    addMessage(currentState.message, "self"); // Add the current state's message to the chat logs
+                    saveChatHistory(currentState.message, "self"); // Save the message to chat history
                 }
 
                 // Then, clear the current buttons 
@@ -599,11 +596,6 @@ export default function StateMachine() {
                             buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
                         }
 
-                        else if (option.type === "dropdown") {
-                            var dropdown = createDropdown(option); // Create a dropdown if the option type is "dropdown"
-                            buttoncontainer.appendChild(dropdown); // Append the dropdown to the buttons container
-                        }
-
                         else if (option.type === "combined-form") {  // Add this case
                             var combinedForm = createCombinedForm(option);
                             buttoncontainer.appendChild(combinedForm);
@@ -643,11 +635,24 @@ export default function StateMachine() {
 
             // Function to add a message to the chat logs
             function addMessage(msg, type) {
-                const msgDiv = document.createElement("div"); // Create a new div element for the message
-                msgDiv.className = `chat-msg ${type}`; // Set the class name for the message div
-                msgDiv.innerHTML = `<div class="cm-msg-text">${msg}</div>`; // Set the inner HTML of the message div
-                messagesContainer.appendChild(msgDiv); // Append the message div to the chat logs
-                chatLogs.scrollTop = chatLogs.scrollHeight; // Scroll to the bottom of the chat logs
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `chat-msg ${type}`;
+                
+                // If it's a user message, use cm-msg-text-reply
+                if (type === "user") {
+                    // Check if the message already contains the div class
+                    if (!msg.includes('cm-msg-text-reply')) {
+                        msgDiv.innerHTML = `<div class="cm-msg-text-reply">${msg}</div>`;
+                    } else {
+                        msgDiv.innerHTML = msg;
+                    }
+                } else {
+                    // For bot messages (type "self"), use cm-msg-text
+                    msgDiv.innerHTML = `<div class="cm-msg-text">${msg}</div>`;
+                }
+                
+                messagesContainer.appendChild(msgDiv);
+                chatLogs.scrollTop = chatLogs.scrollHeight;
             }
 
 
@@ -708,21 +713,30 @@ export default function StateMachine() {
                 let makershipMembership = true;
                 let stirMakerFee = true;
 
+                // In the createCheckbox function, update the form.onsubmit handler
                 form.onsubmit = async function (event) {
                     event.preventDefault();
                     var uncheckedValues = [];
+                    var checkedValues = [];
                     boxes.forEach(box => {
                         var checkbox = document.getElementById(box.id);
-
                         if (!checkbox.checked) {
                             uncheckedValues.push(box.value);
-
                             if (box.id == "City of Kamloops Business License") cityKamloops = false;
                             if (box.id == "Commercial Insurance") commercialInsurance = false;
                             if (box.id == "Makership Membership") makershipMembership = false;
                             if (box.id == "Stir Maker Fee") stirMakerFee = false;
+                        } else {
+                            checkedValues.push(box.value);
                         }
                     });
+
+                    // Add summary message for checked items
+                    if (checkedValues.length > 0) {
+                        const summaryMsg = `<div class="cm-msg-text-reply">You have:<br> ${checkedValues.join("<br><br>")}</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
+                    }
 
                     let result = await insertLicences({ userId: user, licenses: JSON.stringify({ "City of Kamloops Business License": cityKamloops, "Commercial Insurance": commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee": stirMakerFee }) });
                     console.log(result.message);
@@ -745,35 +759,6 @@ export default function StateMachine() {
                 submitButton.type = "submit"; // Set the button type to submit
                 submitButton.innerText = "Submit"; // Set the button text
                 form.appendChild(submitButton); // Append the button to the form
-                return form;
-            }
-
-
-            // Function to create a dropdown for the option
-            function createDropdown(option) {
-                var form = document.createElement("form"); // Create a new form element
-                form.className = "dropdown"; // Set the class name for the form
-                form.onsubmit = function (event) {
-                    event.preventDefault();
-                    var selectedValue = form.querySelector("select").value;
-                    option.callback(selectedValue); // Call the callback function with the selected value
-                };
-
-                var select = document.createElement("select"); // Create a new select element
-                select.name = option.name; // Set the select name
-                option.choices.forEach(choice => {
-                    var optionElement = document.createElement("option"); // Create a new option element
-                    optionElement.value = choice.value; // Set the option value
-                    optionElement.innerText = choice.label; // Set the option label
-                    select.appendChild(optionElement); // Append the option to the select
-                });
-                form.appendChild(select); // Append the select to the form
-
-                var submitButton = document.createElement("button"); // Create a new button element
-                submitButton.type = "submit"; // Set the button type to submit
-                submitButton.innerText = "Let's Get Cooking!"; // Set the button text
-                form.appendChild(submitButton); // Append the button to the form
-
                 return form;
             }
 
@@ -845,7 +830,7 @@ export default function StateMachine() {
 
                     switch (item) {
                         case "Commercial Insurance":
-                            addMessage("You need insurance to protect your business. Here are some local insurance providers:", "user");
+                            addMessage("You need insurance to protect your business. Here are some local insurance providers:", "self");
                             options.push(
                                 {
                                     "title": "Click here for interior savings insurance",
@@ -858,42 +843,42 @@ export default function StateMachine() {
                             );
                             break;
                         case "City of Kamloops Business License":
-                            addMessage("A business license is required to operate in Kamloops. You can apply here:", "user");
+                            addMessage("A business license is required to operate in Kamloops. You can apply here:", "self");
                             options.push({
                                 "title": "Click Here for the business license application",
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
                         case "Interior Health":
-                            addMessage("Food safety is important! You'll need Interior Health approval:", "user");
+                            addMessage("Food safety is important! You'll need Interior Health approval:", "self");
                             options.push({
                                 "title": "Click Here for the Interior Health Requirements",
                                 "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
                             });
                             break;
                         case "Completed Business Plan":
-                            addMessage("A business plan is essential for success. Here are some resources to help you get started:", "user");
+                            addMessage("A business plan is essential for success. Here are some resources to help you get started:", "self");
                             options.push({
                                 "title": "Click Here for the Business Plan Guide",
                                 "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/pages/business-plan-template.aspx"
                             });
                             break;
                         case "FoodSafe Certificate":
-                            addMessage("Food safety is important! You'll need a FoodSafe certificate:", "user");
+                            addMessage("Food safety is important! You'll need a FoodSafe certificate:", "self");
                             options.push({
                                 "title": "Click Here for the FoodSafe Course",
                                 "href": "https://www.foodsafe.ca/"
                             });
                             break;
                         case "Makership Membership":
-                            addMessage("You need to be a member of Makership to proceed. Sign up here:", "user");
+                            addMessage("You need to be a member of Makership to proceed. Sign up here:", "self");
                             options.push({
                                 "title": "Click Here to Sign Up for Makership",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
                             });
                             break;
                         case "Stir Maker Fee":
-                            addMessage("You need to pay the Stir Maker fee to proceed. Click below to pay:", "user");
+                            addMessage("You need to pay the Stir Maker fee to proceed. Click below to pay:", "self");
                             options.push({
                                 "title": "Click Here to Pay the Stir Maker Fee",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
@@ -1005,20 +990,34 @@ export default function StateMachine() {
                             venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
                             venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
                         };
+                        const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
                         option.callback(formData);
                     } else {
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
-                            equipment: Array.from(form.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value),
                             businessType: form.querySelector('input[name="business_type"]:checked')?.value,
                             notes: form.querySelector('textarea[name="notes"]').value,
                         };
+                        let summaryParts = [];
+                        if (formData.foodDocs.length > 0) {
+                            summaryParts.push(`Products: ${formData.foodDocs.join(", ")}`);
+                        }
+                        if (formData.businessType) {
+                            summaryParts.push(`Time Needed: ${formData.businessType} hours`);
+                        }
+                        if (formData.notes) {
+                            summaryParts.push(`Additional Notes: ${formData.notes}`);
+                        }
+                        // Wrap the summary in cm-msg-text-reply div
+                        const summaryMsg = `<div class="cm-msg-text-reply">You picked:<br>${summaryParts.join("<br><br>")}</br></div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
                         option.callback(formData);
-
                     }
-
                 };
-
+                
                 return form;
             }
 
@@ -1061,9 +1060,15 @@ export default function StateMachine() {
                 form.appendChild(submitButton);
 
                 // Handle form submission
+                // In the createRadioGroup function, update the form.onsubmit handler
                 form.onsubmit = function (event) {
                     event.preventDefault();
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
+                    if (selectedValue) {
+                        const summaryMsg = `<div class="cm-msg-text-reply">You selected: ${selectedValue.value}</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
+                    }
                     option.callback({
                         selectedValue: selectedValue ? selectedValue.value : null
                     });
