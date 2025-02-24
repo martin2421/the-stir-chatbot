@@ -186,7 +186,7 @@ export default function StateMachine() {
                 },
 
                 "Explain": {
-                    "message": "Here is a brief explanation of each service we offer <br> <br> warehouse Space: A space for you to work on your projects <br> Kitchen Rental: A kitchen space for you to rent <br> Event Venue: A venue for hosting events <br> Business Coach: A coach to help you with your business <br> Ecommerce: An online platform for selling products",
+                    "message": "Here is a brief explanation of each service we offer.. <br> <br> <strong>Warehouse Space</strong>: A space for you to work on your projects <br><br> <strong>Kitchen Rental</strong>: A kitchen space for you to rent <br><br> <strong>Event Venue</strong>: A venue for hosting events <br><br> <strong>Business Coach</strong>: A coach to help you with your business <br><br> <strong>Ecommerce</strong>: An online platform for selling products",
                     "options": [
                         {
                             "title": "Back to Services",
@@ -295,7 +295,6 @@ export default function StateMachine() {
                                 { name: "b_name", placeholder: "Business Name" },
                                 { name: "email", placeholder: "Email" },
                                 { name: "phone", placeholder: "Phone" },
-                                { name: "message", placeholder: "Message" }
                             ],
                             "callback": async function (data) {
                                 let f_name = data.f_name;
@@ -303,10 +302,9 @@ export default function StateMachine() {
                                 let b_name = data.b_name;
                                 let email = data.email;
                                 let phone = data.phone;
-                                let message = data.message;
 
 
-                                let response = await insertData({ f_name, l_name, b_name, email, phone, message, today });
+                                let response = await insertData({ f_name, l_name, b_name, email, phone, today });
                                 if (response.success) console.log("User data was inserted");
 
 
@@ -337,7 +335,7 @@ export default function StateMachine() {
                 },
 
                 "BusinessStage": {
-                    "message": "What stage is your business are you in?",
+                    "message": "What stage is your business in?",
                     "options": [
                         {
                             "type": "radio",
@@ -402,33 +400,15 @@ export default function StateMachine() {
                     "options": [
                         {
                             "title": "Food Processing",
-                            "next": "Food Processing",
+                            "next": "Food Form",
                             "service": "Food Processing",
                         },
                         {
                             "title": "Food Service",
-                            "next": "Food Service",
+                            "next": "Food Form",
                             "service": "Food Service",
                         }
                     ]
-                },
-
-                "Food Service": {
-                    "message": "Please contact our support team directly for further assistance",
-                    "options": [
-                        {
-                            "title": "Next Step",
-                            "back": "Food Form"
-                        }]
-                },
-
-                "Food Processing": {
-                    "message": "Please contact our support team directly for further assistance",
-                    "options": [
-                        {
-                            "title": "Next Step",
-                            "back": "Food Form"
-                        }]
                 },
 
 
@@ -442,11 +422,11 @@ export default function StateMachine() {
                                     "type": "checkbox-group",
                                     "name": "Types of Products",
                                     "boxes": [
-                                        { name: "food_docs", value: "Processed & Packaged Foods 🍽️", id: "Processed & Packaged Foods" },
-                                        { name: "food_docs", value: "Dairy, Meat & Seafood 🥩🥚🐟", id: "Dairy, Meat & Seafood" },
-                                        { name: "food_docs", value: "Ingredients & Seasonings 🌿🥫", id: "Ingredients & Seasonings" },
-                                        { name: "food_docs", value: "Speciality & Agricultural Products 🌱🚜", id: "Speciality & Agricultural Products" },
-                                        { name: "food_docs", value: "Other Products 🏷️", id: "Other" }
+                                        { name: "food_docs", value: "Processed & Packaged Foods", id: "Processed & Packaged Foods" },
+                                        { name: "food_docs", value: "Dairy, Meat & Seafood", id: "Dairy, Meat & Seafood" },
+                                        { name: "food_docs", value: "Ingredients & Seasonings", id: "Ingredients & Seasonings" },
+                                        { name: "food_docs", value: "Speciality & Agricultural Products", id: "Speciality & Agricultural Products" },
+                                        { name: "food_docs", value: "Other Products", id: "Other" }
                                     ]
                                 },
                                 {
@@ -476,17 +456,27 @@ export default function StateMachine() {
                                 console.log(result.message);
 
                                 if (data.businessType === "Food Processing") {
-                                    statemachine.currentState = "Food Processing";
+                                    statemachine.currentState = "Final Step";
                                 } else if (data.businessType === "Food Service") {
-                                    statemachine.currentState = "Food Service";
+                                    statemachine.currentState = "Final Step";
                                 } else {
-                                    statemachine.currentState = "information";
+                                    statemachine.currentState = "Final Step";
                                 }
                                 statemachine.render();
                             }
                         },
                         {
                             "title": "Back",
+                            "back": "start"
+                        }
+                    ]
+                },
+
+                "Final Step": {
+                    "message": "Thank you for your time. We will get back to you shortly",
+                    "options": [
+                        {
+                            "title": "Back to Start",
                             "back": "start"
                         }
                     ]
@@ -899,21 +889,14 @@ export default function StateMachine() {
                             addMessage("You need to be a member of Makership to proceed. Sign up here:", "user");
                             options.push({
                                 "title": "Click Here to Sign Up for Makership",
-                                "href": "https://www.makerspacekamloops.ca/membership"
+                                "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
                             });
                             break;
                         case "Stir Maker Fee":
                             addMessage("You need to pay the Stir Maker fee to proceed. Click below to pay:", "user");
                             options.push({
                                 "title": "Click Here to Pay the Stir Maker Fee",
-                                "href": "https://www.stirmaker.ca/" // Update the link
-                            });
-                            break;
-                        case "Makership Conduct Agreement":
-                            addMessage("You need to agree to the Makership Conduct Agreement. Click below to review and sign:", "user");
-                            options.push({
-                                "title": "Click Here to Review and Sign the Conduct Agreement",
-                                "href": "https://www.makerspacekamloops.ca/membership"
+                                "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
                             });
                             break;
                         default:
