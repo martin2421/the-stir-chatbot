@@ -1,11 +1,11 @@
 html,
 body {
-    background: #efefef;
     height: 100%;
     margin: 0;
     display: flex;
     flex-direction: row;
-}
+        }
+        
 
 #clearHistoryButton {
     margin-right: 10px;
@@ -15,72 +15,22 @@ body {
     position: fixed;
     bottom: 50px;
     right: 50px;
+    width: 100px;  /* 适配视频大小 */
+    height: 100px;
     cursor: pointer;
     z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 3px solid #fff; /* 添加白色边框 */
+    border-radius: 50%; /* 让它保持圆形 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* 添加阴影 */
 }
-
-.chef {
-    font-size: 70px;  /* Reduced size */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    background-color: rgb(136, 38, 27); /* Bubble color */
-    border-radius: 50%;
-    padding: 20px; /* Space inside the bubble */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Shadow for a floating effect */
-}
-
-.pan {
-    width: 60px;  /* Reduced pan size */
-    height: 12px;
-    background-color: #333;
-    position: absolute;
-    border-radius: 5px;
-    bottom: 0;
-    transform-origin: 50% 50%;
-    animation: flipPan 1s infinite;
-}
-
-@keyframes flipPan {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.chef-icon {
-    font-size: 70px;  /* Reduced chef emoji size */
-    color: white;
-    font-weight: bold;
-}
-
-.help-text {
-    position: absolute;
-    top: -30px; /* Adjusted position to come out from the center of the chef's head */
-    font-size: 24px;
-    font-weight: bold;
-    color: #ff5733; /* Bright color */
-    animation: moveTextUp 3s linear infinite;
-    white-space: nowrap; /* Prevent text from wrapping */
-}
-
-@keyframes moveTextUp {
-    0% {
-        transform: translateY(0); /* Start from the chef's head */
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-200px); /* Move upwards */
-        opacity: 0; /* Fade away */
-    }
-}
-
 
 #chat-circle:hover {
     animation: none;
+    transform: scale(1.2); /* 让元素变大 1.2 倍 */
+    transition: transform 0.3s ease-in-out; /* 平滑过渡 */
 }
 
 #chat-circle.hidden {
@@ -89,7 +39,8 @@ body {
 
 .chat-box {
     display: none;
-    background: #efefef;
+    background: url('./bg.jpg') no-repeat center center;
+    background-size:cover;
     position: fixed;
     right: 30px;
     bottom: 50px;
@@ -147,8 +98,6 @@ body {
 }
 
 
-
-
 .chat-input {
     background: #f4f7f9;
     height: 47px;
@@ -196,8 +145,6 @@ body {
     background: white;
     border: 1px solid #ccc;
 }
-
-
 
 .titles {
     /* This is for the titles of the buttons */
@@ -406,3 +353,61 @@ button[type="submit"]:hover {
     border-radius: 5px;
     background-color: #f5f5f5;
 }
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        touch-action: none;
+        overflow: hidden; /* 隐藏溢出内容 */
+        position: fixed; /* 固定页面位置 */
+        width: 100%; /* 确保宽度占满屏幕 */
+        height: 100%; /* 确保高度占满屏幕 */
+    }
+
+    .chat-box {
+        width: 90%;
+        max-width: 100%;
+        bottom: 60px;
+        right: 10px;
+        overflow: hidden; /* 隐藏溢出内容 */
+        position: fixed; /* 固定页面位置 */
+    }
+
+    .chat-box-body {
+        overflow-x: hidden; /* 禁用水平滚动 */
+        overflow-y: auto; /* 允许垂直滚动 */
+        max-height: 80vh; /* 设置最大高度 */
+        width: 90%; /* 确保宽度占满容器 */
+          padding: 5%;
+  }
+
+    #chat-circle {
+        bottom: 30px;
+        right: 30px;
+    }
+
+    
+    .form {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .checkbox,
+    .form {
+        width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .chat-box-header {
+        font-size: 16px;
+    }
+  }
+
+  #logo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 让视频填充整个容器 */
+    border-radius: 50%;
+  }

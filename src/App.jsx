@@ -11,9 +11,8 @@ function App() {
         <div>
           <div id="chat-circle">
             <div className="chef" id="chef">
-              <div className="chef-icon">👨‍🍳</div>
-              <div className="pan"></div>
-              <div className="help-text">NEED HELP??</div>
+            <video id="logo-video" autoplay loop muted playsinline></video>
+            <source src="logo.mp4" type="video/mp4"></source>
             </div>
           </div>
 

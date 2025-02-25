@@ -1,6 +1,5 @@
 import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue } from "./dynamoService";
 
-
 export default function StateMachine() {
 
     document.addEventListener("readystatechange", function (event) {
@@ -19,10 +18,11 @@ export default function StateMachine() {
             today = dd + '/' + mm + '/' + yyyy;
 
 
-            document.getElementById("chef").addEventListener("click", () => {
-                const helpText = document.querySelector(".help-text");
-                helpText.style.animation = "moveTextUp 3s linear infinite"; // Restart infinite animation if clicked
-            });
+            // Trigger the text animation on clicking the chef
+            document.getElementById("logo-video").addEventListener("click", () => {
+            const helpText = document.querySelector(".help-text");
+            helpText.style.animation = "moveTextUp 3s linear infinite"; // Restart infinite animation if clicked
+        });
 
             const chatCircle = document.getElementById("chat-circle");
             const chatBox = document.querySelector(".chat-box");
@@ -835,11 +835,11 @@ export default function StateMachine() {
                             addMessage("You need insurance to protect your business. Here are some local insurance providers:", "self");
                             options.push(
                                 {
-                                    "title": "Click here for interior savings insurance",
+                                    "title": "Click here for Interior Savings Insurance",
                                     "href": "https://www.interiorsavings.com/business/insurance"
                                 },
                                 {
-                                    "title": "Click here for hub international insurance",
+                                    "title": "Click here for Hub International Insurance",
                                     "href": "https://www.hubinternational.com/en-CA/offices/ca/british-columbia/kamloops-third-avenue/"
                                 }
                             );
@@ -851,13 +851,46 @@ export default function StateMachine() {
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
-                        case "Interior Health":
-                            addMessage("Food safety is important! You'll need Interior Health approval:", "self");
-                            options.push({
-                                "title": "Click Here for the Interior Health Requirements",
-                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
-                            });
-                            break;
+                            case "Interior Health":
+                                addMessage("Food safety is important! You'll need Interior Health approval. Here's how to fill out the application:", "self");
+                                addMessage(`
+                                <div class="cm-msg-text">
+                                    <strong>Section A:</strong><br><br>
+                                    <strong>Business/Facility Name:</strong> Your Business Name<br><br>
+                                    <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
+                                    <strong>Facility Site Address:</strong> 185 Royal Ave, Kamloops, BC, V2C 6A9<br><br>
+                                    <strong>Site Phone:</strong> 778.870.9867<br><br>
+                                    <strong>Cell Phone:</strong> Your Cell Number<br><br>
+                                    <strong>Type of Ownership:</strong> Check what applies to your business<br><br>
+                                    <strong>Legal Owner Name:</strong> Your business name (if incorporated) or your name (if sole proprietorship/partnership)<br><br>
+                                    Fill remaining sections with your contact info and mailing address<br><br>
+                            
+                                    <strong>Section B:</strong><br><br>
+                                    <strong>Start Date:</strong> Your planned start date<br><br>
+                                    <strong>Months of Operation:</strong> Specify if not year-round<br><br>
+                            
+                                    <strong>Business Type - Check one of the following:</strong><br><br>
+                                    <strong>For Food Processors:</strong><br><br>
+                                    Check "Food Other" and "Other"<br><br>
+                                    Specify your product (e.g., "Canning")<br><br>
+                            
+                                    <strong>For Bakeries:</strong><br><br>
+                                    Check "Food Other" and "Bakery"<br><br>
+                            
+                                    <strong>For Caterers:</strong><br><br>
+                                    Check "Food Service Establishment"<br><br>
+                                    Check "50 seats or less"<br><br>
+                                    Write "Catering" in the box<br><br>
+                            
+                                    <strong>Additional Info:</strong><br><br>
+                                    Sewage Waste Disposal: Check community sewer
+                                </div>`, "self");
+                                
+                                options.push({
+                                    "title": "Click Here for the Interior Health Application Form",
+                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                                });
+                                break;
                         case "Completed Business Plan":
                             addMessage("A business plan is essential for success. Here are some resources to help you get started:", "self");
                             options.push({
