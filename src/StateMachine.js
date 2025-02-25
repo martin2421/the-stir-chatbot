@@ -21,7 +21,9 @@ export default function StateMachine() {
             // Trigger the text animation on clicking the chef
             document.getElementById("logo-video").addEventListener("click", () => {
             const helpText = document.querySelector(".help-text");
-            helpText.style.animation = "moveTextUp 3s linear infinite"; // Restart infinite animation if clicked
+            if (helpText) {
+                helpText.style.animation = "moveTextUp 3s linear infinite";
+            }
         });
 
             const chatCircle = document.getElementById("chat-circle");
