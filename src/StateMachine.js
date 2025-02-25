@@ -950,8 +950,6 @@ export default function StateMachine() {
                     });
                 }
 
-                console.log(options);
-
                 return options;
             }
 
@@ -1114,7 +1112,6 @@ export default function StateMachine() {
                     event.preventDefault();
 
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
-                    console.log(selectedValue);
 
                     if(selectedValue == null){
                         alert("Please select at least one option before submitting.");
