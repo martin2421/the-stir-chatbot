@@ -676,6 +676,7 @@ export default function StateMachine() {
                     input.type = "text"; // Set the input type to text
                     input.name = field.name; // Set the input name
                     input.placeholder = field.placeholder; // Set the input placeholder
+                    input.required = true;
                     form.appendChild(input); // Append the input to the form
                 });
 
