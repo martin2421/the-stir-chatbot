@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Data Table | The Stir Kamloops</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f5f1;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            /*border: 5px solid #8b4513;*/
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4513;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 5px solid #8b4513;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            margin-left: -10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%; /* 设置表格宽度 */
+            margin: 0 auto; /* 使表格居中 */
+            overflow-x: auto;
+            display: block;
+        }
+
+        th, td {
+            padding: 15px 40px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #8b4513;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .expand-btn {
+            cursor: pointer;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .expand-btn:hover {
+            background-color: #5a2d0c;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .details {
+            background-color: #f1e7dd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .details-column {
+            width: auto;
+        }
+
+        .divider {
+            background-color: #8b4513;
+            width: 1px;
+            margin: 0 20px;
+        }
+
+        .checklist {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .checklist-item span {
+            display: block;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="https://static.wixstatic.com/media/636f9b_f2871fd983de45dea88cef9593104663~mv2.png/v1/crop/x_28,y_380,w_1426,h_728/fill/w_406,h_208,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/636f9b_f2871fd983de45dea88cef9593104663~mv2.png" class="logo" alt="Logo">
+        <h2>Client Data Table</h2>
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for names, services, or requirements...">
+        <table id="clientTable">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Business Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Service Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Table rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const clients = [
+            {
+                name: "John Doe",
+                business: "Doe Catering",
+                email: "john@example.com",
+                phone: "123-456-7890",
+                service: "Kitchen Rental",
+                requirements: ["✅ Health Certificate", "❌ Insurance", "✅ Business License"],
+                products: ["Oven", "Refrigerator", "Dishwasher"]
+            },
+            {
+                name: "Jane Smith",
+                business: "Smith Logistics",
+                email: "jane@example.com",
+                phone: "987-654-3210",
+                service: "Warehouse Unit",
+                requirements: ["✅ Warehouse Permit", "✅ Business License"],
+                products: ["Forklift", "Storage Shelves"]
+            },
+            
+        ];
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            clients.forEach((client, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${client.name}</td>
+                    <td>${client.business}</td>
+                    <td>${client.email}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.service}</td>
+                    <td><button class="expand-btn" onclick="toggleDetails('details${index}')">View Details</button></td>
+                `;
+                tableBody.appendChild(row);
+
+                const detailsRow = document.createElement('tr');
+                detailsRow.id = `details${index}`;
+                detailsRow.className = 'hidden details-row';
+                detailsRow.innerHTML = `
+                    <td colspan="6" class="details">
+                        <div class="details-column">
+                            <strong>Requirements:</strong>
+                            <ul class="checklist">
+                                ${client.requirements.map(req => `<li class="checklist-item">${req}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="details-column">
+                            <strong>Products:</strong>
+                            <ul class="checklist">
+                                ${client.products.map(prod => `<li class="checklist-item"><span>${prod}</span></li>`).join('')}
+                            </ul>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(detailsRow);
+            });
+        }
+
+        function toggleDetails(id) {
+    // Hide all detail rows first
+    document.querySelectorAll(".details-row").forEach(row => {
+        row.style.display = 'none';
+        row.classList.add('hidden');
+    });
+    
+    // Show the selected detail row
+    const currentElement = document.getElementById(id);
+    if (currentElement.classList.contains('hidden')) {
+        currentElement.style.display = 'block';
+        currentElement.classList.remove('hidden');
+    }
+}
+
+
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("#clientTable tbody tr:not(.details-row)");
+
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+
+</html>
