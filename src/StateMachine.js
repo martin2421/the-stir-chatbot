@@ -20,11 +20,11 @@ export default function StateMachine() {
 
             // Trigger the text animation on clicking the chef
             document.getElementById("logo-video").addEventListener("click", () => {
-            const helpText = document.querySelector(".help-text");
-            if (helpText) {
-                helpText.style.animation = "moveTextUp 3s linear infinite";
-            }
-        });
+                const helpText = document.querySelector(".help-text");
+                if (helpText) {
+                    helpText.style.animation = "moveTextUp 3s linear infinite";
+                }
+            });
 
             const chatCircle = document.getElementById("chat-circle");
             const chatBox = document.querySelector(".chat-box");
@@ -861,9 +861,9 @@ export default function StateMachine() {
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
-                            case "Interior Health":
-                                addMessage("Food safety is important! You'll need Interior Health approval. Here's how to fill out the application:", "self");
-                                addMessage(`
+                        case "Interior Health":
+                            addMessage("Food safety is important! You'll need Interior Health approval. Here's how to fill out the application:", "self");
+                            addMessage(`
                                 <div class="cm-msg-text">
                                     <strong>Section A:</strong><br><br>
                                     <strong>Business/Facility Name:</strong> Your Business Name<br><br>
@@ -895,12 +895,12 @@ export default function StateMachine() {
                                     <strong>Additional Info:</strong><br><br>
                                     Sewage Waste Disposal: Check community sewer
                                 </div>`, "self");
-                                
-                                options.push({
-                                    "title": "Click Here for the Interior Health Application Form",
-                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
-                                });
-                                break;
+
+                            options.push({
+                                "title": "Click Here for the Interior Health Application Form",
+                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                            });
+                            break;
                         case "Completed Business Plan":
                             addMessage("A business plan is essential for success. Here are some resources to help you get started:", "self");
                             options.push({
@@ -1033,14 +1033,31 @@ export default function StateMachine() {
 
 
                     if (statemachine.currentState === "Event Venue") {
-                        const formData = {
-                            venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
-                            venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
-                        };
-                        const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
-                        addMessage(summaryMsg, "user");
-                        saveChatHistory(summaryMsg, "user");
-                        option.callback(formData);
+                        var selectedValue = form.querySelector('input[type="radio"]:checked');
+
+                        if (selectedValue == null) {
+                            alert("Please select at least one option before submitting.");
+                            event.preventDefault(); // Prevent form submission
+                        } else {
+
+                            const formData = {
+                                venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
+                                venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
+                            };
+
+                            if (formData.venue_location == undefined || formData.venue_capacity == undefined) {
+                                alert("Please select at least one option before submitting.");
+                                event.preventDefault(); // Prevent form submission
+                            } else {
+
+                                const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
+                                addMessage(summaryMsg, "user");
+                                saveChatHistory(summaryMsg, "user");
+                                option.callback(formData);
+
+                            }
+                        }
+
                     } else {
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
@@ -1113,7 +1130,7 @@ export default function StateMachine() {
 
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
 
-                    if(selectedValue == null){
+                    if (selectedValue == null) {
                         alert("Please select at least one option before submitting.");
                         event.preventDefault(); // Prevent form submission
                     }
@@ -1126,7 +1143,7 @@ export default function StateMachine() {
                             selectedValue: selectedValue ? selectedValue.value : null
                         });
                     }
-                    
+
                 };
 
                 return form;
