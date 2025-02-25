@@ -100,7 +100,7 @@ export default function StateMachine() {
                             "title": "Submit",
                             "type": "form", // Indicate that this option is a form
                             "fields": [ // Define the fields for the form
-                                { name: "email", placeholder: "Email" },
+                                { name: "email", placeholder: "Email"},
                             ],
                             "callback": async function (data) { // Define the callback function for form submission
                                 let email = data.email
@@ -460,8 +460,9 @@ export default function StateMachine() {
                                 } else if (data.businessType === "Food Service") {
                                     statemachine.currentState = "Final Step";
                                 } else {
-                                    statemachine.currentState = "Final Step";
+                                    statemachine.currentState = "Final Step";                                  
                                 }
+                                saveCurrentState();
                                 statemachine.render();
                             }
                         },
@@ -904,6 +905,8 @@ export default function StateMachine() {
                         "back": "Second Phase"
                     });
                 }
+
+                console.log(options);
 
                 return options;
             }
