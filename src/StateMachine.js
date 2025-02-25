@@ -1049,12 +1049,10 @@ export default function StateMachine() {
                                 alert("Please select at least one option before submitting.");
                                 event.preventDefault(); // Prevent form submission
                             } else {
-
                                 const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
                                 addMessage(summaryMsg, "user");
                                 saveChatHistory(summaryMsg, "user");
                                 option.callback(formData);
-
                             }
                         }
 
