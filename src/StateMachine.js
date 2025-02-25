@@ -100,7 +100,7 @@ export default function StateMachine() {
                             "title": "Submit",
                             "type": "form", // Indicate that this option is a form
                             "fields": [ // Define the fields for the form
-                                { name: "email", placeholder: "Email"},
+                                { name: "email", placeholder: "Email" },
                             ],
                             "callback": async function (data) { // Define the callback function for form submission
                                 let email = data.email
@@ -294,7 +294,7 @@ export default function StateMachine() {
                                 { name: "l_name", placeholder: "Last Name" },
                                 { name: "b_name", placeholder: "Business Name" },
                                 { name: "email", placeholder: "Email" },
-                                { name: "phone", placeholder: "Phone" },
+                                { name: "phone", placeholder: "Phone ex:111-111-1111" },
                             ],
                             "callback": async function (data) {
                                 let f_name = data.f_name;
@@ -383,10 +383,10 @@ export default function StateMachine() {
                             "boxes": function () {
                                 let sel = localStorage.getItem("serviceSelected");
 
-                                if(sel == "Warehouse Space") statemachine.selectedService = "warehouseSpace";
-                                else if(sel == "Kitchen Rental") statemachine.selectedService = "kitchenRental";
-                                else if(sel == "Event Venue") statemachine.selectedService = "Event Venue";
-                                else if(sel == "Business Coach") statemachine.selectedService = "Business Coach";
+                                if (sel == "Warehouse Space") statemachine.selectedService = "warehouseSpace";
+                                else if (sel == "Kitchen Rental") statemachine.selectedService = "kitchenRental";
+                                else if (sel == "Event Venue") statemachine.selectedService = "Event Venue";
+                                else if (sel == "Business Coach") statemachine.selectedService = "Business Coach";
                                 let result = getCheckboxesForService(statemachine.selectedService);
                                 //console.log(result);
                                 return result;
@@ -460,7 +460,7 @@ export default function StateMachine() {
                                 } else if (data.businessType === "Food Service") {
                                     statemachine.currentState = "Final Step";
                                 } else {
-                                    statemachine.currentState = "Final Step";                                  
+                                    statemachine.currentState = "Final Step";
                                 }
                                 saveCurrentState();
                                 statemachine.render();
@@ -638,7 +638,7 @@ export default function StateMachine() {
             function addMessage(msg, type) {
                 const msgDiv = document.createElement("div");
                 msgDiv.className = `chat-msg ${type}`;
-                
+
                 // If it's a user message, use cm-msg-text-reply
                 if (type === "user") {
                     // Check if the message already contains the div class
@@ -651,7 +651,7 @@ export default function StateMachine() {
                     // For bot messages (type "self"), use cm-msg-text
                     msgDiv.innerHTML = `<div class="cm-msg-text">${msg}</div>`;
                 }
-                
+
                 messagesContainer.appendChild(msgDiv);
                 chatLogs.scrollTop = chatLogs.scrollHeight;
             }
@@ -677,6 +677,14 @@ export default function StateMachine() {
                     input.name = field.name; // Set the input name
                     input.placeholder = field.placeholder; // Set the input placeholder
                     input.required = true;
+
+                    if (field.name === "email") {
+                        input.type = "email"; // Change the input type to email\
+                        input.pattern = "^\\w+@\\w+\\.[a-zA-Z]{2,}$"; // Email validation pattern
+                    } else if (field.name === "phone") {
+                        input.pattern = "^\\d{3}-\\d{3}-\\d{4}$"; // Email validation pattern
+                    }
+
                     form.appendChild(input); // Append the input to the form
                 });
 
@@ -1022,6 +1030,8 @@ export default function StateMachine() {
 
                 form.onsubmit = function (event) {
                     event.preventDefault();
+
+
                     if (statemachine.currentState === "Event Venue") {
                         const formData = {
                             venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
@@ -1054,7 +1064,7 @@ export default function StateMachine() {
                         option.callback(formData);
                     }
                 };
-                
+
                 return form;
             }
 
@@ -1100,15 +1110,24 @@ export default function StateMachine() {
                 // In the createRadioGroup function, update the form.onsubmit handler
                 form.onsubmit = function (event) {
                     event.preventDefault();
+
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
-                    if (selectedValue) {
+                    console.log(selectedValue);
+
+                    if(selectedValue == null){
+                        alert("Please select at least one option before submitting.");
+                        event.preventDefault(); // Prevent form submission
+                    }
+                    else {
                         const summaryMsg = `<div class="cm-msg-text-reply">You selected: ${selectedValue.value}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
+
+                        option.callback({
+                            selectedValue: selectedValue ? selectedValue.value : null
+                        });
                     }
-                    option.callback({
-                        selectedValue: selectedValue ? selectedValue.value : null
-                    });
+                    
                 };
 
                 return form;
