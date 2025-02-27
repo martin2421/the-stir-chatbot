@@ -5,5 +5,6 @@
 - npm install @aws-sdk/lib-dynamodb
 - npm install @aws-sdk/util-dynamodb
 - npm install dotenv
+- npm run dev
 
 - .env file should contain private keys
