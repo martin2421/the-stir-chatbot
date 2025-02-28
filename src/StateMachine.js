@@ -842,7 +842,9 @@ export default function StateMachine() {
 
                     switch (item) {
                         case "Commercial Insurance":
-                            addMessage("You need insurance to protect your business. Here are some local insurance providers:", "self");
+                            const CImsg = "You need insurance to protect your business. Here are some local insurance providers:";
+                            addMessage(CImsg, "self");
+                            saveChatHistory(CImsg, "self");
                             options.push(
                                 {
                                     "title": "Click here for Interior Savings Insurance",
@@ -855,16 +857,18 @@ export default function StateMachine() {
                             );
                             break;
                         case "City of Kamloops Business License":
-                            addMessage("A business license is required to operate in Kamloops. You can apply here:", "self");
+                            const BLmsg = "A business license is required to operate in Kamloops. You can apply here:";
+                            addMessage(BLmsg, "self");
+                            saveChatHistory(BLmsg, "self");
                             options.push({
                                 "title": "Click Here for the business license application",
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
                         case "Interior Health":
-                            addMessage("Food safety is important! You'll need Interior Health approval. Here's how to fill out the application:", "self");
-                            addMessage(`
+                            const IHmsg = `
                                 <div class="cm-msg-text">
+                                    Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
                                     <strong>Section A:</strong><br><br>
                                     <strong>Business/Facility Name:</strong> Your Business Name<br><br>
                                     <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
@@ -894,7 +898,9 @@ export default function StateMachine() {
                             
                                     <strong>Additional Info:</strong><br><br>
                                     Sewage Waste Disposal: Check community sewer
-                                </div>`, "self");
+                                </div>`;
+                            addMessage(IHmsg, "self");
+                            saveChatHistory(IHmsg, "self");
 
                             options.push({
                                 "title": "Click Here for the Interior Health Application Form",
@@ -902,28 +908,36 @@ export default function StateMachine() {
                             });
                             break;
                         case "Completed Business Plan":
-                            addMessage("A business plan is essential for success. Here are some resources to help you get started:", "self");
+                            const BPmsg = "A business plan is essential for success. Here are some resources to help you get started:";
+                            addMessage(BPmsg, "self");
+                            saveChatHistory(BPmsg, "self");
                             options.push({
                                 "title": "Click Here for the Business Plan Guide",
                                 "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/pages/business-plan-template.aspx"
                             });
                             break;
                         case "FoodSafe Certificate":
-                            addMessage("Food safety is important! You'll need a FoodSafe certificate:", "self");
+                            const FSmsg = "Food safety is important! You'll need a FoodSafe certificate:";
+                            addMessage(FSmsg, "self");
+                            saveChatHistory(FSmsg, "self");
                             options.push({
                                 "title": "Click Here for the FoodSafe Course",
                                 "href": "https://www.foodsafe.ca/"
                             });
                             break;
                         case "Makership Membership":
-                            addMessage("You need to be a member of Makership to proceed. Sign up here:", "self");
+                            const MMmsg = "You need to be a member of Makership to proceed. Sign up here:";
+                            addMessage(MMmsg, "self");
+                            saveChatHistory(MMmsg, "self");
                             options.push({
                                 "title": "Click Here to Sign Up for Makership",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
                             });
                             break;
                         case "Stir Maker Fee":
-                            addMessage("You need to pay the Stir Maker fee to proceed. Click below to pay:", "self");
+                            const SMmsg = "You need to pay the Stir Maker fee to proceed. Click below to pay:";
+                            addMessage(SMmsg, "self");
+                            saveChatHistory(SMmsg, "self");
                             options.push({
                                 "title": "Click Here to Pay the Stir Maker Fee",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
