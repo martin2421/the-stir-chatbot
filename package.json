@@ -15,7 +15,6 @@
     "@aws-sdk/util-dynamodb": "^3.751.0",
     "aws-sdk": "^2.1692.0",
     "dotenv": "^16.4.7",
-    "gh-pages": "^6.3.0",
     "install": "^0.13.0",
     "npm": "^11.1.0",
     "react": "^19.0.0",
@@ -30,6 +29,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
+    "gh-pages": "^6.3.0",
     "globals": "^15.14.0",
     "vite": "^6.1.0"
   }
