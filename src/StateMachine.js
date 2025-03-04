@@ -2,54 +2,65 @@ import { insertData, searchData, insertStateData, insertChatHistory, insertBusin
 
 export default function StateMachine() {
 
-    document.addEventListener("readystatechange", function (event) {
-        if (document.readyState === 'complete') {
+// Add event listener that fires when the document is fully loaded
+document.addEventListener("readystatechange", function (event) {
+    // Check if document is completely loaded
+    if (document.readyState === 'complete') {
 
-            let user = Number(localStorage.getItem("userId"));
-            let serviceSelected = localStorage.getItem("serviceSelected");
-            let eventVenue;
+        // Get user ID from localStorage and convert to number
+        let user = Number(localStorage.getItem("userId"));
+        // Get previously selected service from localStorage
+        let serviceSelected = localStorage.getItem("serviceSelected");
+        // Initialize variable to store event venue details
+        let eventVenue;
 
+        // Create variables for current date
+        var today = new Date();
+        // Get day and pad with leading zero if needed
+        var dd = String(today.getDate()).padStart(2, '0');
+        // Get month (adding 1 since months are 0-based) and pad with leading zero
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        // Get full year
+        var yyyy = today.getFullYear();
+        // Format date as MM/DD/YYYY
+        today = mm + '/' + dd + '/' + yyyy;
 
-            //data needed to create timestamp for when it was created
-            var today = new Date();
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0');
-            var yyyy = today.getFullYear();
-            // today = yyyy + '/' + mm + '/' + dd;
-            today = mm + '/' + dd + '/' + yyyy;
+        // Add click event listener to the chef logo
+        document.getElementById("logo-video").addEventListener("click", () => {
+            // Get help text element
+            const helpText = document.querySelector(".help-text");
+            // If help text exists, start animation
+            if (helpText) {
+                helpText.style.animation = "moveTextUp 3s linear infinite";
+            }
+        });
 
+        // Get chat UI elements
+        const chatCircle = document.getElementById("chat-circle");
+        const chatBox = document.querySelector(".chat-box");
+        const chatBoxToggle = document.querySelector(".chat-box-toggle");
 
-            // Trigger the text animation on clicking the chef
-            document.getElementById("logo-video").addEventListener("click", () => {
-                const helpText = document.querySelector(".help-text");
-                if (helpText) {
-                    helpText.style.animation = "moveTextUp 3s linear infinite";
-                }
-            });
+        // Add click event listener to clear history button
+        const clearHistoryButton = document.getElementById("clearHistoryButton");
+        clearHistoryButton.addEventListener("click", () => {
+            // Remove all chat-related items from localStorage
+            localStorage.removeItem("userId");
+            localStorage.removeItem("chatHistory");
+            localStorage.removeItem("serviceSelected");
+            localStorage.removeItem("currentState");
 
-            const chatCircle = document.getElementById("chat-circle");
-            const chatBox = document.querySelector(".chat-box");
-            const chatBoxToggle = document.querySelector(".chat-box-toggle");
+            // Reset all variables to null
+            user = null;
+            serviceSelected = null;
+            eventVenue = null;
 
-
-            // Clear chat history
-            const clearHistoryButton = document.getElementById("clearHistoryButton");
-            clearHistoryButton.addEventListener("click", () => {
-
-                localStorage.removeItem("userId");
-                localStorage.removeItem("chatHistory");
-                localStorage.removeItem("serviceSelected");
-                localStorage.removeItem("currentState");
-
-                user = null;
-                serviceSelected = null;
-                eventVenue = null;
-
-                messagesContainer.innerHTML = "";
-                statemachine.currentState = "start";
-                statemachine.render();
-            });
-
+            // Clear chat messages from UI
+            messagesContainer.innerHTML = "";
+            // Reset state machine to start state
+            statemachine.currentState = "start";
+            // Re-render the chat interface
+            statemachine.render();
+        });
 
             // Show/Hide chat box
             chatCircle.addEventListener("click", () => {
@@ -243,13 +254,22 @@ export default function StateMachine() {
                                     ]
                                 }
                             ],
+                            // Asynchronous callback function that handles form submission for venue selection
                             "callback": async function (data) {
+                                // Check if both venue capacity and location are selected
                                 if (data.venue_capacity != undefined && data.venue_location != undefined) {
+                                    // Set the state machine to move to Contact Form state
                                     statemachine.currentState = "Contact Form";
-                                    eventVenue = JSON.stringify({ venue_location: data.venue_location, venue_capacity: data.venue_capacity });
+                                    // Store venue details as JSON string with location and capacity
+                                    eventVenue = JSON.stringify({ 
+                                        venue_location: data.venue_location, 
+                                        venue_capacity: data.venue_capacity 
+                                    });
                                 } else {
+                                    // If either capacity or location is missing, stay on Event Venue state
                                     statemachine.currentState = "Event Venue";
                                 }
+                                // Re-render the state machine to show updated state
                                 statemachine.render();
                             }
                         }
@@ -291,44 +311,60 @@ export default function StateMachine() {
                     "message": "Before moving onto the second phase, please fill out the form below so we can keep track of this conversation",
                     "options": [
                         {
-                            "type": "form",
-                            "fields": [
-                                { name: "f_name", placeholder: "First Name" },
-                                { name: "l_name", placeholder: "Last Name" },
-                                { name: "b_name", placeholder: "Business Name" },
-                                { name: "email", placeholder: "Email" },
-                                { name: "phone", placeholder: "Phone Number (555) 555-5555" },
-                            ],
-                            "callback": async function (data) {
-                                let f_name = data.f_name;
-                                let l_name = data.l_name;
-                                let b_name = data.b_name;
-                                let email = data.email;
-                                let phone = data.phone;
+                        // Define the form structure with input fields
+                        "type": "form",
+                        "fields": [
+                            // Input field for first name
+                            { name: "f_name", placeholder: "First Name" },
+                            // Input field for last name
+                            { name: "l_name", placeholder: "Last Name" },
+                            // Input field for business name
+                            { name: "b_name", placeholder: "Business Name" },
+                            // Input field for email address
+                            { name: "email", placeholder: "Email" },
+                            // Input field for phone number with format example
+                            { name: "phone", placeholder: "Phone Number (555) 555-5555" },
+                        ],
+                        // Asynchronous callback function that handles form submission
+                        "callback": async function (data) {
+                            // Extract form data into individual variables
+                            let f_name = data.f_name;
+                            let l_name = data.l_name;
+                            let b_name = data.b_name;
+                            let email = data.email;
+                            let phone = data.phone;
 
+                            // Insert user data into database and await response
+                            let response = await insertData({ f_name, l_name, b_name, email, phone, today });
+                            // Log success message if data insertion was successful
+                            if (response.success) console.log("User data was inserted");
 
-                                let response = await insertData({ f_name, l_name, b_name, email, phone, today });
-                                if (response.success) console.log("User data was inserted");
+                            // Store user ID in localStorage for persistence
+                            localStorage.setItem("userId", response.userId);
+                            // Log the user ID for debugging
+                            console.log(response.userId);
+                            // Update the user variable with new ID
+                            user = response.userId;
+                            // Set next state to "First Step"
+                            statemachine.currentState = "First Step";
+                            // Save the current state
+                            saveCurrentState();
 
+                            // Insert selected service into database
+                            let result = await insertService({ userId: user, service: serviceSelected });
+                            // Log the result message
+                            console.log(result.message)
 
-                                localStorage.setItem("userId", response.userId);
-                                console.log(response.userId);
-                                user = response.userId;
-                                statemachine.currentState = "First Step"; // ex. state - Replace with different state after data base check
-                                saveCurrentState();
-
-
-                                let result = await insertService({ userId: user, service: serviceSelected });
-                                console.log(result.message)
-
-                                if (eventVenue != null) {
-                                    result = await insertEventVenue({ userId: user, venue: eventVenue })
-                                    console.log(result.message);
-                                }
-
-
-                                statemachine.render(); // Render the new state
+                            // If event venue was selected, insert venue details
+                            if (eventVenue != null) {
+                                result = await insertEventVenue({ userId: user, venue: eventVenue })
+                                // Log the result message
+                                console.log(result.message);
                             }
+
+                            // Update the chat interface with new state
+                            statemachine.render();
+                        }
                         },
                         {
                             "title": "Back",
@@ -350,27 +386,42 @@ export default function StateMachine() {
                                 { name: "business_stage", value: "Established", id: "established", label: "Established (selling, have legal docs)" },
                                 { name: "business_stage", value: "Other", id: "other", label: "Other (not a food business)" }
                             ],
+                            // Asynchronous callback function that handles business stage selection
                             "callback": async function (data) {
+                                // Route user based on their selected business stage
                                 if (data.selectedValue === "Brand New") {
+                                    // New businesses go to information state
                                     statemachine.currentState = "information";
                                 } else if (data.selectedValue === "Getting Started") {
+                                    // Businesses with some progress go to second phase
                                     statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Up N Running") {
+                                    // Operating businesses go to second phase
                                     statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Established") {
+                                    // Established businesses go to second phase
                                     statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Other") {
+                                    // Non-food businesses go to information state
                                     statemachine.currentState = "information";
                                 }
 
+                                // Log current user ID for debugging
                                 console.log(user);
-                                let result = await insertBusinessStage({ userId: user, businessStage: data.selectedValue });
+                                // Save business stage to database
+                                let result = await insertBusinessStage({ 
+                                    userId: user, 
+                                    businessStage: data.selectedValue 
+                                });
+
+                                // Save current state if not a brand new business
                                 if (data.selectedValue != "Brand New") {
                                     saveCurrentState(statemachine.currentState);
                                 }
+                                // Log success message if database insertion worked
                                 if (result.success) console.log(result.message);
 
-
+                                // Update the chat interface
                                 statemachine.render();
                             }
                         }
@@ -449,18 +500,36 @@ export default function StateMachine() {
                                     "placeholder": "Please enter any additional notes or requirements..."
                                 }
                             ],
+                            // Asynchronous callback function to handle food form submission
                             "callback": async function (data) {
+                                // Log submitted form data for debugging
                                 console.log("Form data:", data);
 
-                                let result = await insertProducts({ userId: user, products: JSON.stringify(data.foodDocs) });
+                                // Insert selected products into database
+                                let result = await insertProducts({ 
+                                    userId: user, 
+                                    products: JSON.stringify(data.foodDocs) 
+                                });
+                                // Log database operation result
                                 console.log(result.message);
 
-                                result = await insertNote({ userId: user, note: JSON.stringify(data.notes) });
+                                // Insert additional notes into database
+                                result = await insertNote({ 
+                                    userId: user, 
+                                    note: JSON.stringify(data.notes) 
+                                });
+                                // Log database operation result
                                 console.log(result.message);
 
-                                result = await insertTimeNeeded({ userId: user, timeNeeded: JSON.stringify(data.timeNeeded + " hours") });
+                                // Insert time needed into database with hours suffix
+                                result = await insertTimeNeeded({ 
+                                    userId: user, 
+                                    timeNeeded: JSON.stringify(data.timeNeeded + " hours") 
+                                });
+                                // Log database operation result
                                 console.log(result.message);
 
+                                // Set next state based on business type (all paths lead to Final Step)
                                 if (data.businessType === "Food Processing") {
                                     statemachine.currentState = "Final Step";
                                 } else if (data.businessType === "Food Service") {
@@ -468,7 +537,9 @@ export default function StateMachine() {
                                 } else {
                                     statemachine.currentState = "Final Step";
                                 }
+                                // Save current state to persistence
                                 saveCurrentState();
+                                // Update the chat interface
                                 statemachine.render();
                             }
                         },
@@ -503,139 +574,177 @@ export default function StateMachine() {
 
             // Function to handle user interaction
             statemachine.interact = async function (option) {
-                var currentState = statemachine.states[statemachine.currentState]; // Get the current state
-                var selectedOption = currentState.options[option]; // Get the selected option
+            // Get current state and selected option from state machine
+            var currentState = statemachine.states[statemachine.currentState]; 
+            var selectedOption = currentState.options[option]; 
 
+                // Handle user response in chat interface
                 const lastMsgDiv = messagesContainer.lastElementChild;
                 if (lastMsgDiv && lastMsgDiv.classList.contains("chat-msg")) {
                     const msgTextDiv = lastMsgDiv.querySelector(".cm-msg-text");
                     if (msgTextDiv) {
+                        // Create new message div for user response
                         const replyMsgDiv = document.createElement("div");
                         replyMsgDiv.className = "chat-msg user";
-
+                        // Add selected option title as reply text
                         replyMsgDiv.innerHTML = `<div class="cm-msg-text-reply">${selectedOption.title}</div>`;
-
+                        // Add message to chat and scroll to bottom
                         messagesContainer.appendChild(replyMsgDiv);
                         chatLogs.scrollTop = chatLogs.scrollHeight;
+                        // Save chat history
                         saveChatHistory(replyMsgDiv, "self");
                     }
                 }
 
-                if (selectedOption.back) { // If the option has a back property
-                    this.currentState = selectedOption.back; // Set the current state to the back state
-                    this.render(); // Render the new state
+                // Handle back navigation
+                if (selectedOption.back) {
+                    this.currentState = selectedOption.back; 
+                    this.render(); 
                 }
 
-                if (selectedOption.next) { // If the option has a next property
-                    this.currentState = selectedOption.next; // Set the current state to the next state
-                    if (selectedOption.service) { // If the option has a service property
-                        this.selectedService = selectedOption.service; // Set the selected service
+                // Handle forward navigation
+                if (selectedOption.next) {
+                    this.currentState = selectedOption.next;
+                    // Update selected service if specified 
+                    if (selectedOption.service) {
+                        this.selectedService = selectedOption.service;
                     }
-                    this.render(); // Render the new state
+                    this.render();
                 }
 
-                if (selectedOption.callback) { // If the option has a callback property
-                    selectedOption.callback(); // Call the callback function
+                // Execute callback if defined
+                if (selectedOption.callback) {
+                    selectedOption.callback();
                 }
 
-                if (selectedOption.href) { // If the option has an href property
-                    window.open(selectedOption.href, "_blank"); // Open the link in a new tab
+                // Handle external links
+                if (selectedOption.href) {
+                    window.open(selectedOption.href, "_blank");
                     return;
                 }
 
+                // Save current state to persistence
                 saveCurrentState();
             };
 
 
             // Function to render the current state
             statemachine.render = async function (isLoadingHistory = false) {
-                var buttoncontainer = document.getElementById("button"); // Get the buttons container
-                var currentState = statemachine.states[statemachine.currentState]; // Get the current state
+            // Get the buttons container element from DOM
+            var buttoncontainer = document.getElementById("button"); 
+            // Get the current state object from state machine
+            var currentState = statemachine.states[statemachine.currentState]; 
 
-                if (!currentState) {
-                    console.error(`State "${statemachine.currentState}" is not defined.`);
-                    return;
-                }
+            // Check if current state exists
+            if (!currentState) {
+                // Log error and exit if state is not defined
+                console.error(`State "${statemachine.currentState}" is not defined.`);
+                return;
+            }
 
-                if (!isLoadingHistory) {
-                    addMessage(currentState.message, "self"); // Add the current state's message to the chat logs
-                    saveChatHistory(currentState.message, "self"); // Save the message to chat history
-                }
+            // Only add messages if not loading history
+            if (!isLoadingHistory) {
+                // Add the current state's message to chat logs
+                addMessage(currentState.message, "self"); 
+                // Save message to chat history
+                saveChatHistory(currentState.message, "self"); 
+            }
 
-                // Then, clear the current buttons 
-                buttoncontainer.innerHTML = "";
+            // Clear existing buttons from container
+            buttoncontainer.innerHTML = "";
 
-                // Update the render function's handleUnchecked section
-                if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
-                    const additionalOptions = currentState.render(this.uncheckedStates);
+            // Handle unchecked requirements state
+            if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
+                // Get additional options from rendering unchecked states
+                const additionalOptions = currentState.render(this.uncheckedStates);
 
-                    additionalOptions.forEach((option) => {
-                        var button = document.createElement("button");
-                        button.className = "titles";
-                        button.innerText = option.title;
+                // Create buttons for each additional option
+                additionalOptions.forEach((option) => {
+                    // Create button element
+                    var button = document.createElement("button");
+                    // Add styling class
+                    button.className = "titles";
+                    // Set button text
+                    button.innerText = option.title;
 
-                        if (option.title === "Next Requirement") {
-                            button.onclick = () => {
-                                statemachine.currentUncheckedIndex++;
-                                statemachine.render();
-                            };
-                        } else if (option.href) {
-                            button.onclick = () => window.open(option.href, "_blank");
-                        } else if (option.back) {
-                            button.onclick = () => {
-                                statemachine.currentState = option.back;
-                                statemachine.render();
-                            };
-                        }
+                    // Handle different button types
+                    if (option.title === "Next Requirement") {
+                        // Next requirement button moves to next unchecked item
+                        button.onclick = () => {
+                            statemachine.currentUncheckedIndex++;
+                            statemachine.render();
+                        };
+                    } else if (option.href) {
+                        // External link button opens in new tab
+                        button.onclick = () => window.open(option.href, "_blank");
+                    } else if (option.back) {
+                        // Back button returns to previous state
+                        button.onclick = () => {
+                            statemachine.currentState = option.back;
+                            statemachine.render();
+                        };
+                    }
 
-                        buttoncontainer.appendChild(button);
-                    });
+                    // Add button to container
+                    buttoncontainer.appendChild(button);
+                });
                 } else {
                     // Create buttons for each option in the current state  
                     currentState.options.forEach((option, i) => {
+                        // Handle different form types
                         if (option.type === "form") {
-                            var form = createForm(option, i); // Create a form if the option type is "form"
-                            buttoncontainer.appendChild(form); // Append the form to the buttons container
+                            // Create a standard form element
+                            var form = createForm(option, i);
+                            buttoncontainer.appendChild(form);
                         }
-
                         else if (option.type === "checkbox") {
-                            var checkbox = createCheckbox(option.boxes()); // Create a checkbox if the option type is "checkbox"
-                            buttoncontainer.appendChild(checkbox); // Append the checkbox to the buttons container
+                            // Create a checkbox group element
+                            var checkbox = createCheckbox(option.boxes());
+                            buttoncontainer.appendChild(checkbox);
                         }
-
-                        else if (option.type === "combined-form") {  // Add this case
+                        else if (option.type === "combined-form") {
+                            // Create a combined form with multiple input types
                             var combinedForm = createCombinedForm(option);
                             buttoncontainer.appendChild(combinedForm);
                         }
-                        // In the render function, add this case
                         else if (option.type === "radio") {
+                            // Create a radio button group
                             var radioGroup = createRadioGroup(option);
                             buttoncontainer.appendChild(radioGroup);
                         }
                         else {
-                            var button = document.createElement("button"); // Create a new button element
-                            button.className = "titles"; // Set the class name for the button
-                            button.innerText = option.title; // Set the button text to the option title
+                            // Create a standard button for other options
+                            var button = document.createElement("button");
+                            button.className = "titles";
+                            button.innerText = option.title;
+                            
+                            // Add click handler for button
                             button.onclick = async () => {
+                                // Handle service selection
                                 if (localStorage.getItem("currentState") == "services" && i != 5) {
                                     serviceSelected = option.title;
                                     localStorage.setItem("serviceSelected", serviceSelected);
                                 }
+                                // Handle Food Corridor signup status
                                 if (localStorage.getItem("currentState") == "Check Signed Up" && user != null) {
                                     let signed = false;
                                     if (i == 0) {
                                         signed = true;
                                     }
+                                    // Save signup status to database
                                     let result = await insertSignedUp({ userId: user, signedUp: signed });
                                     console.log(result.message);
                                 }
+                                // Trigger state machine interaction
                                 this.interact(i);
-                            } // Set the button's onclick handler to interact with the option
-                            buttoncontainer.appendChild(button); // Append the button to the buttons container
+                            }
+                            // Add button to container
+                            buttoncontainer.appendChild(button);
                         }
                     });
 
-                    chatLogs.appendChild(buttoncontainer); // Append the buttons container to the chat logs
+                    // Add all buttons to chat interface
+                    chatLogs.appendChild(buttoncontainer);
                 }
             };
 
@@ -665,118 +774,169 @@ export default function StateMachine() {
 
             // Function to create a form for the option
             function createForm(option) {
-                var form = document.createElement("form"); // Create a new form element
-                form.className = "form"; // Set the class name for the form
+                // Create form element and set up basic properties
+                var form = document.createElement("form");
+                form.className = "form";
+
+                // Add submit handler to form
                 form.onsubmit = function (event) {
+                    // Prevent default form submission
                     event.preventDefault();
+                    // Create FormData object from form
                     var formData = new FormData(form);
+                    // Initialize data object
                     var data = {};
+                    // Extract all field values
                     option.fields.forEach(field => {
                         data[field.name] = formData.get(field.name);
                     });
-                    option.callback(data); // Call the callback function with the form data
+                    // Execute callback with form data
+                    option.callback(data);
                 };
 
+                // Create input fields based on options
                 option.fields.forEach(field => {
-                    var input = document.createElement("input"); // Create a new input element
-                    input.type = "text"; // Set the input type to text
-                    input.name = field.name; // Set the input name
-                    input.placeholder = field.placeholder; // Set the input placeholder
+                    // Create input element
+                    var input = document.createElement("input");
+                    // Set default type to text
+                    input.type = "text";
+                    // Set input name from field options
+                    input.name = field.name;
+                    // Set placeholder text
+                    input.placeholder = field.placeholder;
+                    // Make field required
                     input.required = true;
 
+                    // Special handling for email fields
                     if (field.name === "email") {
-                        input.type = "email"; // Change the input type to email\
-                        input.pattern = "^\\w+@\\w+\\.[a-zA-Z]{2,}$"; // Email validation pattern
-                    } else if (field.name === "phone") {
+                        // Set input type to email
+                        input.type = "email";
+                        // Add email validation pattern
+                        input.pattern = "^\\w+@\\w+\\.[a-zA-Z]{2,}$";
+                    } 
+                    // Special handling for phone fields
+                    else if (field.name === "phone") {
+                        // Add input formatter for phone numbers
                         input.addEventListener('input', function (e) {
+                            // Remove non-digits and format as (XXX) XXX-XXXX
                             var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
                             e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-                          });
+                        });
                     }
-                    form.appendChild(input); // Append the input to the form
+                    // Add input to form
+                    form.appendChild(input);
                 });
 
-                var submitButton = document.createElement("button"); // Create a new button element
-                submitButton.type = "submit"; // Set the button type to submit
-                submitButton.innerText = "Submit"; // Set the button text
-                form.appendChild(submitButton); // Append the button to the form
+                // Create submit button
+                var submitButton = document.createElement("button");
+                submitButton.type = "submit";
+                submitButton.innerText = "Submit";
+                // Add button to form
+                form.appendChild(submitButton);
 
+                // Return completed form
                 return form;
             }
 
 
             // Function to create checkboxes for the option
             function createCheckbox(boxes) {
-                var form = document.createElement("form"); // Create a new form element
-                form.className = "checkbox"; // Set the class name for the form 
+                // Create a new form element for checkboxes
+                var form = document.createElement("form");
+                // Set the class name for styling
+                form.className = "checkbox";
 
-
-
+                // Create checkboxes for each option
                 boxes.forEach(box => {
+                    // Create label element to wrap checkbox
                     var label = document.createElement("label");
-                    var input = document.createElement("input"); // Create a new input element
-                    input.type = "checkbox"; // Set the input type to checkbox
-                    input.name = box.name; // Set the input name
-                    input.value = box.value; // Set the input value
-                    input.id = box.id; // Set the input id
-                    label.appendChild(input); // Append the input to the label
-                    label.appendChild(document.createTextNode(box.value)); // Append the checkbox label
-                    form.appendChild(label); // Append the label to the form
-                    form.appendChild(document.createElement("br")); // Add a line break
+                    // Create checkbox input element
+                    var input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.name = box.name;
+                    input.value = box.value;
+                    input.id = box.id;
+                    // Add input to label
+                    label.appendChild(input);
+                    // Add checkbox label text
+                    label.appendChild(document.createTextNode(box.value));
+                    // Add label to form
+                    form.appendChild(label);
+                    // Add line break for spacing
+                    form.appendChild(document.createElement("br"));
                 });
 
-
+                // Initialize tracking variables for required items
                 let cityKamloops = true;
                 let commercialInsurance = true;
                 let makershipMembership = true;
                 let stirMakerFee = true;
 
-                // In the createCheckbox function, update the form.onsubmit handler
+                // Handle form submission
                 form.onsubmit = async function (event) {
+                    // Prevent default form submission
                     event.preventDefault();
+                    // Track checked and unchecked items
                     var uncheckedValues = [];
                     var checkedValues = [];
+                    
+                    // Check status of each checkbox
                     boxes.forEach(box => {
                         var checkbox = document.getElementById(box.id);
                         if (!checkbox.checked) {
+                            // Add to unchecked list
                             uncheckedValues.push(box.value);
+                            // Update tracking variables
                             if (box.id == "City of Kamloops Business License") cityKamloops = false;
                             if (box.id == "Commercial Insurance") commercialInsurance = false;
                             if (box.id == "Makership Membership") makershipMembership = false;
                             if (box.id == "Stir Maker Fee") stirMakerFee = false;
                         } else {
+                            // Add to checked list
                             checkedValues.push(box.value);
                         }
                     });
 
-                    // Add summary message for checked items
+                    // Display summary of checked items
                     if (checkedValues.length > 0) {
                         const summaryMsg = `<div class="cm-msg-text-reply">You have:<br> ${checkedValues.join("<br><br>")}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                     }
 
-                    let result = await insertLicences({ userId: user, licenses: JSON.stringify({ "City of Kamloops Business License": cityKamloops, "Commercial Insurance": commercialInsurance, "Makership Membership": makershipMembership, "Stir Maker Fee": stirMakerFee }) });
+                    // Save license status to database
+                    let result = await insertLicences({ 
+                        userId: user, 
+                        licenses: JSON.stringify({ 
+                            "City of Kamloops Business License": cityKamloops, 
+                            "Commercial Insurance": commercialInsurance, 
+                            "Makership Membership": makershipMembership, 
+                            "Stir Maker Fee": stirMakerFee 
+                        }) 
+                    });
                     console.log(result.message);
 
-                    //Handle the unchecked values as needed
+                    // Handle navigation based on checked status
                     if (uncheckedValues.length > 0) {
-                        statemachine.uncheckedStates = uncheckedValues; // Store unchecked values in the state machine
+                        // If missing items, go to unchecked handler
+                        statemachine.uncheckedStates = uncheckedValues;
                         statemachine.currentState = "handleUnchecked";
                         statemachine.render();
-                    }
-                    else {
-                        //If all checkboxes are checked, transition to a default state
+                    } else {
+                        // If all checked, go to default state
                         statemachine.currentState = "defaultState";
                         saveCurrentState(statemachine.currentState);
                         statemachine.render();
                     }
                 };
 
-                var submitButton = document.createElement("button"); // Create a new button element
-                submitButton.type = "submit"; // Set the button type to submit
-                submitButton.innerText = "Submit"; // Set the button text
-                form.appendChild(submitButton); // Append the button to the form
+                // Create and add submit button
+                var submitButton = document.createElement("button");
+                submitButton.type = "submit";
+                submitButton.innerText = "Submit";
+                form.appendChild(submitButton);
+
+                // Return completed form
                 return form;
             }
 
@@ -953,40 +1113,49 @@ export default function StateMachine() {
                             addMessage(`You need to complete your ${item} before proceeding.`, "user");
                     }
 
-                    // Update the Next Requirement button
                     options.push({
                         "title": "Next Requirement",
                         "callback": function () {
+                            // Increment index and refresh display
                             statemachine.currentUncheckedIndex++;
                             statemachine.currentState = "handleUnchecked";
                             statemachine.render();
                         }
                     });
                 } else {
+                    // Reset index when all items are processed
                     statemachine.currentUncheckedIndex = 0;
+                    // Add back navigation option
                     options.push({
                         "title": "Back",
                         "back": "Second Phase"
                     });
                 }
-
+                
+                // Return navigation options
                 return options;
             }
 
             function createCombinedForm(option) {
+                // Create new form element with combined form class
                 var form = document.createElement("form");
                 form.className = "combined-form";
 
+                // Process each form element based on type
                 option.elements.forEach(element => {
+                    // Handle checkbox groups
                     if (element.type === "checkbox-group") {
+                        // Create container for checkbox group
                         const groupDiv = document.createElement("div");
                         groupDiv.className = "checkbox-group";
 
+                        // Create and add group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.name;
                         groupDiv.appendChild(groupLabel);
 
+                        // Create individual checkboxes
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -1001,15 +1170,19 @@ export default function StateMachine() {
                         });
                         form.appendChild(groupDiv);
                     }
+                    // Handle radio button groups
                     else if (element.type === "radio") {
+                        // Create container for radio group
                         const radioDiv = document.createElement("div");
                         radioDiv.className = "radio-group";
 
+                        // Create and add group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.label;
                         radioDiv.appendChild(groupLabel);
 
+                        // Create individual radio buttons
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
                             var input = document.createElement("input");
@@ -1024,15 +1197,19 @@ export default function StateMachine() {
                         });
                         form.appendChild(radioDiv);
                     }
+                    // Handle textarea elements
                     else if (element.type === "textarea") {
+                        // Create container for textarea
                         const textareaDiv = document.createElement("div");
                         textareaDiv.className = "textarea-group";
 
+                        // Create and add textarea label
                         const textareaLabel = document.createElement("div");
                         textareaLabel.className = "group-label";
                         textareaLabel.innerText = element.label;
                         textareaDiv.appendChild(textareaLabel);
 
+                        // Create textarea element
                         const textarea = document.createElement("textarea");
                         textarea.name = element.name;
                         textarea.placeholder = element.placeholder;
@@ -1043,45 +1220,54 @@ export default function StateMachine() {
                     }
                 });
 
+                // Add submit button to form
                 var submitButton = document.createElement("button");
                 submitButton.type = "submit";
                 submitButton.innerText = "Submit";
                 form.appendChild(submitButton);
 
+                // Handle form submission
                 form.onsubmit = function (event) {
                     event.preventDefault();
 
-
+                    // Handle Event Venue form submission
                     if (statemachine.currentState === "Event Venue") {
                         var selectedValue = form.querySelector('input[type="radio"]:checked');
 
+                        // Validate form input
                         if (selectedValue == null) {
                             alert("Please select at least one option before submitting.");
-                            event.preventDefault(); // Prevent form submission
+                            event.preventDefault();
                         } else {
-
+                            // Collect form data
                             const formData = {
                                 venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
                                 venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
                             };
 
+                            // Validate required fields
                             if (formData.venue_location == undefined || formData.venue_capacity == undefined) {
                                 alert("Please select at least one option before submitting.");
-                                event.preventDefault(); // Prevent form submission
+                                event.preventDefault();
                             } else {
+                                // Display selection summary
                                 const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
                                 addMessage(summaryMsg, "user");
                                 saveChatHistory(summaryMsg, "user");
                                 option.callback(formData);
                             }
                         }
-
-                    } else {
+                    } 
+                    // Handle other form types
+                    else {
+                        // Collect form data
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
                             timeNeeded: form.querySelector('input[name="business_type"]:checked')?.value,
                             notes: form.querySelector('textarea[name="notes"]').value,
                         };
+
+                        // Build summary message
                         let summaryParts = [];
                         if (formData.foodDocs.length > 0) {
                             summaryParts.push(`Products: ${formData.foodDocs.join(", ")}`);
@@ -1092,7 +1278,8 @@ export default function StateMachine() {
                         if (formData.notes) {
                             summaryParts.push(`Additional Notes: ${formData.notes}`);
                         }
-                        // Wrap the summary in cm-msg-text-reply div
+
+                        // Display selection summary
                         const summaryMsg = `<div class="cm-msg-text-reply">You picked:<br>${summaryParts.join("<br><br>")}</br></div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
@@ -1106,13 +1293,15 @@ export default function StateMachine() {
 
             // Function to create radio buttons
             function createRadioGroup(option) {
-                var form = document.createElement("form"); createRadioGroup
+                // Create new form element for radio buttons
+                var form = document.createElement("form");
                 form.className = "radio-form";
 
+                // Create container for radio buttons
                 const radioDiv = document.createElement("div");
                 radioDiv.className = "radio-group";
 
-                // Add group label if provided
+                // Add group label if provided in options
                 if (option.label) {
                     const groupLabel = document.createElement("div");
                     groupLabel.className = "group-label";
@@ -1120,185 +1309,236 @@ export default function StateMachine() {
                     radioDiv.appendChild(groupLabel);
                 }
 
+                // Create radio buttons for each option
                 option.boxes.forEach(box => {
+                    // Create label to wrap radio button
                     var label = document.createElement("label");
+                    // Create radio input element
                     var input = document.createElement("input");
                     input.type = "radio";
                     input.name = box.name;
                     input.value = box.value;
                     input.id = box.id;
+                    // Add input to label
                     label.appendChild(input);
+                    // Add radio button label text (use label if provided, otherwise use value)
                     label.appendChild(document.createTextNode(box.label || box.value));
+                    // Add label to container
                     radioDiv.appendChild(label);
+                    // Add line break for spacing
                     radioDiv.appendChild(document.createElement("br"));
                 });
 
+                // Add radio group to form
                 form.appendChild(radioDiv);
 
-                // Add submit button
+                // Create and add submit button
                 var submitButton = document.createElement("button");
                 submitButton.type = "submit";
                 submitButton.innerText = "Submit";
                 form.appendChild(submitButton);
 
                 // Handle form submission
-                // In the createRadioGroup function, update the form.onsubmit handler
                 form.onsubmit = function (event) {
+                    // Prevent default form submission
                     event.preventDefault();
 
+                    // Get selected radio button
                     var selectedValue = form.querySelector('input[type="radio"]:checked');
 
+                    // Validate that an option was selected
                     if (selectedValue == null) {
                         alert("Please select at least one option before submitting.");
-                        event.preventDefault(); // Prevent form submission
+                        event.preventDefault();
                     }
                     else {
+                        // Display selection summary
                         const summaryMsg = `<div class="cm-msg-text-reply">You selected: ${selectedValue.value}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
 
+                        // Execute callback with selected value
                         option.callback({
                             selectedValue: selectedValue ? selectedValue.value : null
                         });
                     }
-
                 };
 
+                // Return completed form
                 return form;
             }
 
-            // Load chat history from localStorage
+            // Function to load chat history from localStorage
             function loadChatHistory() {
+                // Clear existing chat messages
+                messagesContainer.innerHTML = "";
 
-                messagesContainer.innerHTML = ""; // Clear the chat logs
-
+                // Get chat history from localStorage, default to empty array if none exists
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
+                // Process each message in history
                 history.forEach(item => {
+                    // Create message container div
                     const msgDiv = document.createElement("div");
+                    // Set class for styling (chat-msg + user/self)
                     msgDiv.className = `chat-msg ${item.type}`;
 
-                    // Check if the message contains the reply class
+                    // Handle different message types
                     if (item.msg.includes("cm-msg-text-reply")) {
+                        // User replies keep original HTML structure
                         msgDiv.innerHTML = item.msg;
                     } else {
+                        // Bot messages get wrapped in cm-msg-text div
                         msgDiv.innerHTML = `<div class="cm-msg-text">${item.msg}</div>`;
                     }
 
+                    // Add message to chat container
                     messagesContainer.appendChild(msgDiv);
                 });
 
+                // Restore previous state if it exists
                 const savedState = localStorage.getItem("currentState");
                 if (savedState) {
                     statemachine.currentState = savedState;
                 }
+                // Log source of chat history
                 console.log("Loading chat from localStorage");
 
+                // Return whether history exists
                 return history.length > 0;
             }
 
-
-            // Load chat history from localStorage
+            // Function to load chat history from DynamoDB database
             async function loadChatFromDB(emailIn) {
+                // Clear existing chat messages
+                messagesContainer.innerHTML = "";
 
-                messagesContainer.innerHTML = ""; // Clear the chat logs
-
+                // Fetch user data from database using email
                 const result = await searchData({ email: emailIn });
+                // Parse chat history from result, default to empty array if none exists
                 const history = JSON.parse(result.chat) || [];
 
+                // Process each message in history
                 history.forEach(item => {
+                    // Create message container div
                     const msgDiv = document.createElement("div");
+                    // Set class for styling (chat-msg + user/self)
                     msgDiv.className = `chat-msg ${item.type}`;
 
-                    // Check if the message contains the reply class
+                    // Handle different message types
                     if (item.msg.includes("cm-msg-text-reply")) {
+                        // User replies keep original HTML structure
                         msgDiv.innerHTML = item.msg;
                     } else {
+                        // Bot messages get wrapped in cm-msg-text div
                         msgDiv.innerHTML = `<div class="cm-msg-text">${item.msg}</div>`;
                     }
 
+                    // Add message to chat container
                     messagesContainer.appendChild(msgDiv);
                 });
 
+                // Restore previous state from database
                 const savedState = result.stateChat;
                 if (savedState) {
                     statemachine.currentState = savedState;
                 }
 
-                localStorage.setItem("chatHistory", JSON.stringify(history))
+                // Update localStorage with loaded chat history
+                localStorage.setItem("chatHistory", JSON.stringify(history));
                 console.log("Loading chat from DynamoDB");
 
-                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({ userId: user, chat: localStorage.getItem("chatHistory") });
+                // If user is logged in and not in initial states, update database
+                if (user != null && statemachine.currentState != "start" && 
+                    statemachine.currentState != "Previous Conversation") {
+                    let result = await insertChatHistory({ 
+                        userId: user, 
+                        chat: localStorage.getItem("chatHistory") 
+                    });
                     console.log(result.message);
                 }
 
+                // Return whether history exists
                 return history.length > 0;
             }
 
 
-            // Function to save chat history to localStorage and DynamoDB
+                        // Function to save chat history to localStorage and DynamoDB
             async function saveChatHistory(msg, type) {
+                // Get existing chat history or create new empty array
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
-                // If msg is an HTML element (replyMsgDiv)
+                // Handle different message types
                 if (msg instanceof HTMLElement) {
+                    // For HTML elements (like reply messages), extract inner content
                     history.push({
                         msg: `<div class="cm-msg-text-reply">${msg.querySelector('.cm-msg-text-reply').innerHTML}</div>`,
                         type: type
                     });
                 } else {
-                    // For regular messages
+                    // For regular text messages
                     history.push({
                         msg: msg,
                         type: type
                     });
                 }
 
+                // Save updated history to localStorage
                 localStorage.setItem("chatHistory", JSON.stringify(history));
 
-                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({ userId: user, chat: localStorage.getItem("chatHistory") });
+                // If user is logged in and not in initial states, save to database
+                if (user != null && statemachine.currentState != "start" && 
+                    statemachine.currentState != "Previous Conversation") {
+                    let result = await insertChatHistory({ 
+                        userId: user, 
+                        chat: localStorage.getItem("chatHistory") 
+                    });
                     console.log(result.message);
                 }
             }
 
-
-            // Save the current state to localStorage
+            // Function to save current state to localStorage and database
             async function saveCurrentState(state) {
+                // Save current state to localStorage
                 localStorage.setItem("currentState", statemachine.currentState);
-
                 console.log("Current state: " + statemachine.currentState);
 
-                if (user != null && statemachine.currentState != "start" && statemachine.currentState != "Previous Conversation") {
-                    let result = await insertStateData({ userId: user, stateChat: statemachine.currentState })
+                // If user is logged in and not in initial states, save to database
+                if (user != null && statemachine.currentState != "start" && 
+                    statemachine.currentState != "Previous Conversation") {
+                    let result = await insertStateData({ 
+                        userId: user, 
+                        stateChat: statemachine.currentState 
+                    });
                     console.log(result.message);
                 }
             }
 
+            // Initialize state machine
+            statemachine.currentState = "start"; // Set initial state
+            const hasHistory = loadChatHistory(); // Load existing chat history
 
-            
-
-            statemachine.currentState = "start"; // Set the initial state to start
-            const hasHistory = loadChatHistory(); // Load chat history from localStorage
+            // Render appropriate state based on history
             if (!hasHistory) {
-                statemachine.render(); // Render the initial state
+                statemachine.render(); // Render fresh state
             } else {
-                statemachine.render(true); // Render the initial state
+                statemachine.render(true); // Render with history
             }
         }
     });
 }
 
+// Function to format phone numbers consistently
 function formatPhoneNumber(input) {
+    // Validate phone number against regex pattern
     if (!phoneRegex.test(input)) {
-      return null; // Invalid phone number
+        return null; // Return null if invalid phone number
     }
-  
-    // Extract digits only
+
+    // Extract only digits from input, removing any other characters
     const digits = input.replace(/\D/g, '');
-  
-    // Format to 123-456-7890
+
+    // Format digits into XXX-XXX-XXXX pattern
     const formattedNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     return formattedNumber;
 }
