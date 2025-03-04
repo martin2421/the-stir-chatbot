@@ -277,6 +277,31 @@ export const insertNote = async (data) => {
 
 
 
+export const insertTimeNeeded = async (data) => {
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "stir-test2",
+        Key: {
+          id: data.userId,
+        },
+        UpdateExpression: `set spaceNeeds = :space`,
+        ExpressionAttributeValues: {
+          ":space": data.timeNeeded,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Time was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
 export const insertEventVenue = async (data) => {
 
   try {

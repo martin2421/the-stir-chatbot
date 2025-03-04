@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded } from "./dynamoService";
 
 export default function StateMachine() {
 
@@ -456,6 +456,9 @@ export default function StateMachine() {
                                 console.log(result.message);
 
                                 result = await insertNote({ userId: user, note: JSON.stringify(data.notes) });
+                                console.log(result.message);
+
+                                result = await insertTimeNeeded({ userId: user, timeNeeded: JSON.stringify(data.timeNeeded + " hours") });
                                 console.log(result.message);
 
                                 if (data.businessType === "Food Processing") {
@@ -1076,15 +1079,15 @@ export default function StateMachine() {
                     } else {
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
-                            businessType: form.querySelector('input[name="business_type"]:checked')?.value,
+                            timeNeeded: form.querySelector('input[name="business_type"]:checked')?.value,
                             notes: form.querySelector('textarea[name="notes"]').value,
                         };
                         let summaryParts = [];
                         if (formData.foodDocs.length > 0) {
                             summaryParts.push(`Products: ${formData.foodDocs.join(", ")}`);
                         }
-                        if (formData.businessType) {
-                            summaryParts.push(`Time Needed: ${formData.businessType} hours`);
+                        if (formData.timeNeeded) {
+                            summaryParts.push(`Time Needed: ${formData.timeNeeded} hours`);
                         }
                         if (formData.notes) {
                             summaryParts.push(`Additional Notes: ${formData.notes}`);
