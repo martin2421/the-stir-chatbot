@@ -42,7 +42,7 @@ body {
 
 .chat-box {
     display: none;
-    background: url('./bg.jpg') no-repeat center center;
+    background: url('./bg.jpeg') no-repeat center center;
     background-size: cover;
     position: fixed;
     right: 1.875em; /* 30px */
