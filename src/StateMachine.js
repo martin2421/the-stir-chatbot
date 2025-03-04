@@ -15,7 +15,8 @@ export default function StateMachine() {
             var dd = String(today.getDate()).padStart(2, '0');
             var mm = String(today.getMonth() + 1).padStart(2, '0');
             var yyyy = today.getFullYear();
-            today = dd + '/' + mm + '/' + yyyy;
+            // today = yyyy + '/' + mm + '/' + dd;
+            today = mm + '/' + dd + '/' + yyyy;
 
 
             // Trigger the text animation on clicking the chef
@@ -296,7 +297,7 @@ export default function StateMachine() {
                                 { name: "l_name", placeholder: "Last Name" },
                                 { name: "b_name", placeholder: "Business Name" },
                                 { name: "email", placeholder: "Email" },
-                                { name: "phone", placeholder: "Phone ex:111-111-1111" },
+                                { name: "phone", placeholder: "Phone Number (555) 555-5555" },
                             ],
                             "callback": async function (data) {
                                 let f_name = data.f_name;
@@ -684,9 +685,11 @@ export default function StateMachine() {
                         input.type = "email"; // Change the input type to email\
                         input.pattern = "^\\w+@\\w+\\.[a-zA-Z]{2,}$"; // Email validation pattern
                     } else if (field.name === "phone") {
-                        input.pattern = "^\\d{3}-\\d{3}-\\d{4}$"; // Email validation pattern
+                        input.addEventListener('input', function (e) {
+                            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+                          });
                     }
-
                     form.appendChild(input); // Append the input to the form
                 });
 
@@ -1271,6 +1274,8 @@ export default function StateMachine() {
             }
 
 
+            
+
             statemachine.currentState = "start"; // Set the initial state to start
             const hasHistory = loadChatHistory(); // Load chat history from localStorage
             if (!hasHistory) {
@@ -1280,4 +1285,17 @@ export default function StateMachine() {
             }
         }
     });
+}
+
+function formatPhoneNumber(input) {
+    if (!phoneRegex.test(input)) {
+      return null; // Invalid phone number
+    }
+  
+    // Extract digits only
+    const digits = input.replace(/\D/g, '');
+  
+    // Format to 123-456-7890
+    const formattedNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    return formattedNumber;
 }

@@ -5,7 +5,7 @@ export const searchData = async (data) => {
 
   return dynamodb
     .scan({
-      TableName: "Prospects",
+      TableName: "stir-test2",
       FilterExpression:
         "attribute_not_exists(deletedAt) AND email = :email",
       ExpressionAttributeValues: {
@@ -15,7 +15,7 @@ export const searchData = async (data) => {
     .promise()
     .then(function (data) {
       if (data.Items[0] != undefined) {
-        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, businessName: data.Items[0].businessName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].stateChat, chat: data.Items[0].chat, businessStage: data.Items[0].businessStage, dateCreated: data.Items[0].createdAt, service: data.Items[0].service};
+        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, businessName: data.Items[0].businessName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].currentState, chat: data.Items[0].chatHistory, businessStage: data.Items[0].businessStage, dateCreated: data.Items[0].createdAt, service: data.Items[0].service};
       } else {
         return { success: false };
       }
@@ -29,7 +29,7 @@ export const searchData = async (data) => {
 export const insertData = async (data) => {
 
   let params1 = {
-    TableName: "Prospects",
+    TableName: "stir-test2",
     Key: {
       id: -1,
     },
@@ -39,7 +39,7 @@ export const insertData = async (data) => {
   let item = res.Items[0];
 
   const params = {
-    TableName: 'Prospects',
+    TableName: 'stir-test2',
     Item: {
       id: item.nextId,
       firstName: data.f_name,
@@ -47,7 +47,8 @@ export const insertData = async (data) => {
       businessName: data.b_name,
       email: data.email,
       phoneNumber: data.phone,
-      createdAt: data.today
+      createdAt: data.today,
+      isActive: true,
     }
   }
 
@@ -56,7 +57,7 @@ export const insertData = async (data) => {
 
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: -1,
         },
@@ -81,11 +82,11 @@ export const insertStateData = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set stateChat = :state`,
+        UpdateExpression: `set currentState = :state`,
         ExpressionAttributeValues: {
           ":state": data.stateChat,
         },
@@ -106,11 +107,11 @@ export const insertChatHistory = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set chat = :chat`,
+        UpdateExpression: `set chatHistory = :chat`,
         ExpressionAttributeValues: {
           ":chat": data.chat,
         },
@@ -131,7 +132,7 @@ export const insertBusinessStage = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -156,7 +157,7 @@ export const insertSignedUp = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -181,7 +182,7 @@ export const insertLicences = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -206,7 +207,7 @@ export const insertService = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -231,7 +232,7 @@ export const insertProducts = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -256,7 +257,7 @@ export const insertNote = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
@@ -281,7 +282,7 @@ export const insertEventVenue = async (data) => {
   try {
     await dynamodb
       .update({
-        TableName: "Prospects",
+        TableName: "stir-test2",
         Key: {
           id: data.userId,
         },
