@@ -273,23 +273,67 @@ body {
 }
 
 .checkbox-group, .radio-group, .textarea-group {
-    background-color: white;
+    background-color: #f9f9f9;
     padding: 0.625em; /* 10px */
     border-radius: 0.25em; /* 4px */
     margin-bottom: 0.625em; /* 10px */
+    box-shadow: 0px 2px 40px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
+
+/* Style the container of the checkbox group */
+.checkbox-group {
+    display: flex;
+    flex-direction: column; /* Arrange checkboxes vertically */
+    margin-bottom: 20px;
+  }
+  
+  /* Style each checkbox and its label */
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and label */
+  }
+  
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px; /* Space between each checkbox item */
+    font-size: 16px; /* Font size for labels */
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
+  
+  /* Optional: Style the checkbox itself */
+  .checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: rgb(139,35,27); /* Change the color of the checkbox */
+  }
+  
+  /* Add hover effect for labels */
+  .checkbox-group label:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+  }
 
 .group-label {
     font-weight: bold;
     margin-bottom: 0.5rem;
+    
 }
 
 textarea {
-    width: 100%;
-    padding: 0.5rem;
-    border: 0.0625em solid #ddd; /* 1px */
+    width: 98%;
+    padding: 0.1rem;
+    border: 0.0625em solid rgb(136, 38, 27); /* 1px */
     border-radius: 0.25em; /* 4px */
     resize: vertical;
+    transition: border-color 0.3s ease, border-width 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for border and shadow */
+    background-color: white; /* Light background color */
+    
+}
+
+textarea:focus {
+    border-color: rgb(136, 38, 27); /* Change border color to red when focused */
+    border-width: 0.125em; /* 2px, make the border thicker */
+    outline: none; /* Remove default outline (optional) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow on focus */
 }
 
 label {
@@ -348,7 +392,7 @@ button[type="submit"]:hover {
     margin-bottom: 1.25em; /* 20px */
     padding: 0.625em; /* 10px */
     border-radius: 0.3125em; /* 5px */
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
 }
 
  /* Responsive Design */
