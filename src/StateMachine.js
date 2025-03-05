@@ -1152,9 +1152,9 @@ document.addEventListener("readystatechange", function (event) {
                         // Create and add group label
                         const groupLabel = document.createElement("div");
                         groupLabel.className = "group-label";
-                        groupLabel.innerText = element.name;
+                        groupLabel.innerText = element.name + " (Select at least one)"; // Add requirement note
                         groupDiv.appendChild(groupLabel);
-
+                    
                         // Create individual checkboxes
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
@@ -1190,6 +1190,7 @@ document.addEventListener("readystatechange", function (event) {
                             input.name = element.name;
                             input.value = box.value;
                             input.id = box.id;
+                            input.required = true;
                             label.appendChild(input);
                             label.appendChild(document.createTextNode(box.label));
                             radioDiv.appendChild(label);
@@ -1230,13 +1231,22 @@ document.addEventListener("readystatechange", function (event) {
                 form.onsubmit = function (event) {
                     event.preventDefault();
 
+                    // Check if at least one checkbox is checked
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                    const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+                    if (!isChecked) {
+                        customAlert("Please select at least one option before submitting.");
+                        return;
+                    }
+
                     // Handle Event Venue form submission
                     if (statemachine.currentState === "Event Venue") {
                         var selectedValue = form.querySelector('input[type="radio"]:checked');
 
                         // Validate form input
                         if (selectedValue == null) {
-                            alert("Please select at least one option before submitting.");
+                            customAlert("Please select at least one option before submitting.");
                             event.preventDefault();
                         } else {
                             // Collect form data
@@ -1265,7 +1275,7 @@ document.addEventListener("readystatechange", function (event) {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
                             timeNeeded: form.querySelector('input[name="business_type"]:checked')?.value,
                             notes: form.querySelector('textarea[name="notes"]').value,
-                        };
+                        };         
 
                         // Build summary message
                         let summaryParts = [];
@@ -1319,6 +1329,7 @@ document.addEventListener("readystatechange", function (event) {
                     input.name = box.name;
                     input.value = box.value;
                     input.id = box.id;
+                    input.required = true;
                     // Add input to label
                     label.appendChild(input);
                     // Add radio button label text (use label if provided, otherwise use value)
@@ -1512,6 +1523,13 @@ document.addEventListener("readystatechange", function (event) {
                     });
                     console.log(result.message);
                 }
+            }
+
+            // Custom alert function to display messages in the chat interface
+            function customAlert(message) {
+                const alertMsg = `<div class="cm-msg-text-reply">${message}</div>`;
+                addMessage(alertMsg, "user");
+                saveChatHistory(alertMsg, "user");
             }
 
             // Initialize state machine
