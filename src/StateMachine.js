@@ -66,12 +66,14 @@ document.addEventListener("readystatechange", function (event) {
             chatCircle.addEventListener("click", () => {
                 chatCircle.classList.add("hidden");
                 chatBox.classList.add("show");
+                console.log("2")
 
             });
 
             chatBoxToggle.addEventListener("click", () => {
                 chatBox.classList.remove("show");
                 chatCircle.classList.remove("hidden");
+                console.log("1")
             });
 
 
