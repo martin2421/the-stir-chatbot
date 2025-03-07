@@ -12,7 +12,7 @@ function App() {
           <div id="chat-circle">
             <div className="chef" id="chef">
             <video id="logo-video" autoPlay loop muted playsInline>
-              <source src="new_logo.gif" type="logo/gif"></source>
+              <source src="logo.mp4" type="logo/mp4"></source>
             </video>
             </div>
           </div>
