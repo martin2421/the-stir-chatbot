@@ -2,65 +2,65 @@ import { insertData, searchData, insertStateData, insertChatHistory, insertBusin
 
 export default function StateMachine() {
 
-    // Add event listener that fires when the document is fully loaded
-    document.addEventListener("readystatechange", function (event) {
-        // Check if document is completely loaded
-        if (document.readyState === 'complete') {
+// Add event listener that fires when the document is fully loaded
+document.addEventListener("readystatechange", function (event) {
+    // Check if document is completely loaded
+    if (document.readyState === 'complete') {
 
-            // Get user ID from localStorage and convert to number
-            let user = Number(localStorage.getItem("userId"));
-            // Get previously selected service from localStorage
-            let serviceSelected = localStorage.getItem("serviceSelected");
-            // Initialize variable to store event venue details
-            let eventVenue;
+        // Get user ID from localStorage and convert to number
+        let user = Number(localStorage.getItem("userId"));
+        // Get previously selected service from localStorage
+        let serviceSelected = localStorage.getItem("serviceSelected");
+        // Initialize variable to store event venue details
+        let eventVenue;
 
-            // Create variables for current date
-            var today = new Date();
-            // Get day and pad with leading zero if needed
-            var dd = String(today.getDate()).padStart(2, '0');
-            // Get month (adding 1 since months are 0-based) and pad with leading zero
-            var mm = String(today.getMonth() + 1).padStart(2, '0');
-            // Get full year
-            var yyyy = today.getFullYear();
-            // Format date as MM/DD/YYYY
-            today = mm + '/' + dd + '/' + yyyy;
+        // Create variables for current date
+        var today = new Date();
+        // Get day and pad with leading zero if needed
+        var dd = String(today.getDate()).padStart(2, '0');
+        // Get month (adding 1 since months are 0-based) and pad with leading zero
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        // Get full year
+        var yyyy = today.getFullYear();
+        // Format date as MM/DD/YYYY
+        today = mm + '/' + dd + '/' + yyyy;
 
-            // Add click event listener to the chef logo
-            document.getElementById("logo-video").addEventListener("click", () => {
-                // Get help text element
-                const helpText = document.querySelector(".help-text");
-                // If help text exists, start animation
-                if (helpText) {
-                    helpText.style.animation = "moveTextUp 3s linear infinite";
-                }
-            });
+        // Add click event listener to the chef logo
+        document.getElementById("logo-video").addEventListener("click", () => {
+            // Get help text element
+            const helpText = document.querySelector(".help-text");
+            // If help text exists, start animation
+            if (helpText) {
+                helpText.style.animation = "moveTextUp 3s linear infinite";
+            }
+        });
 
-            // Get chat UI elements
-            const chatCircle = document.getElementById("chat-circle");
-            const chatBox = document.querySelector(".chat-box");
-            const chatBoxToggle = document.querySelector(".chat-box-toggle");
+        // Get chat UI elements
+        const chatCircle = document.getElementById("chat-circle");
+        const chatBox = document.querySelector(".chat-box");
+        const chatBoxToggle = document.querySelector(".chat-box-toggle");
 
-            // Add click event listener to clear history button
-            const clearHistoryButton = document.getElementById("clearHistoryButton");
-            clearHistoryButton.addEventListener("click", () => {
-                // Remove all chat-related items from localStorage
-                localStorage.removeItem("userId");
-                localStorage.removeItem("chatHistory");
-                localStorage.removeItem("serviceSelected");
-                localStorage.removeItem("currentState");
+        // Add click event listener to clear history button
+        const clearHistoryButton = document.getElementById("clearHistoryButton");
+        clearHistoryButton.addEventListener("click", () => {
+            // Remove all chat-related items from localStorage
+            localStorage.removeItem("userId");
+            localStorage.removeItem("chatHistory");
+            localStorage.removeItem("serviceSelected");
+            localStorage.removeItem("currentState");
 
-                // Reset all variables to null
-                user = null;
-                serviceSelected = null;
-                eventVenue = null;
+            // Reset all variables to null
+            user = null;
+            serviceSelected = null;
+            eventVenue = null;
 
-                // Clear chat messages from UI
-                messagesContainer.innerHTML = "";
-                // Reset state machine to start state
-                statemachine.currentState = "start";
-                // Re-render the chat interface
-                statemachine.render();
-            });
+            // Clear chat messages from UI
+            messagesContainer.innerHTML = "";
+            // Reset state machine to start state
+            statemachine.currentState = "start";
+            // Re-render the chat interface
+            statemachine.render();
+        });
 
             // Show/Hide chat box
             chatCircle.addEventListener("click", () => {
@@ -259,21 +259,16 @@ export default function StateMachine() {
                             // Asynchronous callback function that handles form submission for venue selection
                             "callback": async function (data) {
                                 // Check if both venue capacity and location are selected
-                                console.log(data);
                                 if (data.venue_capacity != undefined && data.venue_location != undefined) {
                                     // Set the state machine to move to Contact Form state
                                     statemachine.currentState = "Contact Form";
                                     // Store venue details as JSON string with location and capacity
-                                    eventVenue = JSON.stringify({
-                                        venue_location: data.venue_location,
-                                        venue_capacity: data.venue_capacity
+                                    eventVenue = JSON.stringify({ 
+                                        venue_location: data.venue_location, 
+                                        venue_capacity: data.venue_capacity 
                                     });
-
-                                    // Save the current state
-                                    localStorage.setItem("eventVenue", eventVenue);
-                                    saveCurrentState();
-                                    } else {
-                                        // If either capacity or location is missing, stay on Event Venue state
+                                } else {
+                                    // If either capacity or location is missing, stay on Event Venue state
                                     statemachine.currentState = "Event Venue";
                                 }
                                 // Re-render the state machine to show updated state
@@ -318,60 +313,60 @@ export default function StateMachine() {
                     "message": "Before moving onto the second phase, please fill out the form below so we can keep track of this conversation",
                     "options": [
                         {
-                            // Define the form structure with input fields
-                            "type": "form",
-                            "fields": [
-                                // Input field for first name
-                                { name: "f_name", placeholder: "First Name" },
-                                // Input field for last name
-                                { name: "l_name", placeholder: "Last Name" },
-                                // Input field for business name
-                                { name: "b_name", placeholder: "Business Name" },
-                                // Input field for email address
-                                { name: "email", placeholder: "Email" },
-                                // Input field for phone number with format example
-                                { name: "phone", placeholder: "Phone Number (555) 555-5555" },
-                            ],
-                            // Asynchronous callback function that handles form submission
-                            "callback": async function (data) {
-                                // Extract form data into individual variables
-                                let f_name = data.f_name;
-                                let l_name = data.l_name;
-                                let b_name = data.b_name;
-                                let email = data.email;
-                                let phone = data.phone;
+                        // Define the form structure with input fields
+                        "type": "form",
+                        "fields": [
+                            // Input field for first name
+                            { name: "f_name", placeholder: "First Name" },
+                            // Input field for last name
+                            { name: "l_name", placeholder: "Last Name" },
+                            // Input field for business name
+                            { name: "b_name", placeholder: "Business Name" },
+                            // Input field for email address
+                            { name: "email", placeholder: "Email" },
+                            // Input field for phone number with format example
+                            { name: "phone", placeholder: "Phone Number (555) 555-5555" },
+                        ],
+                        // Asynchronous callback function that handles form submission
+                        "callback": async function (data) {
+                            // Extract form data into individual variables
+                            let f_name = data.f_name;
+                            let l_name = data.l_name;
+                            let b_name = data.b_name;
+                            let email = data.email;
+                            let phone = data.phone;
 
-                                // Insert user data into database and await response
-                                let response = await insertData({ f_name, l_name, b_name, email, phone, today });
-                                // Log success message if data insertion was successful
-                                if (response.success) console.log("User data was inserted");
+                            // Insert user data into database and await response
+                            let response = await insertData({ f_name, l_name, b_name, email, phone, today });
+                            // Log success message if data insertion was successful
+                            if (response.success) console.log("User data was inserted");
 
-                                // Store user ID in localStorage for persistence
-                                localStorage.setItem("userId", response.userId);
-                                // Log the user ID for debugging
-                                console.log(response.userId);
-                                // Update the user variable with new ID
-                                user = response.userId;
-                                // Set next state to "First Step"
-                                statemachine.currentState = "First Step";
-                                // Save the current state
-                                saveCurrentState();
+                            // Store user ID in localStorage for persistence
+                            localStorage.setItem("userId", response.userId);
+                            // Log the user ID for debugging
+                            console.log(response.userId);
+                            // Update the user variable with new ID
+                            user = response.userId;
+                            // Set next state to "First Step"
+                            statemachine.currentState = "First Step";
+                            // Save the current state
+                            saveCurrentState();
 
-                                // Insert selected service into database
-                                let result = await insertService({ userId: user, service: serviceSelected });
+                            // Insert selected service into database
+                            let result = await insertService({ userId: user, service: serviceSelected });
+                            // Log the result message
+                            console.log(result.message)
+
+                            // If event venue was selected, insert venue details
+                            if (eventVenue != null) {
+                                result = await insertEventVenue({ userId: user, venue: eventVenue })
                                 // Log the result message
-                                console.log(result.message)
-
-                                // If event venue was selected, insert venue details
-                                if (eventVenue != null) {
-                                    result = await insertEventVenue({ userId: user, venue: eventVenue })
-                                    // Log the result message
-                                    console.log(result.message);
-                                }
-
-                                // Update the chat interface with new state
-                                statemachine.render();
+                                console.log(result.message);
                             }
+
+                            // Update the chat interface with new state
+                            statemachine.render();
+                        }
                         },
                         {
                             "title": "Back",
@@ -416,9 +411,9 @@ export default function StateMachine() {
                                 // Log current user ID for debugging
                                 console.log(user);
                                 // Save business stage to database
-                                let result = await insertBusinessStage({
-                                    userId: user,
-                                    businessStage: data.selectedValue
+                                let result = await insertBusinessStage({ 
+                                    userId: user, 
+                                    businessStage: data.selectedValue 
                                 });
 
                                 // Save current state if not a brand new business
@@ -513,25 +508,25 @@ export default function StateMachine() {
                                 console.log("Form data:", data);
 
                                 // Insert selected products into database
-                                let result = await insertProducts({
-                                    userId: user,
-                                    products: JSON.stringify(data.foodDocs)
+                                let result = await insertProducts({ 
+                                    userId: user, 
+                                    products: JSON.stringify(data.foodDocs) 
                                 });
                                 // Log database operation result
                                 console.log(result.message);
 
                                 // Insert additional notes into database
-                                result = await insertNote({
-                                    userId: user,
-                                    note: JSON.stringify(data.notes)
+                                result = await insertNote({ 
+                                    userId: user, 
+                                    note: JSON.stringify(data.notes) 
                                 });
                                 // Log database operation result
                                 console.log(result.message);
 
                                 // Insert time needed into database with hours suffix
-                                result = await insertTimeNeeded({
-                                    userId: user,
-                                    timeNeeded: JSON.stringify(data.timeNeeded + " hours")
+                                result = await insertTimeNeeded({ 
+                                    userId: user, 
+                                    timeNeeded: JSON.stringify(data.timeNeeded + " hours") 
                                 });
                                 // Log database operation result
                                 console.log(result.message);
@@ -581,9 +576,9 @@ export default function StateMachine() {
 
             // Function to handle user interaction
             statemachine.interact = async function (option) {
-                // Get current state and selected option from state machine
-                var currentState = statemachine.states[statemachine.currentState];
-                var selectedOption = currentState.options[option];
+            // Get current state and selected option from state machine
+            var currentState = statemachine.states[statemachine.currentState]; 
+            var selectedOption = currentState.options[option]; 
 
                 // Handle user response in chat interface
                 const lastMsgDiv = messagesContainer.lastElementChild;
@@ -605,8 +600,8 @@ export default function StateMachine() {
 
                 // Handle back navigation
                 if (selectedOption.back) {
-                    this.currentState = selectedOption.back;
-                    this.render();
+                    this.currentState = selectedOption.back; 
+                    this.render(); 
                 }
 
                 // Handle forward navigation
@@ -637,64 +632,64 @@ export default function StateMachine() {
 
             // Function to render the current state
             statemachine.render = async function (isLoadingHistory = false) {
-                // Get the buttons container element from DOM
-                var buttoncontainer = document.getElementById("button");
-                // Get the current state object from state machine
-                var currentState = statemachine.states[statemachine.currentState];
+            // Get the buttons container element from DOM
+            var buttoncontainer = document.getElementById("button"); 
+            // Get the current state object from state machine
+            var currentState = statemachine.states[statemachine.currentState]; 
 
-                // Check if current state exists
-                if (!currentState) {
-                    // Log error and exit if state is not defined
-                    console.error(`State "${statemachine.currentState}" is not defined.`);
-                    return;
-                }
+            // Check if current state exists
+            if (!currentState) {
+                // Log error and exit if state is not defined
+                console.error(`State "${statemachine.currentState}" is not defined.`);
+                return;
+            }
 
-                // Only add messages if not loading history
-                if (!isLoadingHistory) {
-                    // Add the current state's message to chat logs
-                    addMessage(currentState.message, "self");
-                    // Save message to chat history
-                    saveChatHistory(currentState.message, "self");
-                }
+            // Only add messages if not loading history
+            if (!isLoadingHistory) {
+                // Add the current state's message to chat logs
+                addMessage(currentState.message, "self"); 
+                // Save message to chat history
+                saveChatHistory(currentState.message, "self"); 
+            }
 
-                // Clear existing buttons from container
-                buttoncontainer.innerHTML = "";
+            // Clear existing buttons from container
+            buttoncontainer.innerHTML = "";
 
-                // Handle unchecked requirements state
-                if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
-                    // Get additional options from rendering unchecked states
-                    const additionalOptions = currentState.render(this.uncheckedStates);
+            // Handle unchecked requirements state
+            if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
+                // Get additional options from rendering unchecked states
+                const additionalOptions = currentState.render(this.uncheckedStates);
 
-                    // Create buttons for each additional option
-                    additionalOptions.forEach((option) => {
-                        // Create button element
-                        var button = document.createElement("button");
-                        // Add styling class
-                        button.className = "titles";
-                        // Set button text
-                        button.innerText = option.title;
+                // Create buttons for each additional option
+                additionalOptions.forEach((option) => {
+                    // Create button element
+                    var button = document.createElement("button");
+                    // Add styling class
+                    button.className = "titles";
+                    // Set button text
+                    button.innerText = option.title;
 
-                        // Handle different button types
-                        if (option.title === "Next Requirement") {
-                            // Next requirement button moves to next unchecked item
-                            button.onclick = () => {
-                                statemachine.currentUncheckedIndex++;
-                                statemachine.render();
-                            };
-                        } else if (option.href) {
-                            // External link button opens in new tab
-                            button.onclick = () => window.open(option.href, "_blank");
-                        } else if (option.back) {
-                            // Back button returns to previous state
-                            button.onclick = () => {
-                                statemachine.currentState = option.back;
-                                statemachine.render();
-                            };
-                        }
+                    // Handle different button types
+                    if (option.title === "Next Requirement") {
+                        // Next requirement button moves to next unchecked item
+                        button.onclick = () => {
+                            statemachine.currentUncheckedIndex++;
+                            statemachine.render();
+                        };
+                    } else if (option.href) {
+                        // External link button opens in new tab
+                        button.onclick = () => window.open(option.href, "_blank");
+                    } else if (option.back) {
+                        // Back button returns to previous state
+                        button.onclick = () => {
+                            statemachine.currentState = option.back;
+                            statemachine.render();
+                        };
+                    }
 
-                        // Add button to container
-                        buttoncontainer.appendChild(button);
-                    });
+                    // Add button to container
+                    buttoncontainer.appendChild(button);
+                });
                 } else {
                     // Create buttons for each option in the current state  
                     currentState.options.forEach((option, i) => {
@@ -724,7 +719,7 @@ export default function StateMachine() {
                             var button = document.createElement("button");
                             button.className = "titles";
                             button.innerText = option.title;
-
+                            
                             // Add click handler for button
                             button.onclick = async () => {
                                 // Handle service selection
@@ -820,7 +815,7 @@ export default function StateMachine() {
                         input.type = "email";
                         // Add email validation pattern
                         input.pattern = "^\\w+@\\w+\\.[a-zA-Z]{2,}$";
-                    }
+                    } 
                     // Special handling for phone fields
                     else if (field.name === "phone") {
                         // Add input formatter for phone numbers
@@ -878,10 +873,6 @@ export default function StateMachine() {
                 let commercialInsurance = true;
                 let makershipMembership = true;
                 let stirMakerFee = true;
-                let interiorHealth = true;
-                let completedBusinessPlan = true;
-                let foodSafeCertificate = true;
-                let makershipConductAgreement = true;
 
                 // Handle form submission
                 form.onsubmit = async function (event) {
@@ -890,7 +881,7 @@ export default function StateMachine() {
                     // Track checked and unchecked items
                     var uncheckedValues = [];
                     var checkedValues = [];
-
+                    
                     // Check status of each checkbox
                     boxes.forEach(box => {
                         var checkbox = document.getElementById(box.id);
@@ -902,10 +893,6 @@ export default function StateMachine() {
                             if (box.id == "Commercial Insurance") commercialInsurance = false;
                             if (box.id == "Makership Membership") makershipMembership = false;
                             if (box.id == "Stir Maker Fee") stirMakerFee = false;
-                            if (box.id == "Interior Health") interiorHealth = false;
-                            if (box.id == "Completed Business Plan") completedBusinessPlan = false;
-                            if (box.id == "FoodSafe Certificate") foodSafeCertificate = false;
-                            if (box.id == "Makership Conduct Agreement") makershipConductAgreement = false;
                         } else {
                             // Add to checked list
                             checkedValues.push(box.value);
@@ -919,49 +906,17 @@ export default function StateMachine() {
                         saveChatHistory(summaryMsg, "user");
                     }
 
-
-                    let result;
-
-                    if (localStorage.getItem("serviceSelected") == "Kitchen Rental") {
-                        // Save license status to database
-                        result = await insertLicences({
-                            userId: user,
-                            licenses: JSON.stringify({
-                                "City of Kamloops Business License": cityKamloops,
-                                "Commercial Insurance": commercialInsurance,
-                                "Makership Membership": makershipMembership,
-                                "Stir Maker Fee": stirMakerFee,
-                                "Interior Health": interiorHealth,
-                                "Completed Business Plan": completedBusinessPlan,
-                                "FoodSafe Certificate": foodSafeCertificate
-                            })
-                        });
-                        console.log(result.message);
-                    }
-                    else if (localStorage.getItem("serviceSelected") == "Business Coach") {
-                        // Save license status to database
-                        result = await insertLicences({
-                            userId: user,
-                            licenses: JSON.stringify({
-                                "Makership Conduct Agreement": makershipConductAgreement,
-                                "Stir Maker Fee": stirMakerFee
-                            })
-                        });
-                        console.log(result.message);
-                    }
-                    else {
-                        // Save license status to database
-                        result = await insertLicences({
-                            userId: user,
-                            licenses: JSON.stringify({
-                                "City of Kamloops Business License": cityKamloops,
-                                "Commercial Insurance": commercialInsurance,
-                                "Makership Membership": makershipMembership,
-                                "Stir Maker Fee": stirMakerFee
-                            })
-                        });
-                        console.log(result.message);
-                    }
+                    // Save license status to database
+                    let result = await insertLicences({ 
+                        userId: user, 
+                        licenses: JSON.stringify({ 
+                            "City of Kamloops Business License": cityKamloops, 
+                            "Commercial Insurance": commercialInsurance, 
+                            "Makership Membership": makershipMembership, 
+                            "Stir Maker Fee": stirMakerFee 
+                        }) 
+                    });
+                    console.log(result.message);
 
                     // Handle navigation based on checked status
                     if (uncheckedValues.length > 0) {
@@ -1003,7 +958,7 @@ export default function StateMachine() {
                         { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Completed Business Plan", value: "Completed Business Plan", id: "Completed Business Plan" },
+                        { name: "Completed Business Plan", value: "Completed Business Plan" },
                         { name: "FoodSafe Certificate", value: "FoodSafe Certificate", id: "FoodSafe Certificate" },
                         { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
                         { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
@@ -1178,7 +1133,7 @@ export default function StateMachine() {
                         "back": "Second Phase"
                     });
                 }
-
+                
                 // Return navigation options
                 return options;
             }
@@ -1201,7 +1156,7 @@ export default function StateMachine() {
                         groupLabel.className = "group-label";
                         groupLabel.innerText = element.name + " (Select at least one)"; // Add requirement note
                         groupDiv.appendChild(groupLabel);
-
+                    
                         // Create individual checkboxes
                         element.boxes.forEach(box => {
                             var label = document.createElement("label");
@@ -1278,6 +1233,15 @@ export default function StateMachine() {
                 form.onsubmit = function (event) {
                     event.preventDefault();
 
+                    // Check if at least one checkbox is checked
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                    const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+                    if (!isChecked) {
+                        customAlert("Please select at least one option before submitting.");
+                        return;
+                    }
+
                     // Handle Event Venue form submission
                     if (statemachine.currentState === "Event Venue") {
                         var selectedValue = form.querySelector('input[type="radio"]:checked');
@@ -1305,24 +1269,15 @@ export default function StateMachine() {
                                 option.callback(formData);
                             }
                         }
-                    }
+                    } 
                     // Handle other form types
                     else {
-                        // Check if at least one checkbox is checked
-                        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-                        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-
-                        if (!isChecked) {
-                            customAlert("Please select at least one option before submitting.");
-                            return;
-                        }
-
                         // Collect form data
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
                             timeNeeded: form.querySelector('input[name="business_type"]:checked')?.value,
                             notes: form.querySelector('textarea[name="notes"]').value,
-                        };
+                        };         
 
                         // Build summary message
                         let summaryParts = [];
@@ -1433,7 +1388,6 @@ export default function StateMachine() {
 
                 // Get chat history from localStorage, default to empty array if none exists
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
-                eventVenue = localStorage.getItem("eventVenue");
 
                 // Process each message in history
                 history.forEach(item => {
@@ -1508,11 +1462,11 @@ export default function StateMachine() {
                 console.log("Loading chat from DynamoDB");
 
                 // If user is logged in and not in initial states, update database
-                if (user != null && statemachine.currentState != "start" &&
+                if (user != null && statemachine.currentState != "start" && 
                     statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({
-                        userId: user,
-                        chat: localStorage.getItem("chatHistory")
+                    let result = await insertChatHistory({ 
+                        userId: user, 
+                        chat: localStorage.getItem("chatHistory") 
                     });
                     console.log(result.message);
                 }
@@ -1522,7 +1476,7 @@ export default function StateMachine() {
             }
 
 
-            // Function to save chat history to localStorage and DynamoDB
+                        // Function to save chat history to localStorage and DynamoDB
             async function saveChatHistory(msg, type) {
                 // Get existing chat history or create new empty array
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
@@ -1546,11 +1500,11 @@ export default function StateMachine() {
                 localStorage.setItem("chatHistory", JSON.stringify(history));
 
                 // If user is logged in and not in initial states, save to database
-                if (user != null && statemachine.currentState != "start" &&
+                if (user != null && statemachine.currentState != "start" && 
                     statemachine.currentState != "Previous Conversation") {
-                    let result = await insertChatHistory({
-                        userId: user,
-                        chat: localStorage.getItem("chatHistory")
+                    let result = await insertChatHistory({ 
+                        userId: user, 
+                        chat: localStorage.getItem("chatHistory") 
                     });
                     console.log(result.message);
                 }
@@ -1563,11 +1517,11 @@ export default function StateMachine() {
                 console.log("Current state: " + statemachine.currentState);
 
                 // If user is logged in and not in initial states, save to database
-                if (user != null && statemachine.currentState != "start" &&
+                if (user != null && statemachine.currentState != "start" && 
                     statemachine.currentState != "Previous Conversation") {
-                    let result = await insertStateData({
-                        userId: user,
-                        stateChat: statemachine.currentState
+                    let result = await insertStateData({ 
+                        userId: user, 
+                        stateChat: statemachine.currentState 
                     });
                     console.log(result.message);
                 }
