@@ -293,9 +293,7 @@ document.addEventListener("readystatechange", function (event) {
                                         venue_location: data.venue_location, 
                                         venue_capacity: data.venue_capacity 
                                     });
-                                } else {
-                                    // If either capacity or location is missing, stay on Event Venue state
-                                    statemachine.currentState = "Event Venue";
+                                    saveCurrentState();
                                 }
                                 // Re-render the state machine to show updated state
                                 statemachine.render();
@@ -306,7 +304,7 @@ document.addEventListener("readystatechange", function (event) {
 
 
                 "Contact Form": {
-                    "message": "Before moving onto the second phase, please fill out the form below so we can keep track of this conversation",
+                    "message": "Before moving forward, please fill out the form below so we can keep track of this conversation",
                     "options": [
                         {
                         // Define the form structure with input fields
@@ -503,7 +501,7 @@ document.addEventListener("readystatechange", function (event) {
 
 
                 "Food Form": {
-                    "message": "Please fill out the form below so we can keep track of this conversation",
+                    "message": "Please fill out the form below so we can understand your food business needs",
                     "options": [
                         {
                             "type": "combined-form",
@@ -1010,22 +1008,6 @@ document.addEventListener("readystatechange", function (event) {
                         { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
                     ];
                 }
-                else if (service === "Food Processing") {
-                    return [
-                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
-                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
-                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Completed Business Plan", value: "Completed Business Plan" }
-                    ];
-                }
-                else if (service === "Food Service") {
-                    return [
-                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
-                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
-                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Completed Business Plan", value: "Completed Business Plan" }
-                    ];
-                }
                 else {
                     return [];
                 }
@@ -1044,7 +1026,7 @@ document.addEventListener("readystatechange", function (event) {
 
                     switch (item) {
                         case "Commercial Insurance":
-                            const CImsg = "You need insurance to protect your business. Here are some local insurance providers:";
+                            const CImsg = "Stir Makers are required, at their own expense, to maintain comprehensive general liability insurance with a minimum $3,000,000 general aggregate, with Kamloops Food Policy Council (185 Royal Ave, Kamloops, BC, V2B 8J6) listed as additional insured";
                             addMessage(CImsg, "self");
                             saveChatHistory(CImsg, "self");
                             options.push(
@@ -1055,6 +1037,10 @@ document.addEventListener("readystatechange", function (event) {
                                 {
                                     "title": "Click here for Hub International Insurance",
                                     "href": "https://www.hubinternational.com/en-CA/offices/ca/british-columbia/kamloops-third-avenue/"
+                                },
+                                {
+                                    "title": "Click here for Kamloops Insurance",
+                                    "href": "https://kamloopsinsurance.ca/"
                                 }
                             );
                             break;
@@ -1123,8 +1109,12 @@ document.addEventListener("readystatechange", function (event) {
                             addMessage(FSmsg, "self");
                             saveChatHistory(FSmsg, "self");
                             options.push({
-                                "title": "Click Here for the FoodSafe Course",
-                                "href": "https://www.foodsafe.ca/"
+                                "title": "Click Here for the Online FoodSafe Course",
+                                "href": "https://www.openschool.bc.ca/foodsafe_level1/"
+                            },
+                            {
+                                "title": "Click Here for the In-Person FoodSafe Course",
+                                "href": "https://courses.foodsafe.ca/course-search?field_course_name_tid=7&field_health_authorities_tid=1027&field_city_tid=4502&field_language_tid=38"
                             });
                             break;
                         case "Makership Membership":
@@ -1267,45 +1257,40 @@ document.addEventListener("readystatechange", function (event) {
                 form.onsubmit = function (event) {
                     event.preventDefault();
 
-                    // Check if at least one checkbox is checked
-                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-                    const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-
-                    if (!isChecked) {
-                        customAlert("Please select at least one option before submitting.");
-                        return;
-                    }
-
-                    // Handle Event Venue form submission
                     if (statemachine.currentState === "Event Venue") {
-                        var selectedValue = form.querySelector('input[type="radio"]:checked');
-
-                        // Validate form input
-                        if (selectedValue == null) {
-                            customAlert("Please select at least one option before submitting.");
-                            event.preventDefault();
-                        } else {
-                            // Collect form data
-                            const formData = {
-                                venue_capacity: Array.from(form.querySelectorAll('input[name="venue_capacity"]:checked')).map(cb => cb.value)[0],
-                                venue_location: Array.from(form.querySelectorAll('input[name="venue_location"]:checked')).map(cb => cb.id)[0],
-                            };
-
-                            // Validate required fields
-                            if (formData.venue_location == undefined || formData.venue_capacity == undefined) {
-                                alert("Please select at least one option before submitting.");
-                                event.preventDefault();
-                            } else {
-                                // Display selection summary
-                                const summaryMsg = `<div class="cm-msg-text-reply">You picked: ${formData.venue_location} venue for ${formData.venue_capacity} people</div>`;
-                                addMessage(summaryMsg, "user");
-                                saveChatHistory(summaryMsg, "user");
-                                option.callback(formData);
-                            }
+                        // Get all selected values for both venue capacity and location
+                        const selectedCapacity = form.querySelector('input[name="venue_capacity"]:checked');
+                        const selectedLocation = form.querySelector('input[name="venue_location"]:checked');
+                
+                        // Check if both capacity and location are selected
+                        if (!selectedCapacity || !selectedLocation) {
+                            customAlert("Please select both venue capacity and location before submitting.");
+                            return;
                         }
-                    } 
+                
+                        // Collect form data from valid selections
+                        const formData = {
+                            venue_capacity: selectedCapacity.value,
+                            venue_location: selectedLocation.id
+                        };
+                
+                        // Display selection summary
+                        const summaryMsg = `<div class="cm-msg-text-reply">You picked: <br><br> ${formData.venue_location} venue <br><br> ${formData.venue_capacity} people</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
+                        option.callback(formData);
+                    }
                     // Handle other form types
                     else {
+                        // Check if at least one checkbox is checked
+                        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+                        if (!isChecked) {
+                            customAlert("Please select at least one option before submitting.");
+                            return;
+                        }
+
                         // Collect form data
                         const formData = {
                             foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
