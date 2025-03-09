@@ -66,14 +66,12 @@ document.addEventListener("readystatechange", function (event) {
             chatCircle.addEventListener("click", () => {
                 chatCircle.classList.add("hidden");
                 chatBox.classList.add("show");
-                console.log("2")
 
             });
 
             chatBoxToggle.addEventListener("click", () => {
                 chatBox.classList.remove("show");
                 chatCircle.classList.remove("hidden");
-                console.log("1")
             });
 
 
@@ -170,27 +168,27 @@ document.addEventListener("readystatechange", function (event) {
                     "message": "What type of service are you looking for?",
                     "options": [
                         {
-                            "title": "Warehouse Space",
+                            "title": "Warehouse Storage Rental",
                             "next": "Contact Form",
                             "service": "warehouseSpace"
                         },
                         {
-                            "title": "Kitchen Rental",
+                            "title": "Commercial Kitchen Rental",
                             "next": "Contact Form",
                             "service": "kitchenRental"
                         },
                         {
-                            "title": "Event Venue",
+                            "title": "Event Venue Rental",
                             "next": "Event Venue",
                             "service": "Event Venue"
                         },
                         {
-                            "title": "Business Coach",
+                            "title": "Food Business Coaching",
                             "next": "Contact Form",
                             "service": "Business Coach"
                         },
                         {
-                            "title": "Ecommerce",
+                            "title": "E-Commerce",
                             "next": "Contact Form",
                             "service": "Ecommerce"
                         },
@@ -202,7 +200,12 @@ document.addEventListener("readystatechange", function (event) {
                 },
 
                 "Explain": {
-                    "message": "Here is a brief explanation of each service we offer.. <br> <br> <strong>Warehouse Space</strong>: A space for you to work on your projects <br><br> <strong>Kitchen Rental</strong>: A kitchen space for you to rent <br><br> <strong>Event Venue</strong>: A venue for hosting events <br><br> <strong>Business Coach</strong>: A coach to help you with your business <br><br> <strong>Ecommerce</strong>: An online platform for selling products",
+                    "message": `Here is a brief explanation of each service we offer.. <br> <br> 
+                    <strong>Warehouse Storage Rental</strong>:Rentable warehouse space by the pallet, available in ambient and frozen temperatures with forklift access <br><br>
+                    <strong>Commercial Kitchen Rental</strong>: Interior Health approved shared commercial kitchen space available for rent by the hour for food processing and catering businesses. <br><br>
+                    <strong>Event Venue Rental</strong>: A venue for hosting events <br><br> <strong>Business Coach</strong>: A coach to help you with your business <br><br>
+                    <strong>Food Business Coaching</strong>: Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, product development, packaging, business plan creation and food business financial planning.<br><br> 
+                    <strong>Ecommerce</strong>: Become a vendor in The Stir's online marketplace with monthly pickups from The Stir.`,
                     "options": [
                         {
                             "title": "Back to Services",
@@ -211,22 +214,45 @@ document.addEventListener("readystatechange", function (event) {
                     ]
                 },
 
-                "First Step": {
-                    "message": "The first step to this process is signing up for The Food Corridor",
-                    "options": [
+                "Type of Business": {
+                    "message": "What type of business are you?",
+                    "options":[
                         {
-                            "title": "Next Step",
-                            "next": "Check Signed Up"
-                        },
-                        {
-                            "title": "Sign up for the Food Corridor here",
-                            "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
-                        },
-                        {
-                            "title": "Back",
-                            "back": "services"
+                    "label": "Business Type:",
+                    "type": "radio",
+                    "boxes": [
+                        { name: "business_type", value: "Baker", id: "baker", label: "Baker" },
+                        { name: "business_type", value: "Beverage Manufacturer", id: "beverage_manufacturer", label: "Beverage Manufacturer" },
+                        { name: "business_type", value: "Caterer", id: "caterer", label: "Caterer" },
+                        { name: "business_type", value: "Chef or restaurateur", id: "chef_restaurateur", label: "Chef or restaurateur" },
+                        { name: "business_type", value: "Consumer packaged goods (CPG)", id: "cpg", label: "Consumer packaged goods (CPG)" },
+                        { name: "business_type", value: "Delivery-only", id: "delivery_only", label: "Delivery-only" },
+                        { name: "business_type", value: "Educator or cooking instructor", id: "educator_instructor", label: "Educator or cooking instructor" },
+                        { name: "business_type", value: "Food truck / mobile vendor", id: "food_truck", label: "Food truck / mobile vendor" },
+                        { name: "business_type", value: "Meal prep / kits", id: "meal_prep", label: "Meal prep / kits" },
+                        { name: "business_type", value: "Non-food products", id: "non_food_products", label: "Non-food products" },
+                        { name: "business_type", value: "Pet food maker", id: "pet_food_maker", label: "Pet food maker" },
+                        { name: "business_type", value: "Value-added producer or farmer (not baker)", id: "value_added_producer", label: "Value-added producer or farmer (not baker)" },
+                        { name: "business_type", value: "Other", id: "other", label: "Other" }
+                        ],
+                    // // Asynchronous callback function that handles business type selection
+                    "callback": async function (data) {
+                        // // Save business type to database
+                        // let result = await insertBusinessType({ userId: user, businessType: data.business_type });
+                        // // Log the result message
+                        // console.log(result.message);
+
+                        // Set next state based on business type
+                        statemachine.currentState = "Second Phase";
+
+                        // Save current state to persistence
+                        saveCurrentState(statemachine.currentState);
+
+                        // Update the chat interface
+                        statemachine.render();
                         }
-                    ]
+                    }
+                    ],
                 },
 
 
@@ -279,36 +305,6 @@ document.addEventListener("readystatechange", function (event) {
                 },
 
 
-                "Check Signed Up": {
-                    "message": "Are you already signed up for The Food Corridor?",
-                    "options": [
-                        {
-                            /*Database update here with callback function similar way like above where the form is*/
-                            "title": "Yes",
-                            "next": "BusinessStage"
-                        },
-                        {
-                            "title": "No",
-                            "next": "Not Signed up"
-                        }
-                    ]
-                },
-
-                "Not Signed up": {
-                    "message": "You need to sign up for The Food Corridor to proceed",
-                    "options": [
-                        {
-                            "title": "Press Here to Sign Up",
-                            "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
-                        },
-                        {
-                            "title": "Back",
-                            "back": "Check Signed Up"
-                        }
-                    ]
-                },
-
-
                 "Contact Form": {
                     "message": "Before moving onto the second phase, please fill out the form below so we can keep track of this conversation",
                     "options": [
@@ -348,7 +344,7 @@ document.addEventListener("readystatechange", function (event) {
                             // Update the user variable with new ID
                             user = response.userId;
                             // Set next state to "First Step"
-                            statemachine.currentState = "First Step";
+                            statemachine.currentState = "Type of Business";
                             // Save the current state
                             saveCurrentState();
 
@@ -396,13 +392,13 @@ document.addEventListener("readystatechange", function (event) {
                                     statemachine.currentState = "information";
                                 } else if (data.selectedValue === "Getting Started") {
                                     // Businesses with some progress go to second phase
-                                    statemachine.currentState = "Second Phase";
+                                    statemachine.currentState = "Type of Business";
                                 } else if (data.selectedValue === "Up N Running") {
                                     // Operating businesses go to second phase
-                                    statemachine.currentState = "Second Phase";
+                                    statemachine.currentState = "Type of Business";
                                 } else if (data.selectedValue === "Established") {
                                     // Established businesses go to second phase
-                                    statemachine.currentState = "Second Phase";
+                                    statemachine.currentState = "Type of Business";
                                 } else if (data.selectedValue === "Other") {
                                     // Non-food businesses go to information state
                                     statemachine.currentState = "information";
@@ -426,6 +422,44 @@ document.addEventListener("readystatechange", function (event) {
                                 // Update the chat interface
                                 statemachine.render();
                             }
+                        }
+                    ]
+                },
+
+                "information": {
+                    "message": `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
+                    Check out the following links for some free business planning resources. The Stir also offers food business coaching services. <br><br>
+                    You can restart this chat and inquire about Food Business Coaching services from The Stir.`,
+                    "options": [
+                        {
+                            "title": "SSFPA Recipe for Success",
+                            "href": "https://ssfpa.net/recipe-for-success/"
+                        },
+                        {
+                            "title": "Futurpreneur Rock My Business",
+                            "href": "https://futurpreneur.ca/en/program/rock-my-business/"
+                        },
+                        {
+                            "title": "BDC Business Plan Template",
+                            "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/business-plan-template"
+                        },
+                        {
+                            "title": "Community Futures Business Boot Camp",
+                            "href": "https://communityfutures.net/start-up-services/business-boot-camp/"
+                        },
+                        {
+                            "title": "Venture Kamloops VK Accelerate",
+                            "href": "https://venturekamloops.com/programs/vk-accelerate"
+                        },
+                    ]
+                },
+
+                "Other Phase": {
+                    "message": "Please fill out our Client Interest Form and add a detailed message so that our team can learn more about your needs and connect with you.",
+                    "options": [
+                        {
+                            "title": "Client Interest Form",
+                            "href": "https://www.thekitchendoor.com/kitchen-rental/the-stir/contact-kitchen"
                         }
                     ]
                 },
