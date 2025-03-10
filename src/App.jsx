@@ -19,10 +19,10 @@ function App() {
           <div className="chat-box">
             <div className="chat-box-header">
               <span className="chat-box-toggle"><button className="material-icons">&times;</button></span>
-
-              <p>Stir Food Assisstant</p>
-              <button id="clearHistoryButton">&#x27f3;</button>
-
+             <p>Stir Food Assistant</p>
+              <button id="clearHistoryButton">
+                <img src="bin.png" alt="Clear History" id="trashIcon" />
+                </button>
             </div>
             <div className="chat-box-body">
               <div className="chat-logs">
