@@ -10,12 +10,11 @@ function App() {
   return (
         <div>
           <div id="chat-circle">
-            <div className="chef" id="chef">
-            <video id="logo-video" autoPlay loop muted playsInline>
-              <source src="logo.mp4" type="video/mp4"></source>
-            </video>
-            </div>
-          </div>
+  <div className="chef" id="chef">
+    <img id="logo-image" src="new_logo.gif" alt="Logo" />
+  </div>
+</div>
+
 
           <div className="chat-box">
             <div className="chat-box-header">

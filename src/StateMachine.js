@@ -26,14 +26,15 @@ document.addEventListener("readystatechange", function (event) {
         today = mm + '/' + dd + '/' + yyyy;
 
         // Add click event listener to the chef logo
-        document.getElementById("logo-video").addEventListener("click", () => {
-            // Get help text element
-            const helpText = document.querySelector(".help-text");
-            // If help text exists, start animation
-            if (helpText) {
-                helpText.style.animation = "moveTextUp 3s linear infinite";
-            }
-        });
+document.getElementById("logo-image").addEventListener("click", () => {
+    // Get help text element
+    const helpText = document.querySelector(".help-text");
+    // If help text exists, start animation
+    if (helpText) {
+        helpText.style.animation = "moveTextUp 3s linear infinite";
+    }
+});
+
 
         // Get chat UI elements
         const chatCircle = document.getElementById("chat-circle");
