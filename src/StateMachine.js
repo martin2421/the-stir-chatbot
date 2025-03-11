@@ -564,14 +564,8 @@ document.getElementById("logo-image").addEventListener("click", () => {
                                 // Log database operation result
                                 console.log(result.message);
 
-                                // Set next state based on business type (all paths lead to Final Step)
-                                if (data.businessType === "Food Processing") {
-                                    statemachine.currentState = "Final Step";
-                                } else if (data.businessType === "Food Service") {
-                                    statemachine.currentState = "Final Step";
-                                } else {
-                                    statemachine.currentState = "Final Step";
-                                }
+                                statemachine.currentState = "Final Step";
+                                
                                 // Save current state to persistence
                                 saveCurrentState();
                                 // Update the chat interface
