@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType } from "./dynamoService";
 
 export default function StateMachine() {
 
@@ -238,10 +238,11 @@ document.getElementById("logo-image").addEventListener("click", () => {
                         ],
                     // // Asynchronous callback function that handles business type selection
                     "callback": async function (data) {
+                        // console.log(data);
                         // // Save business type to database
-                        // let result = await insertBusinessType({ userId: user, businessType: data.business_type });
-                        // // Log the result message
-                        // console.log(result.message);
+                        let result = await insertBusinessType({ userId: user, businessType: data.selectedValue });
+                        // Log the result message
+                        console.log(result.message);
 
                         // Set next state based on business type
                         statemachine.currentState = "Second Phase";
@@ -302,7 +303,6 @@ document.getElementById("logo-image").addEventListener("click", () => {
                         }
                     ]
                 },
-
 
                 "Contact Form": {
                     "message": "Before moving forward, please fill out the form below so we can keep track of this conversation",

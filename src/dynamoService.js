@@ -152,6 +152,33 @@ export const insertBusinessStage = async (data) => {
 
 
 
+
+export const insertBusinessType = async (data) => {
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "stir-test2",
+        Key: {
+          id: data.userId,
+        },
+        UpdateExpression: `set businessType = :type`,
+        ExpressionAttributeValues: {
+          ":type": data.businessType,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Business type was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+
+
+
 export const insertSignedUp = async (data) => {
 
   try {
