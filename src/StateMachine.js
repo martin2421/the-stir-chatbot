@@ -331,7 +331,7 @@ document.getElementById("logo-image").addEventListener("click", () => {
                                                 }
                                             } else if (selectedValue === "Outdoor") {
                                                 // For Outdoor, enable 50-100 and 100-150
-                                                input.disabled = input.value === "0-50";
+                                                input.disabled = input.value === "1-50";
                                                 if (input.disabled) {
                                                     input.checked = false;
                                                     input.parentElement.classList.add('disabled');
@@ -356,12 +356,12 @@ document.getElementById("logo-image").addEventListener("click", () => {
                             // Asynchronous callback function that handles form submission for venue selection
                             "callback": async function (data) {
                                 // Validate selection combination
-                                if (data.venue_location === "Indoor" && data.venue_capacity !== "0-50") {
-                                    customAlert("Indoor venues are only available for 0-50 people");
+                                if (data.venue_location === "Indoor" && data.venue_capacity !== "1-50") {
+                                    customAlert("Indoor venues are only available for 1-50 people");
                                     return;
                                 }
-                                if (data.venue_location === "Outdoor" && data.venue_capacity === "0-50") {
-                                    customAlert("Outdoor venues are not available for 0-50 people");
+                                if (data.venue_location === "Outdoor" && data.venue_capacity === "1-50") {
+                                    customAlert("Outdoor venues are not available for 1-50 people");
                                     return;
                                 }
                                 
