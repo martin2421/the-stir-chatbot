@@ -183,10 +183,11 @@ document.getElementById("logo-image").addEventListener("click", () => {
                             "next": "Event Venue",
                             "service": "Event Venue"
                         },
+                        // In the services state options, ensure consistency:
                         {
                             "title": "Food Business Coaching",
                             "next": "Contact Form",
-                            "service": "Business Coach"
+                            "service": "Food Business Coaching"
                         },
                         {
                             "title": "E-Commerce",
@@ -257,6 +258,46 @@ document.getElementById("logo-image").addEventListener("click", () => {
                     ],
                 },
 
+                "Business Coach": {
+                    "message": "Please select the type of coaching service you're interested in:",
+                    "options": [
+                        {
+                            "type": "radio",
+                            "label": "Business Coach Type:",  // Label for the radio button group
+                            "boxes": [
+                                { name: "coaching_needs", value: "Food Business Planning", id: "business_planning", label: "Food Business Planning" },
+                                { name: "coaching_needs", value: "Food Safety Planning", id: "safety_planning", label: "Food Safety Planning" },
+                                { name: "coaching_needs", value: "Product Development", id: "product_dev", label: "Product Development" },
+                                { name: "coaching_needs", value: "Water Activity and pH Testing", id: "testing", label: "Water Activity and pH Testing" },
+                                { name: "coaching_needs", value: "Regulatory Requirements", id: "regulatory", label: "Regulatory Requirements" }
+                            ],
+                            "callback": async function (data) {
+                                // Log submitted form data for debugging
+                                console.log("Form data:", data);
+
+                                // // Insert coaching needs into database
+                                // let result = await insertCoachingNeeds({ 
+                                //     userId: user, 
+                                //     coachingNeeds: JSON.stringify(data.selectedValue) 
+                                // });
+                                // // Log database operation result
+                                // console.log(result.message);
+
+                                // Set next state to "Final Step"
+                                statemachine.currentState = "Final Step";
+                                // Save current state to persistence
+                                saveCurrentState();
+                                // Update the chat interface
+                                statemachine.render();
+                            }
+                        },
+                        {
+                            "title": "Back",
+                            "back": "start"
+                        }
+                    ]
+                },
+
 
                 "Event Venue": {
                     "message": "Event Venues are available in the following types. Please select the type of venue you are looking for",
@@ -271,23 +312,61 @@ document.getElementById("logo-image").addEventListener("click", () => {
                                     "boxes": [
                                         { name: "venue_location", value: "Indoor", id: "Indoor", label: "Indoor Venue" },
                                         { name: "venue_location", value: "Outdoor", id: "Outdoor", label: "Outdoor Venue" }
-                                    ]
+                                    ],
+                                    // Add onChange handler to update capacity options based on location
+                                    "onChange": function(selectedValue) {
+                                        const capacityGroup = document.querySelector('div[data-name="venue_capacity"]');
+                                        const capacityInputs = capacityGroup.querySelectorAll('input[type="radio"]');
+                                        
+                                        // Enable/disable capacity options based on location
+                                        capacityInputs.forEach(input => {
+                                            if (selectedValue === "Indoor") {
+                                                // For Indoor, only enable 0-50
+                                                input.disabled = input.value !== "1-50";
+                                                if (input.disabled) {
+                                                    input.checked = false;
+                                                    input.parentElement.classList.add('disabled');
+                                                } else {
+                                                    input.parentElement.classList.remove('disabled');
+                                                }
+                                            } else if (selectedValue === "Outdoor") {
+                                                // For Outdoor, enable 50-100 and 100-150
+                                                input.disabled = input.value === "0-50";
+                                                if (input.disabled) {
+                                                    input.checked = false;
+                                                    input.parentElement.classList.add('disabled');
+                                                } else {
+                                                    input.parentElement.classList.remove('disabled');
+                                                }
+                                            }
+                                        });
+                                    }
                                 },
                                 {
                                     "type": "radio",
                                     "name": "venue_capacity",  // Second radio button group for capacity
                                     "label": "Venue Capacity:",  // Label for the radio button group
                                     "boxes": [
-                                        { name: "venue_capacity", value: "0-50", id: "small", label: "0-50 People" },
-                                        { name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People" },
-                                        { name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People" }
+                                        { name: "venue_capacity", value: "1-50", id: "small", label: "1-50 People (Indoor Only)" },
+                                        { name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People (Outdoor Only)" },
+                                        { name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People (Outdoor Only)" }
                                     ]
                                 }
                             ],
                             // Asynchronous callback function that handles form submission for venue selection
                             "callback": async function (data) {
+                                // Validate selection combination
+                                if (data.venue_location === "Indoor" && data.venue_capacity !== "0-50") {
+                                    customAlert("Indoor venues are only available for 0-50 people");
+                                    return;
+                                }
+                                if (data.venue_location === "Outdoor" && data.venue_capacity === "0-50") {
+                                    customAlert("Outdoor venues are not available for 0-50 people");
+                                    return;
+                                }
+                                
                                 // Check if both venue capacity and location are selected
-                                if (data.venue_capacity != undefined && data.venue_location != undefined) {
+                                if (data.venue_capacity !== undefined && data.venue_location !== undefined) {
                                     // Set the state machine to move to Contact Form state
                                     statemachine.currentState = "Contact Form";
                                     // Store venue details as JSON string with location and capacity
@@ -300,7 +379,7 @@ document.getElementById("logo-image").addEventListener("click", () => {
                                 // Re-render the state machine to show updated state
                                 statemachine.render();
                             }
-                        }
+                        },
                     ]
                 },
 
@@ -342,8 +421,14 @@ document.getElementById("logo-image").addEventListener("click", () => {
                             console.log(response.userId);
                             // Update the user variable with new ID
                             user = response.userId;
-                            // Set next state to "First Step"
-                            statemachine.currentState = "Type of Business";
+
+                            statemachine.serviceSelected = serviceSelected;
+
+                            if(statemachine.serviceSelected == "Food Business Coaching") {
+                                statemachine.currentState = "Business Coach";
+                            } else {
+                                statemachine.currentState = "Type of Business";
+                            }
                             // Save the current state
                             saveCurrentState();
 
@@ -975,10 +1060,9 @@ document.getElementById("logo-image").addEventListener("click", () => {
 
                 if (service === "warehouseSpace") {
                     return [
-                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
-                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
+                        { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
+                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership"}
                     ];
                 } else if (service === "kitchenRental") {
                     return [
@@ -987,20 +1071,14 @@ document.getElementById("logo-image").addEventListener("click", () => {
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
                         { name: "Completed Business Plan", value: "Completed Business Plan" },
                         { name: "FoodSafe Certificate", value: "FoodSafe Certificate", id: "FoodSafe Certificate" },
-                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
-                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
+                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership"},
+                        { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
                     ];
                 } else if (service === "Event Venue") {
                     return [
-                        { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Makership Membership", value: "Makership Membership", id: "Makership Membership" },
-                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
-                    ];
-                } else if (service === "Business Coach") {
-                    return [
-                        { name: "Makership Conduct Agreement", value: "Makership Conduct Agreement", id: "Makership Conduct Agreement" },
-                        { name: "Stir Maker Fee", value: "Stir Maker Fee", id: "Stir Maker Fee" }
+                        { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
+                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership"}
                     ];
                 }
                 else {
@@ -1040,7 +1118,7 @@ document.getElementById("logo-image").addEventListener("click", () => {
                             );
                             break;
                         case "City of Kamloops Business License":
-                            const BLmsg = "A business license is required to operate in Kamloops. You can apply here:";
+                            const BLmsg = "When you apply for Interior Health approval at our food hub address, they will notify the City of Kamloops Business License office. The City will require you to submit an application for a city business license and pay the associated fee. Once Interior Health approves your food premises application, they will sign off on your business license application and the City will issue your license.";
                             addMessage(BLmsg, "self");
                             saveChatHistory(BLmsg, "self");
                             options.push({
@@ -1088,16 +1166,40 @@ document.getElementById("logo-image").addEventListener("click", () => {
                             options.push({
                                 "title": "Click Here for the Interior Health Application Form",
                                 "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                            },
+                            {
+                                "title": "Interior Health Guide for Food Premises",
+                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
                             });
                             break;
                         case "Completed Business Plan":
-                            const BPmsg = "A business plan is essential for success. Here are some resources to help you get started:";
+                            const BPmsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
+                            Check out the following links for some free business planning resources. The Stir also offers food business coaching services. <br><br>
+                            You can restart this chat and inquire about Food Business Coaching services from The Stir.`;
                             addMessage(BPmsg, "self");
                             saveChatHistory(BPmsg, "self");
-                            options.push({
-                                "title": "Click Here for the Business Plan Guide",
-                                "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/pages/business-plan-template.aspx"
-                            });
+                            options.push(
+                            {
+                                "title": "SSFPA Recipe for Success",
+                                "href": "https://ssfpa.net/recipe-for-success/"
+                            },
+                            {
+                                "title": "Futurpreneur Rock My Business",
+                                "href": "https://futurpreneur.ca/en/program/rock-my-business/"
+                            },
+                            {
+                                "title": "BDC Business Plan Template",
+                                "href": "https://www.bdc.ca/en/articles-tools/entrepreneur-toolkit/templates-business-guides/business-plan-template"
+                            },
+                            {
+                                "title": "Community Futures Business Boot Camp",
+                                "href": "https://communityfutures.net/start-up-services/business-boot-camp/"
+                            },
+                            {
+                                "title": "Venture Kamloops VK Accelerate",
+                                "href": "https://venturekamloops.com/programs/vk-accelerate"
+                            },
+                            );
                             break;
                         case "FoodSafe Certificate":
                             const FSmsg = "Food safety is important! You'll need a FoodSafe certificate:";
@@ -1112,21 +1214,21 @@ document.getElementById("logo-image").addEventListener("click", () => {
                                 "href": "https://courses.foodsafe.ca/course-search?field_course_name_tid=7&field_health_authorities_tid=1027&field_city_tid=4502&field_language_tid=38"
                             });
                             break;
-                        case "Makership Membership":
+                        case "Stir Maker Membership":
                             const MMmsg = "You need to be a member of Makership to proceed. Sign up here:";
                             addMessage(MMmsg, "self");
                             saveChatHistory(MMmsg, "self");
                             options.push({
                                 "title": "Click Here to Sign Up for Makership",
-                                "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957"
+                                "href": "https://ca.services.docusign.net/webforms-ux/v1.0/forms/0de6dc66d96f1048f3d26c24a4ccfa07"
                             });
                             break;
-                        case "Stir Maker Fee":
-                            const SMmsg = "You need to pay the Stir Maker fee to proceed. Click below to pay:";
+                        case "Food Corridor Membership":
+                            const SMmsg = "You need to sign up for the Food Corridor for the Membership. Click below to Sign up:";
                             addMessage(SMmsg, "self");
                             saveChatHistory(SMmsg, "self");
                             options.push({
-                                "title": "Click Here to Pay the Stir Maker Fee",
+                                "title": "Sign Up for Food Corridor",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
                             });
                             break;
