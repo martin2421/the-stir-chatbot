@@ -1,4 +1,8 @@
 import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType } from "./dynamoService";
+import emailjs from '@emailjs/browser';
+
+emailjs.init('EosUxwgThQBLeEtBX')
+
 
 export default function StateMachine() {
 
@@ -415,6 +419,7 @@ export default function StateMachine() {
                                 let response = await insertData({ f_name, l_name, b_name, email, phone, today });
                                 // Log success message if data insertion was successful
                                 if (response.success) console.log("User data was inserted");
+                                sendEmail();
 
                                 // Store user ID in localStorage for persistence
                                 localStorage.setItem("userId", response.userId);
@@ -1706,3 +1711,19 @@ function formatPhoneNumber(input) {
     const formattedNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     return formattedNumber;
 }
+
+function sendEmail() {
+    const templateParams = {
+      name: "Peter Parker",
+      message: "This is a test email",
+      reply_to: "josueh0207@gmail.com"
+    };
+
+    emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
+      .then(response => {
+        console.log("Email sent successfully!", response.status, response.text);
+      })
+      .catch(error => {
+        console.error("Failed to send email", error);
+      });
+  }
