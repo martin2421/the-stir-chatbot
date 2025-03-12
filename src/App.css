@@ -13,26 +13,25 @@ body {
 
 
 #clearHistoryButton {
-    background: white; /* White background */
+    
     border: none;
     cursor: pointer;
     margin-right: 10px; /* Space from other elements */
+    margin-bottom: 6px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 40px; /* Button size */
-    height: 40px; /* Button size */
-    border-radius: 50%; /* Makes it a perfect circle */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow */
+    height: 30px; /* Button size */
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-weight: 900;
+    font-size: 35px; /* Adjust size */
+    
 }
 
-#clearHistoryButton img {
-    width: 30px; /* Adjust size of bin image */
-    height: 30px; /* Adjust size of bin image */
-    object-fit: contain; /* Ensures proper scaling */
-    filter: invert(0); /* Keeps bin icon black */
+#clearHistoryButton .fa {
+    color: white; /* Icon color */
 }
 
 #clearHistoryButton:hover {
