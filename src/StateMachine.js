@@ -460,6 +460,16 @@ export default function StateMachine() {
                     ]
                 },
 
+                "otherBusiness": {
+                    "message": `Please fill out our Client Interest Form and add a detailed message so that our team can learn more about your needs and connect with you.`,
+                    "options": [
+                        {
+                            "title": "Client Interest Form",
+                            "href": "https://www.thekitchendoor.com/kitchen-rental/the-stir/contact-kitchen"
+                        },
+                    ]
+                },
+
                 "BusinessStage": {
                     "message": "What stage is your business in?",
                     "options": [
@@ -490,7 +500,7 @@ export default function StateMachine() {
                                     statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Other") {
                                     // Non-food businesses go to information state
-                                    statemachine.currentState = "information";
+                                    statemachine.currentState = "otherBusiness";
                                 }
 
                                 // Log current user ID for debugging
@@ -1238,7 +1248,7 @@ export default function StateMachine() {
                     options.push({
                         "title": "Next Requirement",
                         "callback": function () {
-                            if(item == "Valid FoodSafe Level 1 Certification"){
+                            if (item == "Valid FoodSafe Level 1 Certification") {
                                 let IHmsg = `
                                 <div class="cm-msg-text">
                                     Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
@@ -1272,25 +1282,25 @@ export default function StateMachine() {
                                     <strong>Additional Info:</strong><br><br>
                                     Sewage Waste Disposal: Check community sewer
                                 </div>`;
-                            addMessage(IHmsg, "self");
-                            saveChatHistory(IHmsg, "self");
+                                addMessage(IHmsg, "self");
+                                saveChatHistory(IHmsg, "self");
 
-                            options.push({
-                                "title": "Click Here for the Interior Health Application Form",
-                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
-                            },
-                                {
-                                    "title": "Interior Health Guide for Food Premises",
-                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
-                                });
+                                options.push({
+                                    "title": "Click Here for the Interior Health Application Form",
+                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                                },
+                                    {
+                                        "title": "Interior Health Guide for Food Premises",
+                                        "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
+                                    });
                                 statemachine.currentUncheckedIndex++;
                                 statemachine.currentState = "handleUnchecked";
                                 statemachine.render();
-                            }else{
-                            // Increment index and refresh display
-                            statemachine.currentUncheckedIndex++;
-                            statemachine.currentState = "handleUnchecked";
-                            statemachine.render();
+                            } else {
+                                // Increment index and refresh display
+                                statemachine.currentUncheckedIndex++;
+                                statemachine.currentState = "handleUnchecked";
+                                statemachine.render();
                             }
                         }
                     });
