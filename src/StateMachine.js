@@ -208,9 +208,9 @@ export default function StateMachine() {
 
                 "Explain": {
                     "message": `Here is a brief explanation of each service we offer.. <br> <br> 
-                    <strong>Warehouse Storage Rental</strong>:Rentable warehouse space by the pallet, available in ambient and frozen temperatures with forklift access <br><br>
-                    <strong>Commercial Kitchen Rental</strong>: Interior Health approved shared commercial kitchen space available for rent by the hour for food processing and catering businesses. <br><br>
-                    <strong>Event Venue Rental</strong>: A venue for hosting events <br><br> <strong>Business Coach</strong>: A coach to help you with your business <br><br>
+                    <strong>Warehouse Storage Rental</strong>: Our shared warehouse storage is available at daily, weekly, monthly, and annual rates, starting at $75 per pallet per month. You'll have access to your dry-pallet or frozen storage space 24/7.<br><br>
+                    <strong>Commercial Kitchen Rental</strong>: The Stir Kitchen is an Interior Health approved shared food processing facility focused on helping local food entrepreneurs start-up and scale-up their businesses. Featuring flexible online booking at a tiered pricing scale based on usage and on-site dry, cold and frozen storage for your ingredients and supplies. The Stir Kitchen is equipped with large-scale equipment for dehydration, canning, baking, flash freezing and catering.<br><br>
+                    <strong>Event Venue Rental</strong>: Rent event or meeting space at The Stir in either our indoor Stirfront or Outdoor Riverfront Courtyard. The Stirfront has a 54 person capacity, and our Riverfront Courtyard can support events for up to 200 people! Our Stirfront is great for pop-up shops, meetings and workshops, while our Riverfront Courtyard has seen everything from cook-outs to dance parties! The Stir also has AV equipment, tables and chairs available to add your event rental.<br><br>
                     <strong>Food Business Coaching</strong>: Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, product development, packaging, business plan creation and food business financial planning.<br><br> 
                     <strong>Ecommerce</strong>: Become a vendor in The Stir's online marketplace with monthly pickups from The Stir.`,
                     "options": [
@@ -1032,36 +1032,36 @@ export default function StateMachine() {
                         saveChatHistory(summaryMsg, "user");
                     }
 
-                     let result;
- 
-                     if (localStorage.getItem("serviceSelected") == "Commercial Kitchen Rental") {
-                         // Save license status to database
-                         result = await insertLicences({
-                             userId: user,
-                             licenses: JSON.stringify({
-                                 "City of Kamloops Business License": cityKamloops,
-                                 "Commercial Insurance": commercialInsurance,
-                                 "Stir Maker Membership": makershipMembership,
-                                 "Food Corridor Membership": foodCorridorMembership,
-                                 "Interior Health": interiorHealth,
-                                 "Completed Business Plan": completedBusinessPlan,
-                                 "FoodSafe Certificate": foodSafeCertificate
-                             })
-                         });
-                         console.log(result.message);
-                     }
-                     else {
-                         // Save license status to database
-                         result = await insertLicences({
-                             userId: user,
-                             licenses: JSON.stringify({
-                                 "Food Corridor Membership": foodCorridorMembership,
-                                 "Commercial Insurance": commercialInsurance,
-                                 "Stir Makership Membership": makershipMembership,
-                             })
-                         });
-                         console.log(result.message);
-                     }
+                    let result;
+
+                    if (localStorage.getItem("serviceSelected") == "Commercial Kitchen Rental") {
+                        // Save license status to database
+                        result = await insertLicences({
+                            userId: user,
+                            licenses: JSON.stringify({
+                                "City of Kamloops Business License": cityKamloops,
+                                "Commercial Insurance": commercialInsurance,
+                                "Stir Maker Membership": makershipMembership,
+                                "Food Corridor Membership": foodCorridorMembership,
+                                "Interior Health": interiorHealth,
+                                "Completed Business Plan": completedBusinessPlan,
+                                "FoodSafe Certificate": foodSafeCertificate
+                            })
+                        });
+                        console.log(result.message);
+                    }
+                    else {
+                        // Save license status to database
+                        result = await insertLicences({
+                            userId: user,
+                            licenses: JSON.stringify({
+                                "Food Corridor Membership": foodCorridorMembership,
+                                "Commercial Insurance": commercialInsurance,
+                                "Stir Makership Membership": makershipMembership,
+                            })
+                        });
+                        console.log(result.message);
+                    }
 
                     // Handle navigation based on checked status
                     if (uncheckedValues.length > 0) {
@@ -1104,9 +1104,9 @@ export default function StateMachine() {
                         { name: "Interior Health", value: "Interior Health Food Premises Approval", id: "Interior Health" },
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Completed Business Plan", value: "Completed Business Plan", id:"Completed Business Plan"},
-                        
-                        
+                        { name: "Completed Business Plan", value: "Completed Business Plan", id: "Completed Business Plan" },
+
+
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
                     ];
                 } else if (service === "Event Venue") {
@@ -1162,50 +1162,14 @@ export default function StateMachine() {
                             });
                             break;
                         case "Interior Health Food Premises Approval":
-                            const IHmsg = `
-                                <div class="cm-msg-text">
-                                    Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
-                                    <strong>Section A:</strong><br><br>
-                                    <strong>Business/Facility Name:</strong> Your Business Name<br><br>
-                                    <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
-                                    <strong>Facility Site Address:</strong> 185 Royal Ave, Kamloops, BC, V2C 6A9<br><br>
-                                    <strong>Site Phone:</strong> 778.870.9867<br><br>
-                                    <strong>Cell Phone:</strong> Your Cell Number<br><br>
-                                    <strong>Type of Ownership:</strong> Check what applies to your business<br><br>
-                                    <strong>Legal Owner Name:</strong> Your business name (if incorporated) or your name (if sole proprietorship/partnership)<br><br>
-                                    Fill remaining sections with your contact info and mailing address<br><br>
-                            
-                                    <strong>Section B:</strong><br><br>
-                                    <strong>Start Date:</strong> Your planned start date<br><br>
-                                    <strong>Months of Operation:</strong> Specify if not year-round<br><br>
-                            
-                                    <strong>Business Type - Check one of the following:</strong><br><br>
-                                    <strong>For Food Processors:</strong><br><br>
-                                    Check "Food Other" and "Other"<br><br>
-                                    Specify your product (e.g., "Canning")<br><br>
-                            
-                                    <strong>For Bakeries:</strong><br><br>
-                                    Check "Food Other" and "Bakery"<br><br>
-                            
-                                    <strong>For Caterers:</strong><br><br>
-                                    Check "Food Service Establishment"<br><br>
-                                    Check "50 seats or less"<br><br>
-                                    Write "Catering" in the box<br><br>
-                            
-                                    <strong>Additional Info:</strong><br><br>
-                                    Sewage Waste Disposal: Check community sewer
-                                </div>`;
+                            let IHmsg = `All businesses selling food to the public are required to obtain their own Food Premises Approval from Interior Health at The Stir’s address. Once you have signed up as a Stir Maker, our team will provide you with the facility floor plan, our facility sanitation plan and offer guidance on creating your food safety plan(s).`;
                             addMessage(IHmsg, "self");
                             saveChatHistory(IHmsg, "self");
 
                             options.push({
-                                "title": "Click Here for the Interior Health Application Form",
-                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
-                            },
-                                {
-                                    "title": "Interior Health Guide for Food Premises",
-                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
-                                });
+                                "title": "Click Here here for the Interior Health Guide",
+                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
+                            });
                             break;
                         case "Completed Business Plan":
                             const BPmsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
@@ -1274,10 +1238,60 @@ export default function StateMachine() {
                     options.push({
                         "title": "Next Requirement",
                         "callback": function () {
+                            if(item == "Valid FoodSafe Level 1 Certification"){
+                                let IHmsg = `
+                                <div class="cm-msg-text">
+                                    Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
+                                    <strong>Section A:</strong><br><br>
+                                    <strong>Business/Facility Name:</strong> Your Business Name<br><br>
+                                    <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
+                                    <strong>Facility Site Address:</strong> 185 Royal Ave, Kamloops, BC, V2C 6A9<br><br>
+                                    <strong>Site Phone:</strong> 778.870.9867<br><br>
+                                    <strong>Cell Phone:</strong> Your Cell Number<br><br>
+                                    <strong>Type of Ownership:</strong> Check what applies to your business<br><br>
+                                    <strong>Legal Owner Name:</strong> Your business name (if incorporated) or your name (if sole proprietorship/partnership)<br><br>
+                                    Fill remaining sections with your contact info and mailing address<br><br>
+                            
+                                    <strong>Section B:</strong><br><br>
+                                    <strong>Start Date:</strong> Your planned start date<br><br>
+                                    <strong>Months of Operation:</strong> Specify if not year-round<br><br>
+                            
+                                    <strong>Business Type - Check one of the following:</strong><br><br>
+                                    <strong>For Food Processors:</strong><br><br>
+                                    Check "Food Other" and "Other"<br><br>
+                                    Specify your product (e.g., "Canning")<br><br>
+                            
+                                    <strong>For Bakeries:</strong><br><br>
+                                    Check "Food Other" and "Bakery"<br><br>
+                            
+                                    <strong>For Caterers:</strong><br><br>
+                                    Check "Food Service Establishment"<br><br>
+                                    Check "50 seats or less"<br><br>
+                                    Write "Catering" in the box<br><br>
+                            
+                                    <strong>Additional Info:</strong><br><br>
+                                    Sewage Waste Disposal: Check community sewer
+                                </div>`;
+                            addMessage(IHmsg, "self");
+                            saveChatHistory(IHmsg, "self");
+
+                            options.push({
+                                "title": "Click Here for the Interior Health Application Form",
+                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                            },
+                                {
+                                    "title": "Interior Health Guide for Food Premises",
+                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
+                                });
+                                statemachine.currentUncheckedIndex++;
+                                statemachine.currentState = "handleUnchecked";
+                                statemachine.render();
+                            }else{
                             // Increment index and refresh display
                             statemachine.currentUncheckedIndex++;
                             statemachine.currentState = "handleUnchecked";
                             statemachine.render();
+                            }
                         }
                     });
                 } else {
@@ -1716,16 +1730,16 @@ function formatPhoneNumber(input) {
 
 function sendEmail() {
     const templateParams = {
-      name: "Peter Parker",
-      message: "This is a test email",
-      reply_to: "josueh0207@gmail.com"
+        name: "Peter Parker",
+        message: "This is a test email",
+        reply_to: "josueh0207@gmail.com"
     };
 
     emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
-      .then(response => {
-        console.log("Email sent successfully!", response.status, response.text);
-      })
-      .catch(error => {
-        console.error("Failed to send email", error);
-      });
-  }
+        .then(response => {
+            console.log("Email sent successfully!", response.status, response.text);
+        })
+        .catch(error => {
+            console.error("Failed to send email", error);
+        });
+}
