@@ -303,7 +303,6 @@ export default function StateMachine() {
                     ]
                 },
 
-
                 "Event Venue": {
                     "message": "Event Venues are available in the following types. Please select the type of venue you are looking for",
                     "options": [
@@ -554,7 +553,6 @@ export default function StateMachine() {
                     ]
                 },
 
-
                 "Second Phase": {
                     "message": "Great! Let's check the pre-rental checklist of what you have",
                     "options": [
@@ -590,7 +588,6 @@ export default function StateMachine() {
                         }
                     ]
                 },
-
 
                 "Food Form": {
                     "message": "Please fill out the form below so we can understand your food business needs",
@@ -679,7 +676,6 @@ export default function StateMachine() {
                         }
                     ]
                 },
-
 
                 // Then update the handleUnchecked state to use this function:
                 "handleUnchecked": {
@@ -1102,9 +1098,9 @@ export default function StateMachine() {
                         { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
                         { name: "FoodSafe Certificate", value: "Valid FoodSafe Level 1 Certification", id: "FoodSafe Certificate" },
                         { name: "Interior Health", value: "Interior Health Food Premises Approval", id: "Interior Health" },
+                        { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
-                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
-                        { name: "Completed Business Plan", value: "Completed Business Plan", id: "Completed Business Plan" },
+                        { name: "Completed Business Plan", value: "Completed 2-Year Business Plan", id: "Completed Business Plan" },
 
 
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
@@ -1133,9 +1129,13 @@ export default function StateMachine() {
                     const item = uncheckedItems[statemachine.currentUncheckedIndex];
 
                     switch (item) {
-                        case "Commercial Insurance":
-                            const CImsg = "Stir Makers are required, at their own expense, to maintain comprehensive general liability insurance with a minimum $3,000,000 general aggregate, with Kamloops Food Policy Council (185 Royal Ave, Kamloops, BC, V2B 8J6) listed as additional insured";
+                        case "Commercial Liability Insurance":
+                            let CImsg = "Stir Makers are required, at their own expense, to maintain comprehensive general liability insurance with a minimum $3,000,000 general aggregate limit, and list Kamloops Food Policy Council (185 Royal Ave, Kamloops, BC, V2B 8J6) as additional insured on their policy.";
                             addMessage(CImsg, "self");
+
+                            CImsg = "While there are many insurance brokers available, most of our clients have successfully found affordable policies through these local brokers:";
+                            addMessage(CImsg, "self");
+
                             saveChatHistory(CImsg, "self");
                             options.push(
                                 {
@@ -1171,7 +1171,7 @@ export default function StateMachine() {
                                 "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
                             });
                             break;
-                        case "Completed Business Plan":
+                        case "Completed 2-Year Business Plan":
                             const BPmsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
                             Check out the following links for some free business planning resources. The Stir also offers food business coaching services. <br><br>
                             You can restart this chat and inquire about Food Business Coaching services from The Stir.`;
