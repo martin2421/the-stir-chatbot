@@ -460,6 +460,58 @@ export default function StateMachine() {
                     ]
                 },
 
+
+                "interiorHealth": {
+                    "message": `
+                                <div class="cm-msg-text">
+                                    Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
+                                    <strong>Section A:</strong><br><br>
+                                    <strong>Business/Facility Name:</strong> Your Business Name<br><br>
+                                    <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
+                                    <strong>Facility Site Address:</strong> 185 Royal Ave, Kamloops, BC, V2C 6A9<br><br>
+                                    <strong>Site Phone:</strong> 778.870.9867<br><br>
+                                    <strong>Cell Phone:</strong> Your Cell Number<br><br>
+                                    <strong>Type of Ownership:</strong> Check what applies to your business<br><br>
+                                    <strong>Legal Owner Name:</strong> Your business name (if incorporated) or your name (if sole proprietorship/partnership)<br><br>
+                                    Fill remaining sections with your contact info and mailing address<br><br>
+                            
+                                    <strong>Section B:</strong><br><br>
+                                    <strong>Start Date:</strong> Your planned start date<br><br>
+                                    <strong>Months of Operation:</strong> Specify if not year-round<br><br>
+                            
+                                    <strong>Business Type - Check one of the following:</strong><br><br>
+                                    <strong>For Food Processors:</strong><br><br>
+                                    Check "Food Other" and "Other"<br><br>
+                                    Specify your product (e.g., "Canning")<br><br>
+                            
+                                    <strong>For Bakeries:</strong><br><br>
+                                    Check "Food Other" and "Bakery"<br><br>
+                            
+                                    <strong>For Caterers:</strong><br><br>
+                                    Check "Food Service Establishment"<br><br>
+                                    Check "50 seats or less"<br><br>
+                                    Write "Catering" in the box<br><br>
+                            
+                                    <strong>Additional Info:</strong><br><br>
+                                    Sewage Waste Disposal: Check community sewer
+                                </div>`,
+                    "options": [
+                        {
+                            "title": "Click Here for the Interior Health Application Form",
+                            "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
+                        },
+                        {
+                            "title": "Next Requirement",
+                            "callback": function () {
+                                // Increment index and refresh display
+                                statemachine.currentUncheckedIndex++;
+                                statemachine.currentState = "handleUnchecked";
+                                statemachine.render();
+                            }
+                        }
+                    ]
+                },
+
                 "otherBusiness": {
                     "message": `Please fill out our Client Interest Form and add a detailed message so that our team can learn more about your needs and connect with you.`,
                     "options": [
@@ -1176,10 +1228,12 @@ export default function StateMachine() {
                             addMessage(IHmsg, "self");
                             saveChatHistory(IHmsg, "self");
 
-                            options.push({
-                                "title": "Click Here here for the Interior Health Guide",
-                                "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
-                            });
+                            options.push(
+                                {
+                                    "title": "Click Here here for the Interior Health Guide",
+                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
+                                },
+                            );
                             break;
                         case "Completed 2-Year Business Plan":
                             const BPmsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
@@ -1245,65 +1299,22 @@ export default function StateMachine() {
                             addMessage(`You need to complete your ${item} before proceeding.`, "user");
                     }
 
-                    options.push({
-                        "title": "Next Requirement",
-                        "callback": function () {
-                            if (item == "Valid FoodSafe Level 1 Certification") {
-                                let IHmsg = `
-                                <div class="cm-msg-text">
-                                    Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
-                                    <strong>Section A:</strong><br><br>
-                                    <strong>Business/Facility Name:</strong> Your Business Name<br><br>
-                                    <strong>Business/Facility Email:</strong> foodhub@kamloopsfoodpolicycouncil.com<br><br>
-                                    <strong>Facility Site Address:</strong> 185 Royal Ave, Kamloops, BC, V2C 6A9<br><br>
-                                    <strong>Site Phone:</strong> 778.870.9867<br><br>
-                                    <strong>Cell Phone:</strong> Your Cell Number<br><br>
-                                    <strong>Type of Ownership:</strong> Check what applies to your business<br><br>
-                                    <strong>Legal Owner Name:</strong> Your business name (if incorporated) or your name (if sole proprietorship/partnership)<br><br>
-                                    Fill remaining sections with your contact info and mailing address<br><br>
-                            
-                                    <strong>Section B:</strong><br><br>
-                                    <strong>Start Date:</strong> Your planned start date<br><br>
-                                    <strong>Months of Operation:</strong> Specify if not year-round<br><br>
-                            
-                                    <strong>Business Type - Check one of the following:</strong><br><br>
-                                    <strong>For Food Processors:</strong><br><br>
-                                    Check "Food Other" and "Other"<br><br>
-                                    Specify your product (e.g., "Canning")<br><br>
-                            
-                                    <strong>For Bakeries:</strong><br><br>
-                                    Check "Food Other" and "Bakery"<br><br>
-                            
-                                    <strong>For Caterers:</strong><br><br>
-                                    Check "Food Service Establishment"<br><br>
-                                    Check "50 seats or less"<br><br>
-                                    Write "Catering" in the box<br><br>
-                            
-                                    <strong>Additional Info:</strong><br><br>
-                                    Sewage Waste Disposal: Check community sewer
-                                </div>`;
-                                addMessage(IHmsg, "self");
-                                saveChatHistory(IHmsg, "self");
-
-                                options.push({
-                                    "title": "Click Here for the Interior Health Application Form",
-                                    "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/application-for-food-premises-health-protection.pdf"
-                                },
-                                    {
-                                        "title": "Interior Health Guide for Food Premises",
-                                        "href": "https://www.interiorhealth.ca/sites/default/files/PDFS/guide-applying-for-food-premises-approval.pdf"
-                                    });
-                                statemachine.currentUncheckedIndex++;
-                                statemachine.currentState = "handleUnchecked";
-                                statemachine.render();
-                            } else {
+                    if (item == "Interior Health Food Premises Approval") {
+                        options.push({
+                            "title": "Next",
+                            "back": "interiorHealth"
+                        });
+                    } else {
+                        options.push({
+                            "title": "Next Requirement",
+                            "callback": function () {
                                 // Increment index and refresh display
                                 statemachine.currentUncheckedIndex++;
                                 statemachine.currentState = "handleUnchecked";
                                 statemachine.render();
                             }
-                        }
-                    });
+                        });
+                    }
                 } else {
                     // Reset index when all items are processed
                     statemachine.currentUncheckedIndex = 0;
