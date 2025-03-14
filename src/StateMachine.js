@@ -174,14 +174,14 @@ export default function StateMachine() {
                     "message": "What type of service are you looking for?",
                     "options": [
                         {
-                            "title": "Warehouse Storage Rental",
-                            "next": "Contact Form",
-                            "service": "warehouseSpace"
-                        },
-                        {
                             "title": "Commercial Kitchen Rental",
                             "next": "Contact Form",
                             "service": "kitchenRental"
+                        },
+                        {
+                            "title": "Warehouse Storage Rental",
+                            "next": "Contact Form",
+                            "service": "warehouseSpace"
                         },
                         {
                             "title": "Event Venue Rental",
@@ -251,7 +251,7 @@ export default function StateMachine() {
                                 console.log(result.message);
 
                                 // Set next state based on business type
-                                statemachine.currentState = "Second Phase";
+                                statemachine.currentState = "BusinessStage";
 
                                 // Save current state to persistence
                                 saveCurrentState(statemachine.currentState);
@@ -419,7 +419,7 @@ export default function StateMachine() {
                                 let response = await insertData({ f_name, l_name, b_name, email, phone, today });
                                 // Log success message if data insertion was successful
                                 if (response.success) console.log("User data was inserted");
-                                sendEmail();
+                                // sendEmail();
 
                                 // Store user ID in localStorage for persistence
                                 localStorage.setItem("userId", response.userId);
@@ -471,7 +471,7 @@ export default function StateMachine() {
                                 { name: "business_stage", value: "Brand New", id: "brand_new", label: "Brand New (concept phase, no sales)" },
                                 { name: "business_stage", value: "Getting Started", id: "getting_started", label: "Getting Started (some sales, have most legal docs)" },
                                 { name: "business_stage", value: "Up N Running", id: "up_n_running", label: "Up N Running (selling, have legal docs)" },
-                                { name: "business_stage", value: "Established", id: "established", label: "Established (selling, have legal docs)" },
+                                { name: "business_stage", value: "Established", id: "established", label: "Established (scaling, established sales channels)" },
                                 { name: "business_stage", value: "Other", id: "other", label: "Other (not a food business)" }
                             ],
                             // Asynchronous callback function that handles business stage selection
@@ -482,13 +482,13 @@ export default function StateMachine() {
                                     statemachine.currentState = "information";
                                 } else if (data.selectedValue === "Getting Started") {
                                     // Businesses with some progress go to second phase
-                                    statemachine.currentState = "Type of Business";
+                                    statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Up N Running") {
                                     // Operating businesses go to second phase
-                                    statemachine.currentState = "Type of Business";
+                                    statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Established") {
                                     // Established businesses go to second phase
-                                    statemachine.currentState = "Type of Business";
+                                    statemachine.currentState = "Second Phase";
                                 } else if (data.selectedValue === "Other") {
                                     // Non-food businesses go to information state
                                     statemachine.currentState = "information";
@@ -852,7 +852,7 @@ export default function StateMachine() {
                                         signed = true;
                                     }
                                     // Save signup status to database
-                                    let result = await insertSignedUp({ userId: user, signedUp: signed });
+                                    let result = await insertSignedUp({ userId: user, signedUp: today });
                                     console.log(result.message);
                                 }
                                 // Trigger state machine interaction

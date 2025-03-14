@@ -188,7 +188,7 @@ export const insertSignedUp = async (data) => {
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set signedUp = :signed`,
+        UpdateExpression: `set Signed up as Stir Member. = :signed`,
         ExpressionAttributeValues: {
           ":signed": data.signedUp,
         },
