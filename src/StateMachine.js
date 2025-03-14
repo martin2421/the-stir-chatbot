@@ -1099,12 +1099,14 @@ export default function StateMachine() {
                     ];
                 } else if (service === "kitchenRental") {
                     return [
-                        { name: "Interior Health", value: "Interior Health", id: "Interior Health" },
+                        { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
+                        { name: "FoodSafe Certificate", value: "Valid FoodSafe Level 1 Certification", id: "FoodSafe Certificate" },
+                        { name: "Interior Health", value: "Interior Health Food Premises Approval", id: "Interior Health" },
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
                         { name: "Completed Business Plan", value: "Completed Business Plan", id:"Completed Business Plan"},
-                        { name: "FoodSafe Certificate", value: "FoodSafe Certificate", id: "FoodSafe Certificate" },
-                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership" },
+                        
+                        
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
                     ];
                 } else if (service === "Event Venue") {
@@ -1159,7 +1161,7 @@ export default function StateMachine() {
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
-                        case "Interior Health":
+                        case "Interior Health Food Premises Approval":
                             const IHmsg = `
                                 <div class="cm-msg-text">
                                     Food safety is important! You'll need Interior Health approval. Here's how to fill out the application <br><br>
@@ -1234,7 +1236,7 @@ export default function StateMachine() {
                                 },
                             );
                             break;
-                        case "FoodSafe Certificate":
+                        case "Valid FoodSafe Level 1 Certification":
                             const FSmsg = "Food safety is important! You'll need a FoodSafe certificate:";
                             addMessage(FSmsg, "self");
                             saveChatHistory(FSmsg, "self");
@@ -1247,7 +1249,7 @@ export default function StateMachine() {
                                     "href": "https://courses.foodsafe.ca/course-search?field_course_name_tid=7&field_health_authorities_tid=1027&field_city_tid=4502&field_language_tid=38"
                                 });
                             break;
-                        case "Stir Maker Membership":
+                        case "Sign Up as a Stir Maker":
                             const MMmsg = "You need to be a member of Makership to proceed. Sign up here:";
                             addMessage(MMmsg, "self");
                             saveChatHistory(MMmsg, "self");
