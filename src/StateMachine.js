@@ -289,7 +289,7 @@ export default function StateMachine() {
                                 // console.log(result.message);
 
                                 // Set next state to "Final Step"
-                                statemachine.currentState = "Final Step";
+                                statemachine.currentState = "Other Phase";
                                 // Save current state to persistence
                                 saveCurrentState();
                                 // Update the chat interface
@@ -372,7 +372,7 @@ export default function StateMachine() {
                                 // Check if both venue capacity and location are selected
                                 if (data.venue_capacity !== undefined && data.venue_location !== undefined) {
                                     // Set the state machine to move to Contact Form state
-                                    statemachine.currentState = "Contact Form";
+                                    statemachine.currentState = "EquipmentRental";
                                     // Store venue details as JSON string with location and capacity
                                     eventVenue = JSON.stringify({
                                         venue_location: data.venue_location,
@@ -388,7 +388,7 @@ export default function StateMachine() {
                 },
 
                 "Contact Form": {
-                    "message": "Before moving forward, please fill out the form below so we can keep track of this conversation",
+                    "message": "Before moving on, please fill out the form below so we can keep track of this conversation and our team can contact you with a rental quote.",
                     "options": [
                         {
                             // Define the form structure with input fields
@@ -431,7 +431,12 @@ export default function StateMachine() {
 
                                 if (statemachine.serviceSelected == "Food Business Coaching") {
                                     statemachine.currentState = "Business Coach";
-                                } else {
+                                } else if (statemachine.serviceSelected == "Warehouse Storage Rental") {
+                                    statemachine.currentState = "WarehouseOptions";
+                                }else if (statemachine.serviceSelected == "Event Venue Rental") {
+                                    statemachine.currentState = "Second Phase";
+                                }
+                                else {
                                     statemachine.currentState = "Type of Business";
                                 }
                                 // Save the current state
@@ -460,6 +465,65 @@ export default function StateMachine() {
                     ]
                 },
 
+                "WarehouseOptions": {
+                    "message": "Please select the options that apply to your warehouse storage needs",
+                    "options": [
+                        {
+                            "type": "combined-form",
+                            "elements": [
+                                {
+                                    "type": "radio",
+                                    "name": "dry_storage",  // First radio button group for location
+                                    "label": "Dry/Ambient Storage:",  // Label for the radio button group
+                                    "boxes": [
+                                        { name: "dry_storage", value: "0", id: "dry_storage_0", label: "0" },
+                                        { name: "dry_storage", value: "1", id: "dry_storage_1", label: "1" },
+                                        { name: "dry_storage", value: "2", id: "dry_storage_2", label: "2" },
+                                        { name: "dry_storage", value: "3+", id: "dry_storage_3", label: "3+" }
+                                    ],
+                                },
+                                {
+                                    "type": "radio",
+                                    "name": "frozen_storage",  // Second radio button group for capacity
+                                    "label": "Frozen Storage:",  // Label for the radio button group
+                                    "boxes": [
+                                        { name: "frozen_storage", value: "0", id: "frozen_storage_0", label: "0" },
+                                        { name: "frozen_storage", value: "1", id: "frozen_storage_1", label: "1" },
+                                        { name: "frozen_storage", value: "2", id: "frozen_storage_2", label: "2" },
+                                        { name: "frozen_storage", value: "3+", id: "frozen_storage_3", label: "3+" }
+                                    ]
+                                }
+                            ],
+                            // Asynchronous callback function that handles form submission for venue selection
+                            "callback": async function (data) {
+                                // Check if both venue capacity and location are selected
+                                if (data.dry_storage !== undefined && data.frozen_storage !== undefined) {
+                                    // Set the state machine to move to Contact Form state
+                                    statemachine.currentState = "Second Phase";
+
+                                    console.log(data);
+                                    saveCurrentState();
+                                }
+                                // Re-render the state machine to show updated state
+                                statemachine.render();
+                            }
+                        },
+                    ]
+                },
+
+                "EquipmentRental": {
+                    
+                    "message": "Please select the equipment you would like to rent",
+                    "options": [
+                        {
+                            "type": "checkbox",
+                            "boxes": function () {
+                                let result = getCheckboxesForService("Equipment Rental");
+                                return result;
+                            }
+                        }
+                    ],                
+                },
 
                 "interiorHealth": {
                     "message": `
@@ -611,6 +675,10 @@ export default function StateMachine() {
                         {
                             "title": "Client Interest Form",
                             "href": "https://www.thekitchendoor.com/kitchen-rental/the-stir/contact-kitchen"
+                        },
+                        {
+                            "title": "Done",
+                            "back": "Final Step"
                         }
                     ]
                 },
@@ -1083,12 +1151,20 @@ export default function StateMachine() {
                         }
                     });
 
-                    // Display summary of checked items
-                    if (checkedValues.length > 0) {
+                    if(statemachine.currentState == "EquipmentRental") {
+                        const summaryMsg = `<div class="cm-msg-text-reply">You picked:<br><br> ${checkedValues.join("<br><br>")}</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
+                        statemachine.currentState = "Contact Form";
+                        statemachine.render();
+                        return;
+                    }else if (checkedValues.length > 0) {
                         const summaryMsg = `<div class="cm-msg-text-reply">You have:<br> ${checkedValues.join("<br><br>")}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                     }
+
+                    
 
                     let result;
 
@@ -1151,9 +1227,9 @@ export default function StateMachine() {
 
                 if (service === "warehouseSpace") {
                     return [
-                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
-                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership" }
+                        { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                     ];
                 } else if (service === "kitchenRental") {
                     return [
@@ -1163,15 +1239,22 @@ export default function StateMachine() {
                         { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                         { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                         { name: "Completed Business Plan", value: "Completed 2-Year Business Plan", id: "Completed Business Plan" },
-
-
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
                     ];
                 } else if (service === "Event Venue") {
                     return [
-                        { name: "Commercial Insurance", value: "Commercial Insurance", id: "Commercial Insurance" },
+                        { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
-                        { name: "Stir Maker Membership", value: "Stir Maker Membership", id: "Stir Maker Membership" }
+                        { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
+                    ];
+                } else if(service === "Equipment Rental") {
+                    return [
+                        { name: "Folding Tables", value: "Folding Tables", id: "Folding Tables" },
+                        { name: "Folding Chairs", value: "Folding Chairs", id: "Folding Chairs" },
+                        { name: "Speakers", value: "Speakers", id: "Speakers" },
+                        { name: "Microphone", value: "Microphone", id: "Microphone" },
+                        { name: "Projector", value: "Projector", id: "Projector" },
+                        { name: "Projector Screen", value: "Projector Screen", id: "Projector Screen" }
                     ];
                 }
                 else {
@@ -1446,6 +1529,29 @@ export default function StateMachine() {
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                         option.callback(formData);
+                    }else if(statemachine.currentState === "WarehouseOptions"){
+                            // Get all selected values for both venue capacity and location
+                            const selectedFrozen = form.querySelector('input[name="dry_storage"]:checked');
+                            const selectedDry = form.querySelector('input[name="frozen_storage"]:checked');
+    
+                            // Check if both capacity and location are selected
+                            if (!selectedFrozen || !selectedDry) {
+                                customAlert("Please select both venue capacity and location before submitting.");
+                                return;
+                            }
+    
+                            // Collect form data from valid selections
+                            const formData = {
+                                dry_storage: selectedFrozen.value,
+                                frozen_storage: selectedDry.value
+                            };
+    
+                            // Display selection summary
+                            const summaryMsg = `<div class="cm-msg-text-reply">You picked: <br><br> ${formData.dry_storage} dry/ambient storage <br><br> ${formData.frozen_storage} frozen storage</div>`;
+                            addMessage(summaryMsg, "user");
+                            saveChatHistory(summaryMsg, "user");
+                            option.callback(formData);
+                        
                     }
                     // Handle other form types
                     else {
