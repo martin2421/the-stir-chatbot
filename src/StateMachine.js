@@ -54,6 +54,9 @@ export default function StateMachine() {
                 localStorage.removeItem("serviceSelected");
                 localStorage.removeItem("currentState");
                 localStorage.removeItem("eventVenue");
+                localStorage.removeItem("checkedIndex");
+                localStorage.removeItem("msg");
+                localStorage.removeItem("uncheckedStates");
 
                 // Reset all variables to null
                 user = null;
@@ -922,9 +925,22 @@ export default function StateMachine() {
                             // Next requirement button moves to next unchecked item
                             button.onclick = () => {
                                 statemachine.currentUncheckedIndex++;
-                                localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
-                                saveChatHistory(localStorage.getItem("msg"), "self");
-                                statemachine.render();
+                                if(statemachine.currentUncheckedIndex == statemachine.uncheckedStates.length) {
+                                    statemachine.currentUncheckedIndex = 0;
+                                    localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
+                                    statemachine.currentState = "Second Phase";
+                                    saveCurrentState();
+                                    saveChatHistory(localStorage.getItem("msg"), "self");
+                                    // saveChatHistory(currentState.message, "self");
+                                    statemachine.render();
+                                }else{
+                                    
+                                    localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
+                                    saveChatHistory(localStorage.getItem("msg"), "self");
+                                    // saveChatHistory(currentState.message, "self");
+                                    statemachine.render();
+                                }
+
                             };
                         } else if (option.href) {
                             // External link button opens in new tab
@@ -933,6 +949,7 @@ export default function StateMachine() {
                             // Back button returns to previous state
                             button.onclick = () => {
                                 statemachine.currentState = option.back;
+                                saveCurrentState();
                                 statemachine.render();
                             };
                         }
