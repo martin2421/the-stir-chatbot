@@ -433,7 +433,7 @@ export default function StateMachine() {
                                     statemachine.currentState = "Business Coach";
                                 } else if (statemachine.serviceSelected == "Warehouse Storage Rental") {
                                     statemachine.currentState = "WarehouseOptions";
-                                }else if (statemachine.serviceSelected == "Event Venue Rental") {
+                                } else if (statemachine.serviceSelected == "Event Venue Rental") {
                                     statemachine.currentState = "Second Phase";
                                 }
                                 else {
@@ -512,7 +512,7 @@ export default function StateMachine() {
                 },
 
                 "EquipmentRental": {
-                    
+
                     "message": "Please select the equipment you would like to rent",
                     "options": [
                         {
@@ -522,7 +522,7 @@ export default function StateMachine() {
                                 return result;
                             }
                         }
-                    ],                
+                    ],
                 },
 
                 "interiorHealth": {
@@ -569,7 +569,9 @@ export default function StateMachine() {
                             "callback": function () {
                                 // Increment index and refresh display
                                 statemachine.currentUncheckedIndex++;
+                                localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
                                 statemachine.currentState = "handleUnchecked";
+                                saveCurrentState();
                                 statemachine.render();
                             }
                         }
@@ -811,6 +813,7 @@ export default function StateMachine() {
                 "handleUnchecked": {
                     "message": "Please read the following requirement",  // Remove message from here
                     "render": function (uncheckedItems) {
+                        // console.log(uncheckedItems);
                         return handleUncheckedItems(uncheckedItems);
                     },
                     "options  ": []
@@ -902,6 +905,7 @@ export default function StateMachine() {
                 // Handle unchecked requirements state
                 if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
                     // Get additional options from rendering unchecked states
+
                     const additionalOptions = currentState.render(this.uncheckedStates);
 
                     // Create buttons for each additional option
@@ -918,6 +922,8 @@ export default function StateMachine() {
                             // Next requirement button moves to next unchecked item
                             button.onclick = () => {
                                 statemachine.currentUncheckedIndex++;
+                                localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
+                                saveChatHistory(localStorage.getItem("msg"), "self");
                                 statemachine.render();
                             };
                         } else if (option.href) {
@@ -1151,20 +1157,20 @@ export default function StateMachine() {
                         }
                     });
 
-                    if(statemachine.currentState == "EquipmentRental") {
+                    if (statemachine.currentState == "EquipmentRental") {
                         const summaryMsg = `<div class="cm-msg-text-reply">You picked:<br><br> ${checkedValues.join("<br><br>")}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                         statemachine.currentState = "Contact Form";
                         statemachine.render();
                         return;
-                    }else if (checkedValues.length > 0) {
+                    } else if (checkedValues.length > 0) {
                         const summaryMsg = `<div class="cm-msg-text-reply">You have:<br> ${checkedValues.join("<br><br>")}</div>`;
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                     }
 
-                    
+
 
                     let result;
 
@@ -1201,7 +1207,11 @@ export default function StateMachine() {
                     if (uncheckedValues.length > 0) {
                         // If missing items, go to unchecked handler
                         statemachine.uncheckedStates = uncheckedValues;
+                        console.log(uncheckedValues);
+                        localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
                         statemachine.currentState = "handleUnchecked";
+                        localStorage.setItem("uncheckedStates", JSON.stringify(uncheckedValues));
+                        saveCurrentState(statemachine.currentState);
                         statemachine.render();
                     } else {
                         // If all checked, go to default state
@@ -1247,7 +1257,7 @@ export default function StateMachine() {
                         { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
                         { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                     ];
-                } else if(service === "Equipment Rental") {
+                } else if (service === "Equipment Rental") {
                     return [
                         { name: "Folding Tables", value: "Folding Tables", id: "Folding Tables" },
                         { name: "Folding Chairs", value: "Folding Chairs", id: "Folding Chairs" },
@@ -1264,7 +1274,12 @@ export default function StateMachine() {
 
 
             // Add a property to track current unchecked item
-            statemachine.currentUncheckedIndex = 0;
+            if (localStorage.getItem("checkedIndex") == null) {
+                statemachine.currentUncheckedIndex = 0;
+            }
+            else {
+                statemachine.currentUncheckedIndex = localStorage.getItem("checkedIndex");
+            }
 
             // Modify the handleUncheckedItems function
             function handleUncheckedItems(uncheckedItems) {
@@ -1272,16 +1287,14 @@ export default function StateMachine() {
 
                 if (statemachine.currentUncheckedIndex < uncheckedItems.length) {
                     const item = uncheckedItems[statemachine.currentUncheckedIndex];
-
+                    let CImsg = "";
                     switch (item) {
                         case "Commercial Liability Insurance":
-                            let CImsg = "Stir Makers are required, at their own expense, to maintain comprehensive general liability insurance with a minimum $3,000,000 general aggregate limit, and list Kamloops Food Policy Council (185 Royal Ave, Kamloops, BC, V2B 8J6) as additional insured on their policy.";
+                            CImsg = "Stir Makers are required, at their own expense, to maintain comprehensive general liability insurance with a minimum $3,000,000 general aggregate limit, and list Kamloops Food Policy Council (185 Royal Ave, Kamloops, BC, V2B 8J6) as additional insured on their policy.";
                             addMessage(CImsg, "self");
-
                             CImsg = "While there are many insurance brokers available, most of our clients have successfully found affordable policies through these local brokers:";
                             addMessage(CImsg, "self");
-
-                            saveChatHistory(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push(
                                 {
                                     "title": "Click here for Interior Savings Insurance",
@@ -1298,19 +1311,18 @@ export default function StateMachine() {
                             );
                             break;
                         case "City of Kamloops Business License":
-                            const BLmsg = "When you apply for Interior Health approval at our food hub address, they will notify the City of Kamloops Business License office. The City will require you to submit an application for a city business license and pay the associated fee. Once Interior Health approves your food premises application, they will sign off on your business license application and the City will issue your license.";
-                            addMessage(BLmsg, "self");
-                            saveChatHistory(BLmsg, "self");
+                            CImsg = "When you apply for Interior Health approval at our food hub address, they will notify the City of Kamloops Business License office. The City will require you to submit an application for a city business license and pay the associated fee. Once Interior Health approves your food premises application, they will sign off on your business license application and the City will issue your license.";
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push({
                                 "title": "Click Here for the business license application",
                                 "href": "https://www.kamloops.ca/sites/default/files/docs/252123_Application%20for%20Business%20Licence%20Fillable%20Extended.pdf"
                             });
                             break;
                         case "Interior Health Food Premises Approval":
-                            let IHmsg = `All businesses selling food to the public are required to obtain their own Food Premises Approval from Interior Health at The Stir’s address. Once you have signed up as a Stir Maker, our team will provide you with the facility floor plan, our facility sanitation plan and offer guidance on creating your food safety plan(s).`;
-                            addMessage(IHmsg, "self");
-                            saveChatHistory(IHmsg, "self");
-
+                            CImsg = `All businesses selling food to the public are required to obtain their own Food Premises Approval from Interior Health at The Stir’s address. Once you have signed up as a Stir Maker, our team will provide you with the facility floor plan, our facility sanitation plan and offer guidance on creating your food safety plan(s).`;
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push(
                                 {
                                     "title": "Click Here here for the Interior Health Guide",
@@ -1319,11 +1331,11 @@ export default function StateMachine() {
                             );
                             break;
                         case "Completed 2-Year Business Plan":
-                            const BPmsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
+                            CImsg = `We want your food business idea to be a success and therefore we strongly encourage you to develop a 2-year business plan before renting our kitchen and getting cooking. <br><br>
                             Check out the following links for some free business planning resources. The Stir also offers food business coaching services. <br><br>
                             You can restart this chat and inquire about Food Business Coaching services from The Stir.`;
-                            addMessage(BPmsg, "self");
-                            saveChatHistory(BPmsg, "self");
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push(
                                 {
                                     "title": "SSFPA Recipe for Success",
@@ -1348,9 +1360,9 @@ export default function StateMachine() {
                             );
                             break;
                         case "Valid FoodSafe Level 1 Certification":
-                            const FSmsg = "Food safety is important! You'll need a FoodSafe certificate:";
-                            addMessage(FSmsg, "self");
-                            saveChatHistory(FSmsg, "self");
+                            CImsg = "Food safety is important! You'll need a FoodSafe certificate:";
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push({
                                 "title": "Click Here for the Online FoodSafe Course",
                                 "href": "https://www.openschool.bc.ca/foodsafe_level1/"
@@ -1361,18 +1373,18 @@ export default function StateMachine() {
                                 });
                             break;
                         case "Sign Up as a Stir Maker":
-                            const MMmsg = "You need to be a member of Makership to proceed. Sign up here:";
-                            addMessage(MMmsg, "self");
-                            saveChatHistory(MMmsg, "self");
+                            CImsg = "You need to be a member of Makership to proceed. Sign up here:";
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push({
                                 "title": "Click Here to Sign Up for Makership",
                                 "href": "https://ca.services.docusign.net/webforms-ux/v1.0/forms/0de6dc66d96f1048f3d26c24a4ccfa07"
                             });
                             break;
                         case "Food Corridor Membership":
-                            const SMmsg = "You need to sign up for the Food Corridor for the Membership. Click below to Sign up:";
-                            addMessage(SMmsg, "self");
-                            saveChatHistory(SMmsg, "self");
+                            CImsg = "You need to sign up for the Food Corridor for the Membership. Click below to Sign up:";
+                            addMessage(CImsg, "self");
+                            localStorage.setItem("msg", CImsg);
                             options.push({
                                 "title": "Sign Up for Food Corridor",
                                 "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
@@ -1387,20 +1399,25 @@ export default function StateMachine() {
                             "title": "Next",
                             "back": "interiorHealth"
                         });
+                        saveCurrentState();
                     } else {
                         options.push({
                             "title": "Next Requirement",
                             "callback": function () {
                                 // Increment index and refresh display
                                 statemachine.currentUncheckedIndex++;
+                                localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
+                                console.log(statemachine.currentUncheckedIndex);
                                 statemachine.currentState = "handleUnchecked";
                                 statemachine.render();
                             }
                         });
+                        saveCurrentState();
                     }
                 } else {
                     // Reset index when all items are processed
                     statemachine.currentUncheckedIndex = 0;
+                    localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
                     // Add back navigation option
                     options.push({
                         "title": "Back",
@@ -1529,29 +1546,29 @@ export default function StateMachine() {
                         addMessage(summaryMsg, "user");
                         saveChatHistory(summaryMsg, "user");
                         option.callback(formData);
-                    }else if(statemachine.currentState === "WarehouseOptions"){
-                            // Get all selected values for both venue capacity and location
-                            const selectedFrozen = form.querySelector('input[name="dry_storage"]:checked');
-                            const selectedDry = form.querySelector('input[name="frozen_storage"]:checked');
-    
-                            // Check if both capacity and location are selected
-                            if (!selectedFrozen || !selectedDry) {
-                                customAlert("Please select both venue capacity and location before submitting.");
-                                return;
-                            }
-    
-                            // Collect form data from valid selections
-                            const formData = {
-                                dry_storage: selectedFrozen.value,
-                                frozen_storage: selectedDry.value
-                            };
-    
-                            // Display selection summary
-                            const summaryMsg = `<div class="cm-msg-text-reply">You picked: <br><br> ${formData.dry_storage} dry/ambient storage <br><br> ${formData.frozen_storage} frozen storage</div>`;
-                            addMessage(summaryMsg, "user");
-                            saveChatHistory(summaryMsg, "user");
-                            option.callback(formData);
-                        
+                    } else if (statemachine.currentState === "WarehouseOptions") {
+                        // Get all selected values for both venue capacity and location
+                        const selectedFrozen = form.querySelector('input[name="dry_storage"]:checked');
+                        const selectedDry = form.querySelector('input[name="frozen_storage"]:checked');
+
+                        // Check if both capacity and location are selected
+                        if (!selectedFrozen || !selectedDry) {
+                            customAlert("Please select both venue capacity and location before submitting.");
+                            return;
+                        }
+
+                        // Collect form data from valid selections
+                        const formData = {
+                            dry_storage: selectedFrozen.value,
+                            frozen_storage: selectedDry.value
+                        };
+
+                        // Display selection summary
+                        const summaryMsg = `<div class="cm-msg-text-reply">You picked: <br><br> ${formData.dry_storage} dry/ambient storage <br><br> ${formData.frozen_storage} frozen storage</div>`;
+                        addMessage(summaryMsg, "user");
+                        saveChatHistory(summaryMsg, "user");
+                        option.callback(formData);
+
                     }
                     // Handle other form types
                     else {
@@ -1703,8 +1720,10 @@ export default function StateMachine() {
 
                 // Restore previous state if it exists
                 const savedState = localStorage.getItem("currentState");
+                const savedUncheckedStates = localStorage.getItem("uncheckedStates");
                 if (savedState) {
                     statemachine.currentState = savedState;
+                    statemachine.uncheckedStates = JSON.parse(savedUncheckedStates);
                 }
                 // Log source of chat history
                 console.log("Loading chat from localStorage");
