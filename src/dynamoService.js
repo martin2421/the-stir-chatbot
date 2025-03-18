@@ -152,7 +152,6 @@ export const insertBusinessStage = async (data) => {
 
 
 
-
 export const insertBusinessType = async (data) => {
 
   try {
@@ -175,7 +174,6 @@ export const insertBusinessType = async (data) => {
     return { success: false, message: error };
   }
 }
-
 
 
 
