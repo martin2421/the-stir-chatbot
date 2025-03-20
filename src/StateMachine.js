@@ -30,7 +30,7 @@ export default function StateMachine() {
             today = mm + '/' + dd + '/' + yyyy;
 
             // Add click event listener to the chef logo
-            document.getElementById("chat-circle").addEventListener("click", () => {
+            document.getElementById("chat-circle").addEventListener("click", function() {
                 // Get help text element
                 const helpText = document.querySelector(".help-text");
                 // If help text exists, start animation
