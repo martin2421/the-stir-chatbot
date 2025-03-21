@@ -6,11 +6,6 @@ emailjs.init('EosUxwgThQBLeEtBX')
 
 export default function StateMachine() {
 
-    // Add event listener that fires when the document is fully loaded
-    document.addEventListener("readystatechange", function (event) {
-        // Check if document is completely loaded
-        if (document.readyState === 'complete') {
-
             // Get user ID from localStorage and convert to number
             let user = Number(localStorage.getItem("userId"));
             // Get previously selected service from localStorage
@@ -1873,8 +1868,6 @@ export default function StateMachine() {
                 statemachine.render(true); // Render with history
             }
         }
-    });
-}
 
 // Function to format phone numbers consistently
 function formatPhoneNumber(input) {
