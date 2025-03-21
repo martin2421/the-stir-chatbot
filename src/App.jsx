@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import StateMachine from './StateMachine'
 
@@ -9,7 +9,7 @@ function App() {
 
     StateMachine();
   }, []);
-  
+
   return (
     <div>
       <div id="chat-circle">
