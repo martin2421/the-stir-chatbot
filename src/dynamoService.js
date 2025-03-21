@@ -24,8 +24,6 @@ export const searchData = async (data) => {
     .catch(console.error)
 }
 
-
-
 export const insertData = async (data) => {
 
   let params1 = {
@@ -75,8 +73,6 @@ export const insertData = async (data) => {
   }
 }
 
-
-
 export const insertStateData = async (data) => {
 
   try {
@@ -99,8 +95,6 @@ export const insertStateData = async (data) => {
     return { success: false, message: error };
   }
 }
-
-
 
 export const insertChatHistory = async (data) => {
 
@@ -125,8 +119,6 @@ export const insertChatHistory = async (data) => {
   }
 }
 
-
-
 export const insertBusinessStage = async (data) => {
 
   try {
@@ -149,8 +141,6 @@ export const insertBusinessStage = async (data) => {
     return { success: false, message: error };
   }
 }
-
-
 
 export const insertBusinessType = async (data) => {
 
@@ -175,8 +165,6 @@ export const insertBusinessType = async (data) => {
   }
 }
 
-
-
 export const insertSignedUp = async (data) => {
 
   try {
@@ -199,8 +187,6 @@ export const insertSignedUp = async (data) => {
     return { success: false, message: error };
   }
 }
-
-
 
 export const insertLicences = async (data) => {
 
@@ -225,8 +211,6 @@ export const insertLicences = async (data) => {
   }
 }
 
-
-
 export const insertService = async (data) => {
 
   try {
@@ -249,8 +233,6 @@ export const insertService = async (data) => {
     return { success: false, message: error };
   }
 }
-
-
 
 export const insertProducts = async (data) => {
 
@@ -275,8 +257,6 @@ export const insertProducts = async (data) => {
   }
 }
 
-
-
 export const insertNote = async (data) => {
 
   try {
@@ -300,8 +280,6 @@ export const insertNote = async (data) => {
   }
 }
 
-
-
 export const insertTimeNeeded = async (data) => {
 
   try {
@@ -324,8 +302,6 @@ export const insertTimeNeeded = async (data) => {
     return { success: false, message: error };
   }
 }
-
-
 
 export const insertEventVenue = async (data) => {
 

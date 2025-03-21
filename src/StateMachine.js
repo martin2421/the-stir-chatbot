@@ -416,7 +416,7 @@ export default function StateMachine() {
                                 let response = await insertData({ f_name, l_name, b_name, email, phone, today });
                                 // Log success message if data insertion was successful
                                 if (response.success) console.log("User data was inserted");
-                                sendEmail();
+                                // sendEmail();
 
                                 // Store user ID in localStorage for persistence
                                 localStorage.setItem("userId", response.userId);
