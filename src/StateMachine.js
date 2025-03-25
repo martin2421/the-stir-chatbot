@@ -398,7 +398,7 @@ export default function StateMachine() {
                 },
 
                 "Contact Form": {
-                    "message": "Before moving on, please fill out the form below so we can keep track of this conversation and our team can contact you with a rental quote.",
+                    "message": "Before moving on, please fill out the form below so we can keep track of this conversation and our team can contact you.",
                     "options": [
                         {
                             // Define the form structure with input fields
@@ -1714,44 +1714,60 @@ export default function StateMachine() {
                 return form;
             }
 
-            // Function to load chat history from localStorage
             function loadChatHistory() {
                 // Clear existing chat messages
                 messagesContainer.innerHTML = "";
-
+            
                 // Get chat history from localStorage, default to empty array if none exists
                 const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
-
+            
                 // Process each message in history
                 history.forEach(item => {
+                    // Skip if message is undefined or null
+                    if (!item || !item.msg) return;
+            
                     // Create message container div
                     const msgDiv = document.createElement("div");
                     // Set class for styling (chat-msg + user/self)
                     msgDiv.className = `chat-msg ${item.type}`;
-
-                    // Handle different message types
-                    if (item.msg.includes("cm-msg-text-reply")) {
-                        // User replies keep original HTML structure
-                        msgDiv.innerHTML = item.msg;
-                    } else {
-                        // Bot messages get wrapped in cm-msg-text div
-                        msgDiv.innerHTML = `<div class="cm-msg-text">${item.msg}</div>`;
+            
+                    try {
+                        // Handle different message types
+                        if (typeof item.msg === 'string' && item.msg.includes("cm-msg-text-reply")) {
+                            // User replies keep original HTML structure
+                            msgDiv.innerHTML = item.msg;
+                        } else {
+                            // Bot messages get wrapped in cm-msg-text div
+                            msgDiv.innerHTML = `<div class="cm-msg-text">${item.msg}</div>`;
+                        }
+            
+                        // Add message to chat container
+                        messagesContainer.appendChild(msgDiv);
+                    } catch (error) {
+                        console.warn("Failed to process chat message:", error);
+                        // Skip problematic message and continue
+                        return;
                     }
-
-                    // Add message to chat container
-                    messagesContainer.appendChild(msgDiv);
                 });
-
+            
                 // Restore previous state if it exists
                 const savedState = localStorage.getItem("currentState");
                 const savedUncheckedStates = localStorage.getItem("uncheckedStates");
                 if (savedState) {
                     statemachine.currentState = savedState;
-                    statemachine.uncheckedStates = JSON.parse(savedUncheckedStates);
+                    if (savedUncheckedStates) {
+                        try {
+                            statemachine.uncheckedStates = JSON.parse(savedUncheckedStates);
+                        } catch (error) {
+                            console.warn("Failed to parse unchecked states:", error);
+                            statemachine.uncheckedStates = [];
+                        }
+                    }
                 }
+            
                 // Log source of chat history
                 console.log("Loading chat from localStorage");
-
+            
                 // Return whether history exists
                 return history.length > 0;
             }
