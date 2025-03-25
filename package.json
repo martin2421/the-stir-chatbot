@@ -16,6 +16,7 @@
     "@emailjs/browser": "^4.4.1",
     "aws-sdk": "^2.1692.0",
     "dotenv": "^16.4.7",
+    "emailjs": "^4.0.3",
     "install": "^0.13.0",
     "npm": "^11.1.0",
     "react": "^19.0.0",

@@ -353,6 +353,18 @@ export default function StateMachine() {
                                         { name: "venue_capacity", value: "50-100", id: "medium", label: "50-100 People (Outdoor Only)" },
                                         { name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People (Outdoor Only)" }
                                     ]
+                                },
+                                {
+                                    "type": "checkbox-group",
+                                    "name": "Equipment Rental:",
+                                    "boxes": [
+                                        { name: "event_docs", value: "Folding Tables", id: "Folding Tables", label: "Folding Tables" },
+                                        { name: "event_docs", value: "Folding Chairs", id: "Folding Chairs", label: "Folding Chairs" },
+                                        { name: "event_docs", value: "Speakers", id: "Speakers", label: "Speakers" },
+                                        { name: "event_docs", value: "Microphone", id: "Microphone", label: "Microphone" },
+                                        { name: "event_docs", value: "Projector", id: "Projector", label: "Projector" },
+                                        { name: "event_docs", value: "Projector Screen", id: "Projector Screen", label: "Projector Screen" }
+                                    ]
                                 }
                             ],
                             // Asynchronous callback function that handles form submission for venue selection
@@ -464,7 +476,7 @@ export default function StateMachine() {
                 },
 
                 "WarehouseOptions": {
-                    "message": "Please select the options that apply to your warehouse storage needs",
+                    "message": "How many standard pallets of storage do you require?",
                     "options": [
                         {
                             "type": "combined-form",
