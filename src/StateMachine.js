@@ -354,18 +354,6 @@ export default function StateMachine() {
                                         { name: "venue_capacity", value: "100-150", id: "large", label: "100-150 People (Outdoor Only)" }
                                     ]
                                 },
-                                {
-                                    "type": "checkbox-group",
-                                    "name": "Equipment Rental:",
-                                    "boxes": [
-                                        { name: "event_docs", value: "Folding Tables", id: "Folding Tables", label: "Folding Tables" },
-                                        { name: "event_docs", value: "Folding Chairs", id: "Folding Chairs", label: "Folding Chairs" },
-                                        { name: "event_docs", value: "Speakers", id: "Speakers", label: "Speakers" },
-                                        { name: "event_docs", value: "Microphone", id: "Microphone", label: "Microphone" },
-                                        { name: "event_docs", value: "Projector", id: "Projector", label: "Projector" },
-                                        { name: "event_docs", value: "Projector Screen", id: "Projector Screen", label: "Projector Screen" }
-                                    ]
-                                }
                             ],
                             // Asynchronous callback function that handles form submission for venue selection
                             "callback": async function (data) {
@@ -527,6 +515,7 @@ export default function StateMachine() {
                     "options": [
                         {
                             "type": "checkbox",
+                            "label": "Equipment Rental:",
                             "boxes": function () {
                                 let result = getCheckboxesForService("Equipment Rental");
                                 return result;
@@ -1277,9 +1266,9 @@ export default function StateMachine() {
                     ];
                 } else if (service === "Event Venue") {
                     return [
-                        { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
-                        { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
-                        { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
+                        { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership", required: false },
+                        { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership", required: true },
+                        { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance", required: true },
                     ];
                 } else if (service === "Equipment Rental") {
                     return [
