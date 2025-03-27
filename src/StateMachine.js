@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType } from "./dynamoService";
+import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType, insertStorageNeeds, insertEventEquipment } from "./dynamoService";
 import emailjs from '@emailjs/browser';
 
 emailjs.init('EosUxwgThQBLeEtBX')
@@ -499,6 +499,9 @@ export default function StateMachine() {
                                     // Set the state machine to move to Contact Form state
                                     statemachine.currentState = "Second Phase";
 
+                                    let result = await insertStorageNeeds({ userId: user, storageNeed: JSON.stringify({dryStorage: data.dry_storage, frozenStorage: data.frozen_storage})});
+                                    console.log(result.message);
+
                                     console.log(data);
                                     saveCurrentState();
                                 }
@@ -511,11 +514,10 @@ export default function StateMachine() {
 
                 "EquipmentRental": {
 
-                    "message": "Please select the equipment you would like to rent",
+                    "message": `Please select the <strong> equipment </strong> you would like to rent`,
                     "options": [
                         {
                             "type": "checkbox",
-                            "label": "Equipment Rental:",
                             "boxes": function () {
                                 let result = getCheckboxesForService("Equipment Rental");
                                 return result;
@@ -685,7 +687,7 @@ export default function StateMachine() {
                 },
 
                 "Second Phase": {
-                    "message": "Great! Let's check the pre-rental checklist of what you have",
+                    "message": `Great! Let's check the <strong> pre-rental checklist </strong> of what you have`,
                     "options": [
                         {
                             "type": "checkbox",
@@ -1196,9 +1198,9 @@ export default function StateMachine() {
                                 "Commercial Insurance": commercialInsurance,
                                 "Stir Maker Membership": makershipMembership,
                                 "Food Corridor Membership": foodCorridorMembership,
-                                "Interior Health": interiorHealth,
-                                "Completed Business Plan": completedBusinessPlan,
-                                "FoodSafe Certificate": foodSafeCertificate
+                                "Interior Health Food Premises Approval": interiorHealth,
+                                "Completed 2-Year Business Plan": completedBusinessPlan,
+                                "Valid FoodSafe Level 1 Certification": foodSafeCertificate
                             })
                         });
                         console.log(result.message);
@@ -1209,7 +1211,7 @@ export default function StateMachine() {
                             userId: user,
                             licenses: JSON.stringify({
                                 "Food Corridor Membership": foodCorridorMembership,
-                                "Commercial Insurance": commercialInsurance,
+                                "Commercial Liability Insurance": commercialInsurance,
                                 "Stir Makership Membership": makershipMembership,
                             })
                         });
@@ -1228,6 +1230,10 @@ export default function StateMachine() {
                         statemachine.render();
                     } else {
                         // If all checked, go to default state
+                        if (makershipMembership){
+                            result = await insertSignedUp({ userId: user, signedUp: today });
+                            console.log(result.message);
+                        }
                         statemachine.currentState = "defaultState";
                         saveCurrentState(statemachine.currentState);
                         statemachine.render();

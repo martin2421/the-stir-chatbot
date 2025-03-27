@@ -174,7 +174,7 @@ export const insertSignedUp = async (data) => {
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set Signed up as Stir Member. = :signed`,
+        UpdateExpression: `set stirMemberMembership = :signed`,
         ExpressionAttributeValues: {
           ":signed": data.signedUp,
         },
@@ -315,6 +315,52 @@ export const insertEventVenue = async (data) => {
         UpdateExpression: `set eventVenue = :venue`,
         ExpressionAttributeValues: {
           ":venue": data.venue,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Event Venue was saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+export const insertStorageNeeds = async (data) => {
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "stir-test2",
+        Key: {
+          id: data.userId,
+        },
+        UpdateExpression: `set storageNeeds = :storageNeed`,
+        ExpressionAttributeValues: {
+          ":storageNeed": data.storageNeed,
+        },
+      })
+      .promise()
+
+    return { success: true, message: 'Storage Needs were saved' };
+
+  } catch (error) {
+    return { success: false, message: error };
+  }
+}
+
+export const insertEventEquipment = async (data) => {
+
+  try {
+    await dynamodb
+      .update({
+        TableName: "stir-test2",
+        Key: {
+          id: data.userId,
+        },
+        UpdateExpression: `set eventVenueEquipment = :equipment`,
+        ExpressionAttributeValues: {
+          ":equipment": data.equipment,
         },
       })
       .promise()
