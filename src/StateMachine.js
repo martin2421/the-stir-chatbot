@@ -11,7 +11,7 @@ export default function StateMachine() {
     // Get previously selected service from localStorage
     let serviceSelected = localStorage.getItem("serviceSelected");
     // Initialize variable to store event venue details
-    let eventVenue;
+    let eventVenue, eventVenueEquip;
 
     // Create variables for current date
     var today = new Date();
@@ -57,6 +57,7 @@ export default function StateMachine() {
         user = null;
         serviceSelected = null;
         eventVenue = null;
+        eventVenueEquip = null;
 
         // Clear chat messages from UI
         messagesContainer.innerHTML = "";
@@ -447,8 +448,12 @@ export default function StateMachine() {
 
                         // If event venue was selected, insert venue details
                         if (eventVenue != null) {
+
                             result = await insertEventVenue({ userId: user, venue: eventVenue })
                             // Log the result message
+                            console.log(result.message);
+
+                            result = await insertEventEquipment({ userId: user, equipment: eventVenueEquip.equipment })
                             console.log(result.message);
                         }
 
@@ -537,16 +542,12 @@ export default function StateMachine() {
                         // Log submitted form data for debugging
                         console.log("Form data:", data.equipmentDocs);
 
-                        // Insert selected products into database
-                        let result = await insertEventEquipment({
-                            userId: user,
+                        eventVenueEquip = {
                             equipment: JSON.stringify(data.equipmentDocs)
-                        });
+                        }
 
-                        // Log database operation result
-                        console.log(result.message);
 
-                        statemachine.currentState = "EquipmentRental";
+                        statemachine.currentState = "Contact Form";
                         // Save current state to persistence
                         saveCurrentState();
                         // Update the chat interface
