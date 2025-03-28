@@ -358,15 +358,14 @@ export const insertEventEquipment = async (data) => {
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set eventVenueEquipment = :equipment`,
+        UpdateExpression: `set eventVenueEquipment = :equipmentN`,
         ExpressionAttributeValues: {
-          ":equipment": data.equipment,
+          ":equipmentN": data.equipment,
         },
       })
       .promise()
 
-    return { success: true, message: 'Event Venue was saved' };
-
+    return { success: true, message: 'Event Venue Equipment was saved' };
   } catch (error) {
     return { success: false, message: error };
   }
