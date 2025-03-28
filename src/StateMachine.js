@@ -49,6 +49,7 @@ export default function StateMachine() {
         localStorage.removeItem("serviceSelected");
         localStorage.removeItem("currentState");
         localStorage.removeItem("eventVenue");
+        localStorage.removeItem("eventVenueEquip"); 
         localStorage.removeItem("checkedIndex");
         localStorage.removeItem("msg");
         localStorage.removeItem("uncheckedStates");
@@ -377,6 +378,9 @@ export default function StateMachine() {
                                 venue_location: data.venue_location,
                                 venue_capacity: data.venue_capacity
                             });
+
+                            localStorage.setItem("eventVenue", eventVenue);
+
                             saveCurrentState();
                         }
                         // Re-render the state machine to show updated state
@@ -446,14 +450,17 @@ export default function StateMachine() {
                         // Log the result message
                         console.log(result.message)
 
+                        eventVenue = localStorage.getItem("eventVenue");
                         // If event venue was selected, insert venue details
                         if (eventVenue != null) {
 
-                            result = await insertEventVenue({ userId: user, venue: eventVenue })
+                            
+                            result = await insertEventVenue({ userId: user, venue: eventVenue });
                             // Log the result message
                             console.log(result.message);
 
-                            result = await insertEventEquipment({ userId: user, equipment: eventVenueEquip.equipment })
+                            eventVenueEquip = localStorage.getItem("eventVenueEquip");
+                            result = await insertEventEquipment({ userId: user, equipment: eventVenueEquip });
                             console.log(result.message);
                         }
 
@@ -545,6 +552,8 @@ export default function StateMachine() {
                         eventVenueEquip = {
                             equipment: JSON.stringify(data.equipmentDocs)
                         }
+
+                        localStorage.setItem("eventVenueEquip", eventVenueEquip.equipment);
 
 
                         statemachine.currentState = "Contact Form";
