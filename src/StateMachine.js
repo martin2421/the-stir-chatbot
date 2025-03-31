@@ -1,4 +1,4 @@
-import { insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType, insertStorageNeeds, insertEventEquipment } from "./dynamoService";
+import { getCustomerInformation, insertData, searchData, insertStateData, insertChatHistory, insertBusinessStage, insertService, insertSignedUp, insertLicences, insertProducts, insertNote, insertEventVenue, insertTimeNeeded, insertBusinessType, insertStorageNeeds, insertEventEquipment } from "./dynamoService";
 import emailjs from '@emailjs/browser';
 
 emailjs.init('EosUxwgThQBLeEtBX')
@@ -464,6 +464,7 @@ export default function StateMachine() {
                             console.log(result.message);
                         }
 
+                        await getEmailContent();
                         // Update the chat interface with new state
                         statemachine.render();
                     }
@@ -824,6 +825,8 @@ export default function StateMachine() {
                         });
                         // Log database operation result
                         console.log(result.message);
+
+                        await getEmailContent();
 
                         statemachine.currentState = "Final Step";
 
@@ -1963,6 +1966,12 @@ function formatPhoneNumber(input) {
     // Format digits into XXX-XXX-XXXX pattern
     const formattedNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     return formattedNumber;
+}
+
+
+async function getEmailContent(){
+    let myObj = await getCustomerInformation({ user : localStorage.getItem("userId")});
+    console.log(myObj.phoneNumber);
 }
 
 function sendEmail() {
