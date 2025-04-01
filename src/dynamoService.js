@@ -15,7 +15,7 @@ export const searchData = async (data) => {
     .promise()
     .then(function (data) {
       if (data.Items[0] != undefined) {
-        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, businessName: data.Items[0].businessName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].currentState, chat: data.Items[0].chatHistory, businessStage: data.Items[0].businessStage, dateCreated: data.Items[0].createdAt, service: data.Items[0].service};
+        return { success: true, id: data.Items[0].id, email: data.Items[0].email, firstName: data.Items[0].firstName, lastName: data.Items[0].lastName, businessName: data.Items[0].businessName, phoneNumber: data.Items[0].phoneNumber, stateChat: data.Items[0].currentState, chat: data.Items[0].chatHistory, businessStage: data.Items[0].businessStage, dateCreated: data.Items[0].createdAt, service: data.Items[0].service };
       } else {
         return { success: false };
       }
@@ -369,4 +369,26 @@ export const insertEventEquipment = async (data) => {
   } catch (error) {
     return { success: false, message: error };
   }
+}
+
+export const getCustomerInformation = async (data) => {
+
+  return dynamodb
+    .query({
+      TableName: "stir-test2",
+      KeyConditionExpression: `id = :myId`,
+      ExpressionAttributeValues: {
+        ":myId": Number(data.user),
+      },
+    })
+    .promise()
+    .then(function (data) {
+      if (data.Items != undefined) {
+        return { myData: JSON.stringify(data.Items) };
+      } else {
+        return { success: false };
+      }
+    }
+    )
+    .catch(console.error)
 }
