@@ -389,6 +389,10 @@ export default function StateMachine() {
             ]
         },
 
+        "Selected Service Explanation": {
+            
+        },
+
         "Contact Form": {
             "message": "Before moving on, please fill out the form below so we can keep track of this conversation and our team can contact you.",
             "options": [
@@ -839,10 +843,17 @@ export default function StateMachine() {
         },
     };
 
+    // Add a mapping of service descriptions
+    const serviceDescriptions = {
+        "Commercial Kitchen Rental": "The Stir Kitchen is an Interior Health approved shared food processing facility focused on helping local food entrepreneurs start-up and scale-up their businesses.",
+        "Warehouse Storage Rental": "Our shared warehouse storage is available at daily, weekly, monthly, and annual rates. You'll have access to your dry-pallet or frozen storage space 24/7.",
+        "Event Venue Rental": "Rent event or meeting space at The Stir in either our indoor Stirfront or Outdoor Riverfront Courtyard.",
+        "Food Business Coaching": "Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, and more.",
+        "E-Commerce": "Become a vendor in The Stir's online marketplace with monthly pickups from The Stir."
+    };
 
     // Function to handle user interaction
     statemachine.interact = async function (option) {
-        // Get current state and selected option from state machine
         var currentState = statemachine.states[statemachine.currentState];
         var selectedOption = currentState.options[option];
 
@@ -851,16 +862,22 @@ export default function StateMachine() {
         if (lastMsgDiv && lastMsgDiv.classList.contains("chat-msg")) {
             const msgTextDiv = lastMsgDiv.querySelector(".cm-msg-text");
             if (msgTextDiv) {
-                // Create new message div for user response
                 const replyMsgDiv = document.createElement("div");
                 replyMsgDiv.className = "chat-msg user";
-                // Add selected option title as reply text
                 replyMsgDiv.innerHTML = `<div class="cm-msg-text-reply">${selectedOption.title}</div>`;
-                // Add message to chat and scroll to bottom
                 messagesContainer.appendChild(replyMsgDiv);
                 chatLogs.scrollTop = chatLogs.scrollHeight;
-                // Save chat history
                 saveChatHistory(replyMsgDiv, "self");
+            }
+        }
+
+        // Display service description if a service is selected
+        if (statemachine.currentState === "services" && selectedOption.service) {
+            const description = serviceDescriptions[selectedOption.title];
+            if (description) {
+                const descriptionMsg = `${description}`;
+                addMessage(descriptionMsg, "self")
+                saveChatHistory(descriptionMsg, "self");
             }
         }
 
@@ -873,7 +890,6 @@ export default function StateMachine() {
         // Handle forward navigation
         if (selectedOption.next) {
             this.currentState = selectedOption.next;
-            // Update selected service if specified 
             if (selectedOption.service) {
                 this.selectedService = selectedOption.service;
             }
@@ -891,7 +907,6 @@ export default function StateMachine() {
             return;
         }
 
-        // Save current state to persistence
         saveCurrentState();
     };
 
