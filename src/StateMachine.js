@@ -11,7 +11,7 @@ export default function StateMachine() {
     // Get previously selected service from localStorage
     let serviceSelected = localStorage.getItem("serviceSelected");
     // Initialize variable to store event venue details
-    let eventVenue, eventVenueEquip;
+    let eventVenue;
 
     // Create variables for current date
     var today = new Date();
@@ -49,7 +49,6 @@ export default function StateMachine() {
         localStorage.removeItem("serviceSelected");
         localStorage.removeItem("currentState");
         localStorage.removeItem("eventVenue");
-        localStorage.removeItem("eventVenueEquip"); 
         localStorage.removeItem("checkedIndex");
         localStorage.removeItem("msg");
         localStorage.removeItem("uncheckedStates");
@@ -58,7 +57,6 @@ export default function StateMachine() {
         user = null;
         serviceSelected = null;
         eventVenue = null;
-        eventVenueEquip = null;
 
         // Clear chat messages from UI
         messagesContainer.innerHTML = "";
@@ -374,12 +372,13 @@ export default function StateMachine() {
                             // Set the state machine to move to Contact Form state
                             statemachine.currentState = "EquipmentRental";
                             // Store venue details as JSON string with location and capacity
-                            eventVenue = JSON.stringify({
+                            eventVenue = {
                                 venue_location: data.venue_location,
-                                venue_capacity: data.venue_capacity
-                            });
+                                venue_capacity: data.venue_capacity,
+                                venue_equipment: null
+                            };
 
-                            localStorage.setItem("eventVenue", eventVenue);
+                            localStorage.setItem("eventVenue", JSON.stringify(eventVenue));
 
                             saveCurrentState();
                         }
@@ -450,17 +449,11 @@ export default function StateMachine() {
                         // Log the result message
                         console.log(result.message)
 
-                        eventVenue = localStorage.getItem("eventVenue");
+                        eventVenue = JSON.parse(localStorage.getItem("eventVenue"));
                         // If event venue was selected, insert venue details
                         if (eventVenue != null) {
-
-                            
-                            result = await insertEventVenue({ userId: user, venue: eventVenue });
+                            result = await insertEventVenue({ userId: user, venue: JSON.stringify(eventVenue) });
                             // Log the result message
-                            console.log(result.message);
-
-                            eventVenueEquip = localStorage.getItem("eventVenueEquip");
-                            result = await insertEventEquipment({ userId: user, equipment: eventVenueEquip });
                             console.log(result.message);
                         }
 
@@ -550,11 +543,9 @@ export default function StateMachine() {
                         // Log submitted form data for debugging
                         console.log("Form data:", data.equipmentDocs);
 
-                        eventVenueEquip = {
-                            equipment: JSON.stringify(data.equipmentDocs)
-                        }
+                        eventVenue.venue_equipment = data.equipmentDocs;
 
-                        localStorage.setItem("eventVenueEquip", eventVenueEquip.equipment);
+                        localStorage.setItem("eventVenue", JSON.stringify(eventVenue));
 
 
                         statemachine.currentState = "Contact Form";
@@ -743,22 +734,6 @@ export default function StateMachine() {
                         //console.log(result);
                         return result;
                     }
-                }
-            ]
-        },
-
-        "defaultState": {
-            "message": "All requirements are met. You can proceed to the next step",
-            "options": [
-                {
-                    "title": "Food Processing",
-                    "next": "Food Form",
-                    "service": "Food Processing",
-                },
-                {
-                    "title": "Food Service",
-                    "next": "Food Form",
-                    "service": "Food Service",
                 }
             ]
         },
@@ -1277,7 +1252,7 @@ export default function StateMachine() {
                     result = await insertSignedUp({ userId: user, signedUp: today });
                     console.log(result.message);
                 }
-                statemachine.currentState = "defaultState";
+                statemachine.currentState = "Final Step";
                 saveCurrentState(statemachine.currentState);
                 statemachine.render();
             }

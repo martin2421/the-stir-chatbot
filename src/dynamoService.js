@@ -46,7 +46,6 @@ export const insertData = async (data) => {
       email: data.email,
       phoneNumber: data.phone,
       createdAt: data.today,
-      isActive: true,
     }
   }
 
@@ -174,7 +173,7 @@ export const insertSignedUp = async (data) => {
         Key: {
           id: data.userId,
         },
-        UpdateExpression: `set stirMemberMembership = :signed`,
+        UpdateExpression: `set dateSignedUp = :signed`,
         ExpressionAttributeValues: {
           ":signed": data.signedUp,
         },
