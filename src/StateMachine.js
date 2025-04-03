@@ -98,14 +98,14 @@ export default function StateMachine() {
     // Define the states and their transitions
     statemachine.states = {
         "start": {
-            "message": "Welcome to the Stir Food Chatbot! Is it your first time here?",
+            "message": "Welcome to The Stir! Our assistant can help guide you through the services we offer and collect information for our team to best support you.",
             "options": [
                 {
-                    "title": "Yes, it is my first time",
+                    "title": "Start a new chat",
                     "next": "services"
                 },
                 {
-                    "title": "No, I've been here before",
+                    "title": "Resume saved chat",
                     "next": "Previous Conversation"
                 },
             ]
@@ -819,7 +819,7 @@ export default function StateMachine() {
         },
 
         "Final Step": {
-            "message": "Thank you for your time. We will get back to you shortly",
+            "message": "Thank you for your time. Our team will get back to you within 1-2 business days.",
             "options": [
                 {
                     "title": "Back to Start",
