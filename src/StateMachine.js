@@ -52,6 +52,7 @@ export default function StateMachine() {
         localStorage.removeItem("checkedIndex");
         localStorage.removeItem("msg");
         localStorage.removeItem("uncheckedStates");
+        localStorage.removeItem("flagSend");
 
         // Reset all variables to null
         user = null;
@@ -431,7 +432,7 @@ export default function StateMachine() {
                             statemachine.currentState = "WarehouseOptions";
                         } else if (statemachine.serviceSelected == "Event Venue Rental") {
                             statemachine.currentState = "Event Venue Box";
-                        }else if(statemachine.serviceSelected == "E-Commerce/ Distribution Platform"){
+                        } else if (statemachine.serviceSelected == "E-Commerce/ Distribution Platform") {
                             statemachine.currentState = "Final Step";
                         }
                         else {
@@ -924,8 +925,8 @@ export default function StateMachine() {
         // Clear existing buttons from container
         buttoncontainer.innerHTML = "";
 
-
-        if(statemachine.currentState == "Final Step") {
+        if (statemachine.currentState == "Final Step" && localStorage.getItem("flagSend") == null) {
+            localStorage.setItem("flagSend", true);
             console.log("Reached the end.");
             sendEmail();
         }
@@ -1193,7 +1194,7 @@ export default function StateMachine() {
                     if (box.id == "Interior Health") interiorHealth = false;
                     if (box.id == "Completed Business Plan") completedBusinessPlan = false;
                     if (box.id == "FoodSafe Certificate") foodSafeCertificate = false;
-                    if( box.id == "Client Interest Form") interestForm = false;
+                    if (box.id == "Client Interest Form") interestForm = false;
                 } else {
                     // Add to checked list  
                     checkedValues.push(box.value);
@@ -1298,9 +1299,9 @@ export default function StateMachine() {
                 { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                 { name: "Completed Business Plan", value: "Completed 2-Year Business Plan", id: "Completed Business Plan" },
                 { name: "Food Corridor Membership", value: "Create Food Corridor Profile and Link Payment Method", id: "Food Corridor Membership" },
-                { name: "Client Interest Form", value: "Client Interest Form", id: "Client Interest Form" } 
+                { name: "Client Interest Form", value: "Client Interest Form", id: "Client Interest Form" }
             ];
-        } 
+        }
         else {
             return [];
         }
@@ -1943,23 +1944,24 @@ function formatPhoneNumber(input) {
 }
 
 
-async function getEmailContent(){
-    let myObj = await getCustomerInformation({ user : localStorage.getItem("userId")});
-    console.log(myObj.phoneNumber);
+async function getEmailContent() {
+    let myObj = await getCustomerInformation({ user: localStorage.getItem("userId") });
+    return myObj;
 }
 
 function sendEmail() {
-    const templateParams = {
-        name: "Peter Parker",
-        message: "This is a test email",
-        reply_to: "josueh0207@gmail.com"
-    };
+    console.log(JSON.stringify(getEmailContent()));
+    // const templateParams = {
+    //     name: "Peter Parker",
+    //     message: "This is a test email",
+    //     reply_to: "josueh0207@gmail.com"
+    // };
 
-    emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
-        .then(response => {
-            console.log("Email sent successfully!", response.status, response.text);
-        })
-        .catch(error => {
-            console.error("Failed to send email", error);
-        });
+    // emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
+    //     .then(response => {
+    //         console.log("Email sent successfully!", response.status, response.text);
+    //     })
+    //     .catch(error => {
+    //         console.error("Failed to send email", error);
+    //     });
 }
