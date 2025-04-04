@@ -278,13 +278,7 @@ export default function StateMachine() {
                         // Log submitted form data for debugging
                         console.log("Form data:", data);
 
-                        // // Insert coaching needs into database
-                        // let result = await insertCoachingNeeds({ 
-                        //     userId: user, 
-                        //     coachingNeeds: JSON.stringify(data.selectedValue) 
-                        // });
-                        // // Log database operation result
-                        // console.log(result.message);
+                        let result = await insertBusinessType({ userId: user, businessType: data.selectedValue });
 
                         // Set next state to "Final Step"
                         statemachine.currentState = "Business Coach Box";
