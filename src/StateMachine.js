@@ -287,7 +287,7 @@ export default function StateMachine() {
                         // console.log(result.message);
 
                         // Set next state to "Final Step"
-                        statemachine.currentState = "Other Phase";
+                        statemachine.currentState = "";
                         // Save current state to persistence
                         saveCurrentState();
                         // Update the chat interface
@@ -440,7 +440,7 @@ export default function StateMachine() {
                         } else if (statemachine.serviceSelected == "Warehouse Storage Rental") {
                             statemachine.currentState = "WarehouseOptions";
                         } else if (statemachine.serviceSelected == "Event Venue Rental") {
-                            statemachine.currentState = "Second Phase";
+                            statemachine.currentState = "";
                         }
                         else {
                             statemachine.currentState = "Type of Business";
@@ -845,10 +845,10 @@ export default function StateMachine() {
 
     // Add a mapping of service descriptions
     const serviceDescriptions = {
-        "Commercial Kitchen Rental": "The Stir Kitchen is an Interior Health approved shared food processing facility focused on helping local food entrepreneurs start-up and scale-up their businesses.",
+        "Commercial Kitchen Rental": "The Stir Kitchen is an Interior Health approved shared food processing facility focused on helping local food entrepreneurs start-up and scale-up their businesses. Featuring flexible online booking at a tiered pricing scale based on usage and on-site dry, cold and frozen storage for your ingredients and supplies. The Stir Kitchen is equipped with large-scale equipment for dehydration, canning, baking, flash freezing and catering.",
         "Warehouse Storage Rental": "Our shared warehouse storage is available at daily, weekly, monthly, and annual rates. You'll have access to your dry-pallet or frozen storage space 24/7.",
-        "Event Venue Rental": "Rent event or meeting space at The Stir in either our indoor Stirfront or Outdoor Riverfront Courtyard.",
-        "Food Business Coaching": "Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, and more.",
+        "Event Venue Rental": "Rent event or meeting space at The Stir in either our indoor Stirfront or Outdoor Riverfront Courtyard. The Stirfront has a 54 person capacity, and our Riverfront Courtyard can support events for up to 200 people! Our Stirfront is great for pop-up shops, meetings and workshops, while our Riverfront Courtyard has seen everything from cook-outs to dance parties! The Stir also has AV equipment, tables and chairs available to add your event rental.",
+        "Food Business Coaching": "Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, product development, packaging, business plan creation and food business financial planning.",
         "E-Commerce": "Become a vendor in The Stir's online marketplace with monthly pickups from The Stir."
     };
 
@@ -1174,6 +1174,7 @@ export default function StateMachine() {
         let completedBusinessPlan = true;
         let foodSafeCertificate = true;
         let foodCorridorMembership = true;
+        let interestForm = true;
 
         // Handle form submission
         form.onsubmit = async function (event) {
@@ -1199,6 +1200,7 @@ export default function StateMachine() {
                     if (box.id == "Interior Health") interiorHealth = false;
                     if (box.id == "Completed Business Plan") completedBusinessPlan = false;
                     if (box.id == "FoodSafe Certificate") foodSafeCertificate = false;
+                    if( box.id == "Client Interest Form") interestForm = false;
                 } else {
                     // Add to checked list  
                     checkedValues.push(box.value);
@@ -1233,7 +1235,8 @@ export default function StateMachine() {
                         "Food Corridor Membership": foodCorridorMembership,
                         "Interior Health Food Premises Approval": interiorHealth,
                         "Completed 2-Year Business Plan": completedBusinessPlan,
-                        "Valid FoodSafe Level 1 Certification": foodSafeCertificate
+                        "Valid FoodSafe Level 1 Certification": foodSafeCertificate,
+                        "Client Interest Form": interestForm
                     })
                 });
                 console.log(result.message);
@@ -1301,15 +1304,10 @@ export default function StateMachine() {
                 { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                 { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                 { name: "Completed Business Plan", value: "Completed 2-Year Business Plan", id: "Completed Business Plan" },
-                { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" }
+                { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
+                { name: "Client Interest Form", value: "Client Interest Form", id: "Client Interest Form" } 
             ];
-        } else if (service === "Event Venue") {
-            return [
-                { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership", required: false },
-                { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership", required: true },
-                { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance", required: true },
-            ];
-        }
+        } 
         else {
             return [];
         }
@@ -1431,6 +1429,15 @@ export default function StateMachine() {
                     options.push({
                         "title": "Sign Up for Food Corridor",
                         "href": "https://app.thefoodcorridor.com/en/signup?default_kitchen=21957" // Update the link
+                    });
+                    break;
+                case "Client Interest Form":
+                    CImsg = "Please fill out our Client Interest Form so that we can learn more about your business and needs.";
+                    addMessage(CImsg, "self");
+                    localStorage.setItem("msg", CImsg);
+                    options.push({
+                        "title": "Click Here for the Client Interest Form",
+                        "href": "https://www.thekitchendoor.com/kitchen-rental/the-stir/contact-kitchen"
                     });
                     break;
                 default:
