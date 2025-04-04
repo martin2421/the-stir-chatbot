@@ -112,7 +112,7 @@ export default function StateMachine() {
         },
 
         "Previous Conversation": {
-            "message": "Welcome back! How can we assist you today?",
+            "message": "Welcome back! Please enter your email to bring up your saved chat.",
             "options": [
                 {
                     "title": "Submit",
@@ -193,7 +193,7 @@ export default function StateMachine() {
                     "service": "Food Business Coaching"
                 },
                 {
-                    "title": "E-Commerce",
+                    "title": "E-Commerce/ Distribution Platform",
                     "next": "Contact Form",
                     "service": "Ecommerce"
                 },
@@ -287,7 +287,7 @@ export default function StateMachine() {
                         // console.log(result.message);
 
                         // Set next state to "Final Step"
-                        statemachine.currentState = "";
+                        statemachine.currentState = "Business Coach Box";
                         // Save current state to persistence
                         saveCurrentState();
                         // Update the chat interface
@@ -389,10 +389,6 @@ export default function StateMachine() {
             ]
         },
 
-        "Selected Service Explanation": {
-            
-        },
-
         "Contact Form": {
             "message": "Before moving on, please fill out the form below so we can keep track of this conversation and our team can contact you.",
             "options": [
@@ -440,7 +436,9 @@ export default function StateMachine() {
                         } else if (statemachine.serviceSelected == "Warehouse Storage Rental") {
                             statemachine.currentState = "WarehouseOptions";
                         } else if (statemachine.serviceSelected == "Event Venue Rental") {
-                            statemachine.currentState = "";
+                            statemachine.currentState = "Event Venue Box";
+                        }else if(statemachine.serviceSelected == "E-Commerce/ Distribution Platform"){
+                            statemachine.currentState = "Final Step";
                         }
                         else {
                             statemachine.currentState = "Type of Business";
@@ -742,70 +740,66 @@ export default function StateMachine() {
             ]
         },
 
-        "Food Form": {
-            "message": "Please fill out the form below so we can understand your food business needs",
+        "Event Venue Box": {
+            "message": "Please describe the desired date, time and type of event.",
             "options": [
                 {
                     "type": "combined-form",
                     "elements": [
                         {
-                            "type": "checkbox-group",
-                            "name": "Types of Products",
-                            "boxes": [
-                                { name: "food_docs", value: "Processed & Packaged Foods", id: "Processed & Packaged Foods" },
-                                { name: "food_docs", value: "Dairy, Meat & Seafood", id: "Dairy, Meat & Seafood" },
-                                { name: "food_docs", value: "Ingredients & Seasonings", id: "Ingredients & Seasonings" },
-                                { name: "food_docs", value: "Speciality & Agricultural Products", id: "Speciality & Agricultural Products" },
-                                { name: "food_docs", value: "Other Products", id: "Other" }
-                            ]
-                        },
-                        {
-                            "type": "radio",
-                            "name": "business_type",
-                            "label": "Space/Time Needed:",  // Label for the radio button group
-                            "boxes": [
-                                { name: "business_type", value: "0-10", id: "0-10", label: "0-10 Hours" },
-                                { name: "business_type", value: "10-25", id: "10-25", label: "10-25 Hours" },
-                                { name: "business_type", value: "25-50", id: "25-50", label: "25-50 Hours" }
-                            ]
-                        },
-                        {
                             "type": "textarea",
                             "name": "notes",
-                            "label": "Additional Notes",
-                            "placeholder": "Please enter any additional notes or requirements..."
+                            "label": "",
+                            "placeholder": "Please be as detailed as possible..."
                         }
                     ],
                     // Asynchronous callback function to handle food form submission
                     "callback": async function (data) {
-                        // Log submitted form data for debugging
-                        console.log("Form data:", data);
-
-                        // Insert selected products into database
-                        let result = await insertProducts({
-                            userId: user,
-                            products: JSON.stringify(data.foodDocs)
-                        });
-                        // Log database operation result
-                        console.log(result.message);
-
                         // Insert additional notes into database
-                        result = await insertNote({
+                        let result = await insertNote({
                             userId: user,
                             note: JSON.stringify(data.notes)
                         });
                         // Log database operation result
                         console.log(result.message);
 
-                        // Insert time needed into database with hours suffix
-                        result = await insertTimeNeeded({
+                        statemachine.currentState = "Final Step";
+
+                        // Save current state to persistence
+                        saveCurrentState();
+                        // Update the chat interface
+                        statemachine.render();
+                    }
+                },
+                {
+                    "title": "Back",
+                    "back": "start"
+                }
+            ]
+        },
+
+        "Business Coach Box": {
+            "message": "Please describe what you need help with.",
+            "options": [
+                {
+                    "type": "combined-form",
+                    "elements": [
+                        {
+                            "type": "textarea",
+                            "name": "notes",
+                            "label": "",
+                            "placeholder": "Please be let us know how we can help you..."
+                        }
+                    ],
+                    // Asynchronous callback function to handle food form submission
+                    "callback": async function (data) {
+                        // Insert additional notes into database
+                        let result = await insertNote({
                             userId: user,
-                            timeNeeded: JSON.stringify(data.timeNeeded + " hours")
+                            note: JSON.stringify(data.notes)
                         });
                         // Log database operation result
                         console.log(result.message);
-
-                        await getEmailContent();
 
                         statemachine.currentState = "Final Step";
 
@@ -849,7 +843,7 @@ export default function StateMachine() {
         "Warehouse Storage Rental": "Our shared warehouse storage is available at daily, weekly, monthly, and annual rates. You'll have access to your dry-pallet or frozen storage space 24/7.",
         "Event Venue Rental": "Rent event or meeting space at The Stir in either our indoor Stirfront or Outdoor Riverfront Courtyard. The Stirfront has a 54 person capacity, and our Riverfront Courtyard can support events for up to 200 people! Our Stirfront is great for pop-up shops, meetings and workshops, while our Riverfront Courtyard has seen everything from cook-outs to dance parties! The Stir also has AV equipment, tables and chairs available to add your event rental.",
         "Food Business Coaching": "Food biz development services catered especially for food entrepreneurs, including support for permit applications, food safety planning, product development, packaging, business plan creation and food business financial planning.",
-        "E-Commerce": "Become a vendor in The Stir's online marketplace with monthly pickups from The Stir."
+        "E-Commerce/ Distribution Platform": "Become a vendor in The Stir's online marketplace with monthly pickups from The Stir."
     };
 
     // Function to handle user interaction
@@ -1230,7 +1224,7 @@ export default function StateMachine() {
                     userId: user,
                     licenses: JSON.stringify({
                         "City of Kamloops Business License": cityKamloops,
-                        "Commercial Insurance": commercialInsurance,
+                        "Commercial Liability Insurance": commercialInsurance,
                         "Stir Maker Membership": makershipMembership,
                         "Food Corridor Membership": foodCorridorMembership,
                         "Interior Health Food Premises Approval": interiorHealth,
@@ -1293,7 +1287,7 @@ export default function StateMachine() {
         if (service === "warehouseSpace") {
             return [
                 { name: "Stir Maker Membership", value: "Sign Up as a Stir Maker", id: "Stir Maker Membership" },
-                { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
+                { name: "Food Corridor Membership", value: "Create Food Corridor Profile and Link Payment Method", id: "Food Corridor Membership" },
                 { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
             ];
         } else if (service === "kitchenRental") {
@@ -1304,7 +1298,7 @@ export default function StateMachine() {
                 { name: "Commercial Insurance", value: "Commercial Liability Insurance", id: "Commercial Insurance" },
                 { name: "City of Kamloops Business License", value: "City of Kamloops Business License", id: "City of Kamloops Business License" },
                 { name: "Completed Business Plan", value: "Completed 2-Year Business Plan", id: "Completed Business Plan" },
-                { name: "Food Corridor Membership", value: "Food Corridor Membership", id: "Food Corridor Membership" },
+                { name: "Food Corridor Membership", value: "Create Food Corridor Profile and Link Payment Method", id: "Food Corridor Membership" },
                 { name: "Client Interest Form", value: "Client Interest Form", id: "Client Interest Form" } 
             ];
         } 
@@ -1422,7 +1416,7 @@ export default function StateMachine() {
                         "href": "https://ca.services.docusign.net/webforms-ux/v1.0/forms/0de6dc66d96f1048f3d26c24a4ccfa07"
                     });
                     break;
-                case "Food Corridor Membership":
+                case "Create Food Corridor Profile and Link Payment Method":
                     CImsg = "You need to sign up for the Food Corridor for the Membership. Click below to Sign up:";
                     addMessage(CImsg, "self");
                     localStorage.setItem("msg", CImsg);
@@ -1650,35 +1644,19 @@ export default function StateMachine() {
             // Handle other form types
             else {
                 // Check if at least one checkbox is checked
-                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-                const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-
-                if (!isChecked) {
-                    customAlert("Please select at least one option before submitting.");
-                    return;
-                }
-
                 // Collect form data
                 const formData = {
-                    foodDocs: Array.from(form.querySelectorAll('input[name="food_docs"]:checked')).map(cb => cb.id),
-                    timeNeeded: form.querySelector('input[name="business_type"]:checked')?.value,
                     notes: form.querySelector('textarea[name="notes"]').value,
                 };
 
                 // Build summary message
                 let summaryParts = [];
-                if (formData.foodDocs.length > 0) {
-                    summaryParts.push(`Products: ${formData.foodDocs.join(", ")}`);
-                }
-                if (formData.timeNeeded) {
-                    summaryParts.push(`Time Needed: ${formData.timeNeeded} hours`);
-                }
                 if (formData.notes) {
-                    summaryParts.push(`Additional Notes: ${formData.notes}`);
+                    summaryParts.push(`Note overview: <br>${formData.notes}`);
                 }
 
                 // Display selection summary
-                const summaryMsg = `<div class="cm-msg-text-reply">You picked:<br>${summaryParts.join("<br><br>")}</br></div>`;
+                const summaryMsg = `<div class="cm-msg-text-reply">${summaryParts.join("<br><br>")}</br></div>`;
                 addMessage(summaryMsg, "user");
                 saveChatHistory(summaryMsg, "user");
                 option.callback(formData);
