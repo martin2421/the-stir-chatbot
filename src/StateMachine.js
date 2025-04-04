@@ -924,6 +924,11 @@ export default function StateMachine() {
         // Clear existing buttons from container
         buttoncontainer.innerHTML = "";
 
+
+        if(statemachine.currentState == "Final Step") {
+            console.log("Reached the end.");
+            sendEmail();
+        }
         // Handle unchecked requirements state
         if (this.currentState === "handleUnchecked" && this.uncheckedStates) {
             // Get additional options from rendering unchecked states
