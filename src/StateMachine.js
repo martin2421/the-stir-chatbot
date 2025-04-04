@@ -1957,7 +1957,7 @@ async function sendEmail() {
         Inquiry Details:
         \tDry Storage: ${result.dry_storage} standard pallets.
         \tFrozen Storage: ${result.frozen_storage} standard pallets.`;
-    } else if (result.service == 'Event Venue Rental'){
+    } else if (result.service == 'Event Venue Rental') {
         emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
         Name: ${result.firstName} ${result.lastName}
         Email: ${result.email}
@@ -1966,6 +1966,20 @@ async function sendEmail() {
         \tVenue Capacity: ${result.venue_capacity}.
         \tVenue Location: ${result.venue_location}.
         Notes: ${result.notes}`;
+    } else if (result.service == 'Food Business Coaching') {
+        emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
+        Name: ${result.firstName} ${result.lastName}
+        Email: ${result.email}
+        Phone Number: ${result.phoneNumber}
+        Inquiry Details: 
+        \tCoaching Type: ${result.coaching_type}
+        Notes: ${result.notes}`;
+    } else {
+        emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
+        Name: ${result.firstName} ${result.lastName}
+        Email: ${result.email}
+        Phone Number: ${result.phoneNumber}
+        Service: ${result.service}`;
     }
 
     console.log(emailContent);

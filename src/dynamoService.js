@@ -408,6 +408,26 @@ export const getCustomerInformation = async (data) => {
             notes: data.Items[0].notes,
           }
         }
+        else if(data.Items[0].service == 'Food Business Coaching'){
+          returningData = {
+            firstName: data.Items[0].firstName,
+            lastName: data.Items[0].lastName,
+            email: data.Items[0].email,
+            phoneNumber: data.Items[0].phoneNumber,
+            service: data.Items[0].service,
+            coaching_type: data.Items[0].businessType,
+            notes: data.Items[0].notes,
+          }
+        }
+        else {
+          returningData = {
+            firstName: data.Items[0].firstName,
+            lastName: data.Items[0].lastName,
+            email: data.Items[0].email,
+            phoneNumber: data.Items[0].phoneNumber,
+            service: data.Items[0].service,
+          }
+        }
         return returningData;
       }
       else{
