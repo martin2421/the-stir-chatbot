@@ -454,7 +454,7 @@ export default function StateMachine() {
                             console.log(result.message);
                         }
 
-                        await getEmailContent();
+
                         // Update the chat interface with new state
                         statemachine.render();
                     }
@@ -1943,25 +1943,43 @@ function formatPhoneNumber(input) {
     return formattedNumber;
 }
 
+async function sendEmail() {
+    let result = await getCustomerInformation({ user: localStorage.getItem("userId") });
 
-async function getEmailContent() {
-    let myObj = await getCustomerInformation({ user: localStorage.getItem("userId") });
-    return myObj;
-}
+    let emailContent;
+    console.log(result);
 
-function sendEmail() {
-    console.log(JSON.stringify(getEmailContent()));
-    // const templateParams = {
-    //     name: "Peter Parker",
-    //     message: "This is a test email",
-    //     reply_to: "josueh0207@gmail.com"
-    // };
+    if (result.service == 'Warehouse Storage Rental') {
+        emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
+        Name: ${result.firstName} ${result.lastName}
+        Email: ${result.email}
+        Phone Number: ${result.phoneNumber}
+        Inquiry Details:
+        \tDry Storage: ${result.dry_storage} standard pallets.
+        \tFrozen Storage: ${result.frozen_storage} standard pallets.`;
+    } else if (result.service == 'Event Venue Rental'){
+        emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
+        Name: ${result.firstName} ${result.lastName}
+        Email: ${result.email}
+        Phone Number: ${result.phoneNumber}
+        Inquiry Details:
+        \tVenue Capacity: ${result.venue_capacity}.
+        \tVenue Location: ${result.venue_location}.
+        Notes: ${result.notes}`;
+    }
 
-    // emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
-    //     .then(response => {
-    //         console.log("Email sent successfully!", response.status, response.text);
-    //     })
-    //     .catch(error => {
-    //         console.error("Failed to send email", error);
-    //     });
+    console.log(emailContent);
+
+    const templateParams = {
+        name: "From The Stir Chatbot",
+        message: emailContent,
+    };
+
+    emailjs.send("service_65cl2q7", "template_sj8taxe", templateParams)
+        .then(response => {
+            console.log("Email sent successfully!", response.status, response.text);
+        })
+        .catch(error => {
+            console.error("Failed to send email", error);
+        });
 }

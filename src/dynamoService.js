@@ -383,11 +383,37 @@ export const getCustomerInformation = async (data) => {
     .promise()
     .then(function (data) {
       if (data.Items != undefined) {
-        return { myData: JSON.stringify(data.Items) };
-      } else {
-        return { success: false };
+
+        let returningData;
+        if (data.Items[0].service == 'Warehouse Storage Rental'){
+          returningData = {
+            firstName: data.Items[0].firstName,
+            lastName: data.Items[0].lastName,
+            email: data.Items[0].email,
+            phoneNumber: data.Items[0].phoneNumber,
+            service: data.Items[0].service,
+            dry_storage: JSON.parse(data.Items[0].storageNeeds).dryStorage,
+            frozen_storage: JSON.parse(data.Items[0].storageNeeds).frozenStorage,
+          }
+        } else if(data.Items[0].service == 'Event Venue Rental'){
+          returningData = {
+            firstName: data.Items[0].firstName,
+            lastName: data.Items[0].lastName,
+            email: data.Items[0].email,
+            phoneNumber: data.Items[0].phoneNumber,
+            service: data.Items[0].service,
+            venue_location: JSON.parse(data.Items[0].eventVenue).venue_location,
+            venue_capacity: JSON.parse(data.Items[0].eventVenue).venue_capacity,
+            venue_equipment: JSON.parse(data.Items[0].eventVenue).venue_equipment,
+            notes: data.Items[0].notes,
+          }
+        }
+        return returningData;
       }
-    }
+      else{
+          return { success: false };
+        }
+      }
     )
     .catch(console.error)
 }

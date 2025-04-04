@@ -9,6 +9,9 @@ body {
     display: flex;
     flex-direction: row;
     font-family: inherit;
+    background-image: url('stir-background.png'); 
+    background-size: cover; 
+    background-repeat: no-repeat; 
 }
 
 
