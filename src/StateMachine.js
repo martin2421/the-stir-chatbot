@@ -687,6 +687,7 @@ export default function StateMachine() {
                         if (data.selectedValue === "Brand New") {
                             // New businesses go to information state
                             statemachine.currentState = "information";
+                            saveCurrentState(statemachine.currentState);
                         } else if (data.selectedValue === "Getting Started") {
                             // Businesses with some progress go to second phase
                             statemachine.currentState = "Second Phase";
@@ -748,6 +749,34 @@ export default function StateMachine() {
                     "title": "Venture Kamloops VK Accelerate",
                     "href": "https://venturekamloops.com/programs/vk-accelerate"
                 },
+                {
+                    "title": "Back to Start",
+                    "callback": function () {
+                        // Remove all chat-related items from localStorage
+                        localStorage.removeItem("userId");
+                        localStorage.removeItem("chatHistory");
+                        localStorage.removeItem("serviceSelected");
+                        localStorage.removeItem("currentState");
+                        localStorage.removeItem("eventVenue");
+                        localStorage.removeItem("checkedIndex");
+                        localStorage.removeItem("msg");
+                        localStorage.removeItem("uncheckedStates");
+                        localStorage.removeItem("flagSend");
+
+                        // Reset all variables to null
+                        user = null;
+                        serviceSelected = null;
+                        eventVenue = null;
+
+                        // Clear chat messages from UI
+                        messagesContainer.innerHTML = "";
+                        // Reset state machine to start state
+                        statemachine.currentState = "start";
+                        // Re-render the chat interface
+                        statemachine.render();
+                    }
+                }
+
             ]
         },
 
