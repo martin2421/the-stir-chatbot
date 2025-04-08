@@ -486,7 +486,30 @@ export default function StateMachine() {
                 },
                 {
                     "title": "Back",
-                    "back": "start"
+                    "callback": function () {
+                        // Remove all chat-related items from localStorage
+                        localStorage.removeItem("userId");
+                        localStorage.removeItem("chatHistory");
+                        localStorage.removeItem("serviceSelected");
+                        localStorage.removeItem("currentState");
+                        localStorage.removeItem("eventVenue");
+                        localStorage.removeItem("checkedIndex");
+                        localStorage.removeItem("msg");
+                        localStorage.removeItem("uncheckedStates");
+                        localStorage.removeItem("flagSend");
+
+                        // Reset all variables to null
+                        user = null;
+                        serviceSelected = null;
+                        eventVenue = null;
+
+                        // Clear chat messages from UI
+                        messagesContainer.innerHTML = "";
+                        // Reset state machine to start state
+                        statemachine.currentState = "start";
+                        // Re-render the chat interface
+                        statemachine.render();
+                    }
                 }
             ]
         },
