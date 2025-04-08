@@ -137,7 +137,7 @@ export default function StateMachine() {
                             } else {
                                 statemachine.currentState = result.stateChat; // ex. state - Replace with different state after data base check
                                 localStorage.setItem("currentState", statemachine.currentState);
-                                loadChatFromDB(email);
+                                await loadChatFromDB(email);
                                 statemachine.render(true);
                             }
                         }
@@ -454,6 +454,8 @@ export default function StateMachine() {
                             console.log(result.message);
                         }
 
+                        localStorage.removeItem("flagSend");
+
 
                         // Update the chat interface with new state
                         statemachine.render();
@@ -539,6 +541,8 @@ export default function StateMachine() {
 
                         // Log submitted form data for debugging
                         console.log("Form data:", data.equipmentDocs);
+
+                        eventVenue = JSON.parse(localStorage.getItem("eventVenue"));
 
                         eventVenue.venue_equipment = data.equipmentDocs;
 
@@ -1810,6 +1814,12 @@ export default function StateMachine() {
 
         // Fetch user data from database using email
         const result = await searchData({ email: emailIn });
+
+        if(result.stateChat == "Final Step") {
+            localStorage.setItem("flagSend", true);
+        }
+
+
         // Parse chat history from result, default to empty array if none exists
         const history = JSON.parse(result.chat) || [];
 
@@ -1833,12 +1843,15 @@ export default function StateMachine() {
             messagesContainer.appendChild(msgDiv);
         });
 
+        
         // Restore previous state from database
         const savedState = result.stateChat;
+        
         if (savedState) {
             statemachine.currentState = savedState;
         }
 
+        
         // Update localStorage with loaded chat history
         localStorage.setItem("chatHistory", JSON.stringify(history));
         console.log("Loading chat from DynamoDB");
