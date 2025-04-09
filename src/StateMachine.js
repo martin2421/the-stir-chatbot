@@ -1002,6 +1002,8 @@ export default function StateMachine() {
     };
 
 
+
+
     // Function to render the current state
     statemachine.render = async function (isLoadingHistory = false) {
         // Get the buttons container element from DOM
@@ -1142,6 +1144,8 @@ export default function StateMachine() {
             // Add all buttons to chat interface
             chatLogs.appendChild(buttoncontainer);
         }
+
+
     };
 
 
@@ -2107,4 +2111,7 @@ async function sendEmail() {
         .catch(error => {
             console.error("Failed to send email", error);
         });
+
 }
+
+
