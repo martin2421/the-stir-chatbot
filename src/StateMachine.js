@@ -266,11 +266,8 @@ export default function StateMachine() {
                     ],
                     // // Asynchronous callback function that handles business type selection
                     "callback": async function (data) {
-                        // console.log(data);
                         // // Save business type to database
                         let result = await insertBusinessType({ userId: user, businessType: data.selectedValue });
-                        // Log the result message
-                        console.log(result.message);
 
                         // Set next state based on business type
                         statemachine.currentState = "BusinessStage";
@@ -299,9 +296,6 @@ export default function StateMachine() {
                         { name: "coaching_needs", value: "Regulatory Requirements", id: "regulatory", label: "Regulatory Requirements" }
                     ],
                     "callback": async function (data) {
-                        // Log submitted form data for debugging
-                        console.log("Form data:", data);
-
                         let result = await insertBusinessType({ userId: user, businessType: data.selectedValue });
 
                         // Set next state to "Final Step"
@@ -436,14 +430,10 @@ export default function StateMachine() {
 
                         // Insert user data into database and await response
                         let response = await insertData({ f_name, l_name, b_name, email, phone, today });
-                        // Log success message if data insertion was successful
-                        if (response.success) console.log("User data was inserted");
                         // sendEmail();
 
                         // Store user ID in localStorage for persistence
                         localStorage.setItem("userId", response.userId);
-                        // Log the user ID for debugging
-                        console.log(response.userId);
                         // Update the user variable with new ID
                         user = response.userId;
 
@@ -466,15 +456,11 @@ export default function StateMachine() {
 
                         // Insert selected service into database
                         let result = await insertService({ userId: user, service: serviceSelected });
-                        // Log the result message
-                        console.log(result.message)
 
                         eventVenue = JSON.parse(localStorage.getItem("eventVenue"));
                         // If event venue was selected, insert venue details
                         if (eventVenue != null) {
                             result = await insertEventVenue({ userId: user, venue: JSON.stringify(eventVenue) });
-                            // Log the result message
-                            console.log(result.message);
                         }
 
                         localStorage.removeItem("flagSend");
@@ -551,9 +537,6 @@ export default function StateMachine() {
                             statemachine.currentState = "Second Phase";
 
                             let result = await insertStorageNeeds({ userId: user, storageNeed: JSON.stringify({ dryStorage: data.dry_storage, frozenStorage: data.frozen_storage }) });
-                            console.log(result.message);
-
-                            console.log(data);
                             saveCurrentState();
                         }
                         // Re-render the state machine to show updated state
@@ -584,9 +567,6 @@ export default function StateMachine() {
                         }
                     ],
                     "callback": async function (data) {
-
-                        // Log submitted form data for debugging
-                        console.log("Form data:", data.equipmentDocs);
 
                         eventVenue = JSON.parse(localStorage.getItem("eventVenue"));
 
@@ -702,8 +682,6 @@ export default function StateMachine() {
                             statemachine.currentState = "otherBusiness";
                         }
 
-                        // Log current user ID for debugging
-                        console.log(user);
                         // Save business stage to database
                         let result = await insertBusinessStage({
                             userId: user,
@@ -714,8 +692,6 @@ export default function StateMachine() {
                         if (data.selectedValue != "Brand New") {
                             saveCurrentState(statemachine.currentState);
                         }
-                        // Log success message if database insertion worked
-                        if (result.success) console.log(result.message);
 
                         // Update the chat interface
                         statemachine.render();
@@ -807,7 +783,6 @@ export default function StateMachine() {
                         else if (sel == "Event Venue Rental") statemachine.selectedService = "Event Venue";
                         else if (sel == "Food Business Coaching") statemachine.selectedService = "Business Coach";
                         let result = getCheckboxesForService(statemachine.selectedService);
-                        //console.log(result);
                         return result;
                     }
                 }
@@ -834,8 +809,6 @@ export default function StateMachine() {
                             userId: user,
                             note: JSON.stringify(data.notes)
                         });
-                        // Log database operation result
-                        console.log(result.message);
 
                         statemachine.currentState = "Final Step";
 
@@ -872,8 +845,6 @@ export default function StateMachine() {
                             userId: user,
                             note: JSON.stringify(data.notes)
                         });
-                        // Log database operation result
-                        console.log(result.message);
 
                         statemachine.currentState = "Final Step";
 
@@ -927,7 +898,6 @@ export default function StateMachine() {
         "handleUnchecked": {
             "message": "Please read the following requirement",  // Remove message from here
             "render": function (uncheckedItems) {
-                // console.log(uncheckedItems);
                 return handleUncheckedItems(uncheckedItems);
             },
             "options  ": []
@@ -1031,7 +1001,6 @@ export default function StateMachine() {
 
         if (statemachine.currentState == "Final Step" && localStorage.getItem("flagSend") == null) {
             localStorage.setItem("flagSend", true);
-            console.log("Reached the end.");
             sendEmail();
         }
         // Handle unchecked requirements state
@@ -1131,7 +1100,6 @@ export default function StateMachine() {
                             }
                             // Save signup status to database
                             let result = await insertSignedUp({ userId: user, signedUp: today });
-                            console.log(result.message);
                         }
                         // Trigger state machine interaction
                         this.interact(i);
@@ -1290,8 +1258,6 @@ export default function StateMachine() {
                 if (!checkbox.checked) {
                     // Add to unchecked list
                     uncheckedValues.push(box.value);
-
-                    console.log(box);
                     // Update tracking variables
                     if (box.id == "City of Kamloops Business License") cityKamloops = false;
                     if (box.id == "Commercial Insurance") commercialInsurance = false;
@@ -1339,7 +1305,6 @@ export default function StateMachine() {
                         "Client Interest Form": interestForm
                     })
                 });
-                console.log(result.message);
             }
             else {
                 // Save license status to database
@@ -1351,14 +1316,12 @@ export default function StateMachine() {
                         "Stir Makership Membership": makershipMembership,
                     })
                 });
-                console.log(result.message);
             }
 
             // Handle navigation based on checked status
             if (uncheckedValues.length > 0) {
                 // If missing items, go to unchecked handler
                 statemachine.uncheckedStates = uncheckedValues;
-                console.log(uncheckedValues);
                 localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
                 statemachine.currentState = "handleUnchecked";
                 localStorage.setItem("uncheckedStates", JSON.stringify(uncheckedValues));
@@ -1368,7 +1331,6 @@ export default function StateMachine() {
                 // If all checked, go to default state
                 if (makershipMembership) {
                     result = await insertSignedUp({ userId: user, signedUp: today });
-                    console.log(result.message);
                 }
                 statemachine.currentState = "Final Step";
                 saveCurrentState(statemachine.currentState);
@@ -1557,7 +1519,6 @@ export default function StateMachine() {
                         // Increment index and refresh display
                         statemachine.currentUncheckedIndex++;
                         localStorage.setItem("checkedIndex", statemachine.currentUncheckedIndex);
-                        console.log(statemachine.currentUncheckedIndex);
                         statemachine.currentState = "handleUnchecked";
                         statemachine.render();
                     }
@@ -1902,9 +1863,6 @@ export default function StateMachine() {
             }
         }
 
-        // Log source of chat history
-        console.log("Loading chat from localStorage");
-
         // Return whether history exists
         return history.length > 0;
     }
@@ -1956,7 +1914,6 @@ export default function StateMachine() {
 
         // Update localStorage with loaded chat history
         localStorage.setItem("chatHistory", JSON.stringify(history));
-        console.log("Loading chat from DynamoDB");
 
         // If user is logged in and not in initial states, update database
         if (user != null && statemachine.currentState != "start" &&
@@ -1965,7 +1922,6 @@ export default function StateMachine() {
                 userId: user,
                 chat: localStorage.getItem("chatHistory")
             });
-            console.log(result.message);
         }
 
         // Return whether history exists
@@ -2003,7 +1959,6 @@ export default function StateMachine() {
                 userId: user,
                 chat: localStorage.getItem("chatHistory")
             });
-            console.log(result.message);
         }
     }
 
@@ -2011,7 +1966,6 @@ export default function StateMachine() {
     async function saveCurrentState(state) {
         // Save current state to localStorage
         localStorage.setItem("currentState", statemachine.currentState);
-        console.log("Current state: " + statemachine.currentState);
 
         // If user is logged in and not in initial states, save to database
         if (user != null && statemachine.currentState != "start" &&
@@ -2020,7 +1974,6 @@ export default function StateMachine() {
                 userId: user,
                 stateChat: statemachine.currentState
             });
-            console.log(result.message);
         }
     }
 
@@ -2062,7 +2015,6 @@ async function sendEmail() {
     let result = await getCustomerInformation({ user: localStorage.getItem("userId") });
 
     let emailContent;
-    console.log(result);
 
     if (result.service == 'Warehouse Storage Rental') {
         emailContent = `Hello,\n\nWe are notifying you that a new prospect is ready to get an inquiry from you guys. \n\nHere is the prospect's details:
@@ -2096,8 +2048,6 @@ async function sendEmail() {
         Phone Number: ${result.phoneNumber}
         Service: ${result.service}`;
     }
-
-    console.log(emailContent);
 
     const templateParams = {
         name: "From The Stir Chatbot",
