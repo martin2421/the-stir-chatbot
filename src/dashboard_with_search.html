@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Data Table</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f5f1;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            border: 5px solid #8b4513;
+            background-image: url('stir-background.png'); 
+            background-size: cover; 
+            background-repeat: no-repeat; 
+        }
+
+        .container {
+            max-width: 90%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4513;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #8b4513;
+            color: white;
+        }
+
+        .expand-btn {
+            cursor: pointer;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .expand-btn:hover {
+            background-color: #5a2d0c;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 15px;
+        }
+
+        .details-column {
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .divider {
+            width: 2px;
+            background-color: #8b4513;
+            margin: 0 20px;
+            align-self: stretch;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" >
+        <img src="https://static.wixstatic.com/media/636f9b_f2871fd983de45dea88cef9593104663~mv2.png/v1/crop/x_28,y_380,w_1426,h_728/fill/w_406,h_208,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/636f9b_f2871fd983de45dea88cef9593104663~mv2.png"
+            class="logo" alt="Logo">
+        <h2>Client Data Table</h2>
+        <input type="text" id="searchInput" onkeyup="searchTable()"
+            placeholder="Search for names, services, or requirements...">
+        <table id="clientTable">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Business Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Service Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>Doe Catering</td>
+                    <td>john@example.com</td>
+                    <td>123-456-7890</td>
+                    <td>Kitchen Rental</td>
+                    <td><button class="expand-btn" onclick="toggleDetails('details1')">View Details</button></td>
+                </tr>
+                <tr id="details1" class="hidden details-row">
+                    <td colspan="6">
+                        <div class="details">
+                            <div class="details-column">
+                                <strong>Requirements:</strong>
+                                <ul>
+                                    <li>Health Certificate: ✅</li>
+                                    <li>Insurance: ❌</li>
+                                    <li>Business License: ✅</li>
+                                </ul>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="details-column">
+                                <strong>Products:</strong>
+                                <ul>
+                                    <li>Oven</li>
+                                    <li>Refrigerator</li>
+                                    <li>Dishwasher</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>Smith Logistics</td>
+                    <td>jane@example.com</td>
+                    <td>987-654-3210</td>
+                    <td>Warehouse Unit</td>
+                    <td><button class="expand-btn" onclick="toggleDetails('details2')">View Details</button></td>
+                </tr>
+                <tr id="details2" class="hidden details-row">
+                    <td colspan="6">
+                        <div class="details">
+                            <div class="details-column">
+                                <strong>Requirements:</strong>
+                                <ul>
+                                    <li>Warehouse Permit: ✅</li>
+                                    <li>Business License: ✅</li>
+                                </ul>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="details-column">
+                                <strong>Products:</strong>
+                                <ul>
+                                    <li>Forklift</li>
+                                    <li>Storage Shelves</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Michael Johnson</td>
+                    <td>Johnson Bakery</td>
+                    <td>michael@example.com</td>
+                    <td>555-123-4567</td>
+                    <td>Kitchen Rental</td>
+                    <td><button class="expand-btn" onclick="toggleDetails('details3')">View Details</button></td>
+                </tr>
+                <tr id="details3" class="hidden details-row">
+                    <td colspan="6">
+                        <div class="details">
+                            <div class="details-column">
+                                <strong>Requirements:</strong>
+                                <ul>
+                                    <li>Health Certificate: ✅</li>
+                                    <li>Insurance: ✅</li>
+                                </ul>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="details-column">
+                                <strong>Products:</strong>
+                                <ul>
+                                    <li>Mixing Machine</li>
+                                    <li>Cooling Rack</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleDetails(id) {
+            let detailsRow = document.getElementById(id);
+            detailsRow.classList.toggle('hidden');
+        }
+
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("clientTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let rowText = rows[i].textContent.toLowerCase();
+                if (rowText.includes(input)) {
+                    rows[i].style.display = "";
+                    if (rows[i].classList.contains("details-row")) {
+                        rows[i - 1].style.display = ""; // Show parent row when a detail matches
+                    }
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
