@@ -296,10 +296,9 @@ export default function StateMachine() {
                         { name: "coaching_needs", value: "Regulatory Requirements", id: "regulatory", label: "Regulatory Requirements" }
                     ],
                     "callback": async function (data) {
-<<<<<<< HEAD
+                        // Log submitted form data for debugging
+                        console.log("Form data:", data);
 
-=======
->>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
                         let result = await insertBusinessType({ userId: user, businessType: data.selectedValue });
 
                         // Set next state to "Final Step"
@@ -434,18 +433,14 @@ export default function StateMachine() {
 
                         // Insert user data into database and await response
                         let response = await insertData({ f_name, l_name, b_name, email, phone, today });
-<<<<<<< HEAD
-
-=======
->>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
+                        // Log success message if data insertion was successful
+                        if (response.success) console.log("User data was inserted");
                         // sendEmail();
 
                         // Store user ID in localStorage for persistence
                         localStorage.setItem("userId", response.userId);
-<<<<<<< HEAD
-
-=======
->>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
+                        // Log the user ID for debugging
+                        console.log(response.userId);
                         // Update the user variable with new ID
                         user = response.userId;
 
@@ -580,7 +575,8 @@ export default function StateMachine() {
                     ],
                     "callback": async function (data) {
 
-<<<<<<< HEAD
+                        // Log submitted form data for debugging
+                        console.log("Form data:", data.equipmentDocs);
 
 =======
 >>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
@@ -717,8 +713,8 @@ export default function StateMachine() {
                         if (data.selectedValue != "Brand New") {
                             saveCurrentState(statemachine.currentState);
                         }
-<<<<<<< HEAD
-=======
+                        // Log success message if database insertion worked
+                        if (result.success) console.log(result.message);
 
 >>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
                         // Update the chat interface
@@ -1294,10 +1290,8 @@ export default function StateMachine() {
                 if (!checkbox.checked) {
                     // Add to unchecked list
                     uncheckedValues.push(box.value);
-<<<<<<< HEAD
 
-=======
->>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
+                    console.log(box);
                     // Update tracking variables
                     if (box.id == "City of Kamloops Business License") cityKamloops = false;
                     if (box.id == "Commercial Insurance") commercialInsurance = false;
@@ -1903,7 +1897,8 @@ export default function StateMachine() {
             }
         }
 
-<<<<<<< HEAD
+        // Log source of chat history
+        console.log("Loading chat from localStorage");
 
 =======
 >>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
@@ -2093,7 +2088,7 @@ async function sendEmail() {
         Service: ${result.service}`;
     }
 
-<<<<<<< HEAD
+    console.log(emailContent);
 
 =======
 >>>>>>> cd6219be273ff001bcc97a70e0db9a62117f271f
